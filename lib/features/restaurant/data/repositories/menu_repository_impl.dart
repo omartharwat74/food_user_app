@@ -7,6 +7,7 @@ import 'package:food_user_app/features/restaurant/data/datasources/menu_remote_d
 import 'package:food_user_app/features/restaurant/data/models/menu_category_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/item_modifier_dto.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/modifier.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 
@@ -59,6 +60,16 @@ class MenuRepositoryImpl implements MenuRepository {
     try {
       final dto = await remoteDataSource.getStoreMenu(storeId);
       return Right(dto.sections);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MenuItem>> getProductDetail(String productId) async {
+    try {
+      final item = await remoteDataSource.getProductDetail(productId);
+      return Right(item);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

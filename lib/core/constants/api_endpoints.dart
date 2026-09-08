@@ -135,6 +135,9 @@ class ApiEndpoints {
   /// `GET /api/v1/stores/products/all?store_id={storeId}` — menu sections.
   static const String storeProducts = '/api/v1/stores/products/all';
 
+  /// `GET /api/v1/stores/products/show?id={productId}` — single product details.
+  static const String storeProductShow = '/api/v1/stores/products/show';
+
   // ── Spotlights ────────────────────────────────────────────────────────────
   /// `GET /api/v1/spotlights`
   static const String spotlights = '/api/v1/spotlights';

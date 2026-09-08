@@ -1176,23 +1176,14 @@ class _MenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
-    final isArabic = locale.languageCode == 'ar';
-
     return Column(
-      crossAxisAlignment: isArabic
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(
-          width: double.infinity,
-          child: Text(
-            section.name,
-            textAlign: isArabic ? TextAlign.right : TextAlign.left,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-            style: AppTextStyles.heading4(
-              context,
-            ).copyWith(fontSize: 15, height: 1.4),
+        Text(
+          section.name,
+          style: AppTextStyles.heading4(context).copyWith(
+            fontSize: 15,
+            height: 1.4,
           ),
         ),
         const SizedBox(height: 20),
@@ -1214,7 +1205,7 @@ class _SectionProductGrid extends StatelessWidget {
     for (var i = 0; i < items.length; i += 2) {
       rows.add(
         Row(
-          textDirection: TextDirection.ltr,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
               child: SizedBox(
@@ -1237,6 +1228,7 @@ class _SectionProductGrid extends StatelessWidget {
     }
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var i = 0; i < rows.length; i++) ...[
           if (i > 0) const SizedBox(height: 12),

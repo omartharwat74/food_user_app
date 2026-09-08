@@ -3,7 +3,9 @@ import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/restaurant/data/models/menu_category_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/item_modifier_dto.dart';
+import 'package:food_user_app/features/restaurant/data/models/product_detail_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/store_products_dto.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 
 abstract class MenuRemoteDataSource {
   Future<List<MenuCategoryDto>> getRestaurantMenu(String restaurantId);
@@ -12,6 +14,9 @@ abstract class MenuRemoteDataSource {
 
   /// Fetches menu from `GET /api/v1/stores/products/all?store_id={storeId}`.
   Future<StoreProductsDto> getStoreMenu(String storeId);
+
+  /// Fetches full product details from `GET /api/v1/stores/products/show?id={productId}`.
+  Future<MenuItem> getProductDetail(String productId);
 }
 
 class MenuRemoteDataSourceImpl implements MenuRemoteDataSource {
@@ -85,6 +90,23 @@ class MenuRemoteDataSourceImpl implements MenuRemoteDataSource {
         throw const FormatException('Expected store products envelope');
       }
       return StoreProductsDto.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<MenuItem> getProductDetail(String productId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.storeProductShow,
+        queryParameters: {'id': productId},
+      );
+      final raw = response.data;
+      if (raw is! Map<String, dynamic>) {
+        throw const FormatException('Expected product detail object');
+      }
+      return ProductDetailDto.fromJson(raw);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

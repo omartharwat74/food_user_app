@@ -93,6 +93,7 @@ import 'package:food_user_app/features/restaurant/data/datasources/menu_remote_d
 import 'package:food_user_app/features/restaurant/data/repositories/menu_repository_impl.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
@@ -398,6 +399,9 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
   sl.registerFactory<MenuCubit>(
     () => MenuCubit(menuRepository: sl<MenuRepository>()),
+  );
+  sl.registerFactory<ProductDetailCubit>(
+    () => ProductDetailCubit(menuRepository: sl<MenuRepository>()),
   );
 
   sl.registerLazySingleton(

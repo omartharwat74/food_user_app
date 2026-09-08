@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import '../constants/app_assets.dart';
 import 'package:food_user_app/features/profile/presentation/pages/verify_phone_otp_args.dart';
 
 import 'package:food_user_app/features/auth/presentation/pages/complete_profile_args.dart';
@@ -20,8 +19,8 @@ import '../../features/restaurant/presentation/pages/restaurant_detail_screen.da
 import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
+import '../../features/restaurant/presentation/cubit/product_detail_cubit.dart';
 import '../../features/restaurant/domain/entities/menu_item.dart';
-import '../../features/cart/domain/entities/cart_item.dart';
 import '../../features/cart/presentation/pages/cart_screen.dart';
 import '../../features/product/presentation/pages/product_details_screen.dart';
 import '../../features/checkout/presentation/pages/checkout_screen.dart';
@@ -199,24 +198,32 @@ class AppRouter {
         path: RouteNames.menuItemDetail,
         builder: (c, s) {
           final item = s.extra as MenuItem;
-          return MenuItemDetailScreen(item: item);
+          return BlocProvider<ProductDetailCubit>(
+            create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+            child: MenuItemDetailScreen(item: item),
+          );
         },
       ),
       GoRoute(path: RouteNames.cart, builder: (c, s) => const CartScreen()),
       GoRoute(
         path: RouteNames.productDetails,
         builder: (c, s) {
-          final item = s.extra is CartItem
-              ? s.extra as CartItem
-              : const CartItem(
+          final item = s.extra is MenuItem
+              ? s.extra as MenuItem
+              : const MenuItem(
                   id: 'burger-combo',
                   name: 'Burger meal with fries offer',
                   description:
                       'Fresh burger sandwich with grilled beef and special sauce, served with fries.',
                   price: 200,
-                  imageAsset: AppAssets.cartProductImage,
+                  originalPrice: 200,
+                  imageUrl: '',
+                  available: true,
                 );
-          return ProductDetailsScreen(item: item);
+          return BlocProvider<ProductDetailCubit>(
+            create: (context) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+            child: ProductDetailsScreen(item: item),
+          );
         },
       ),
       GoRoute(

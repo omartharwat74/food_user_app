@@ -1,12 +1,14 @@
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
-import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/product/presentation/pages/product_details_screen.dart';
 
 class MenuItemTile extends StatelessWidget {
   const MenuItemTile({super.key, required this.item});
@@ -189,9 +191,14 @@ class MenuItemTile extends StatelessWidget {
   }
 
   void _openProductDetails(BuildContext context, MenuItem item, Locale locale) {
-    context.push(
-      RouteNames.menuItemDetail,
-      extra: item,
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) => BlocProvider<ProductDetailCubit>(
+        create: (context) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+        child: ProductDetailsScreen(item: item), // We will update ProductDetailsScreen to accept MenuItem
+      ),
     );
   }
 }

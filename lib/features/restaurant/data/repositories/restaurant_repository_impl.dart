@@ -78,45 +78,6 @@ class RestaurantRepositoryImpl implements RestaurantRepository {
   }
 
   @override
-  Future<Either<Failure, PageResponseRestaurant>> getTopRated({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final dto = await remoteDataSource.getTopRated(page: page, size: size);
-      return Right(dto.toEntity());
-    } catch (e) {
-      return Left(_mapExceptionToFailure(e));
-    }
-  }
-
-  @override
-  Future<Either<Failure, PageResponseRestaurant>> getMostOrdered({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final dto = await remoteDataSource.getMostOrdered(page: page, size: size);
-      return Right(dto.toEntity());
-    } catch (e) {
-      return Left(_mapExceptionToFailure(e));
-    }
-  }
-
-  @override
-  Future<Either<Failure, PageResponseRestaurant>> getWithOffers({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final dto = await remoteDataSource.getWithOffers(page: page, size: size);
-      return Right(dto.toEntity());
-    } catch (e) {
-      return Left(_mapExceptionToFailure(e));
-    }
-  }
-
-  @override
   Future<Either<Failure, List<Restaurant>>> getFavorites() async {
     try {
       final dtos = await remoteDataSource.getFavorites();

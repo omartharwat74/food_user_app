@@ -52,7 +52,6 @@ import '../../features/service_listing/presentation/models/service_listing_type.
 import '../../features/service_listing/presentation/pages/service_listing_screen.dart';
 import '../../features/search/presentation/pages/unified_results_screen.dart';
 import '../../features/search/presentation/models/results_config.dart';
-import '../../features/store/presentation/pages/store_details_screen.dart';
 import '../../features/market/presentation/pages/markets_list_screen.dart';
 import '../../features/market/presentation/pages/market_details_screen.dart';
 
@@ -174,12 +173,6 @@ class AppRouter {
         path: RouteNames.restaurantSearch,
         builder: (c, s) => RestaurantSearchScreen(
           restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
-        ),
-      ),
-      GoRoute(
-        path: RouteNames.storeDetail,
-        builder: (c, s) => StoreDetailsScreen(
-          storeId: s.pathParameters['id'] ?? 'store-id',
         ),
       ),
       GoRoute(

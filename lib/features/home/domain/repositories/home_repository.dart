@@ -4,6 +4,7 @@ import 'package:food_user_app/features/home/domain/entities/app_settings.dart';
 import 'package:food_user_app/features/home/domain/entities/section.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart';
 import 'package:food_user_app/features/home/domain/entities/store.dart';
+import 'package:food_user_app/features/home/domain/entities/spotlight.dart';
 
 abstract class HomeRepository {
   /// `GET /api/v1/general-settings`
@@ -33,4 +34,7 @@ abstract class HomeRepository {
     int page = 1,
     int perPage = 10,
   });
+
+  /// `GET /api/v1/spotlights`
+  Future<Either<Failure, List<Spotlight>>> getSpotlights({int? sectionId});
 }

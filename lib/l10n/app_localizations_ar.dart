@@ -1496,9 +1496,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchClearAll => 'مسح الكل';
 
   @override
-  String get searchClearHistoryConfirm =>
-      'هل أنت متأكد أنك تريد مسح سجل البحث؟';
+  String get searchClearHistoryConfirm => 'هل أنت متأكد من مسح سجل البحث؟';
 
   @override
   String get clear => 'مسح';
+
+  @override
+  String get seeAll => 'عرض الكل';
 }

@@ -541,5 +541,6 @@
   "noCategoriesAvailable": "No categories available",
   "searchClearAll": "Clear All",
   "searchClearHistoryConfirm": "Are you sure you want to clear your search history?",
-  "clear": "Clear"
+  "clear": "Clear",
+  "seeAll": "See All"
 }

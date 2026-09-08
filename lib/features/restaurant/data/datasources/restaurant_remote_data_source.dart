@@ -22,18 +22,6 @@ abstract class RestaurantRemoteDataSource {
 
   Future<List<OfferDto>> getOffers(String restaurantId);
 
-  Future<PageResponseRestaurantDto> getTopRated({int page = 0, int size = 20});
-
-  Future<PageResponseRestaurantDto> getMostOrdered({
-    int page = 0,
-    int size = 20,
-  });
-
-  Future<PageResponseRestaurantDto> getWithOffers({
-    int page = 0,
-    int size = 20,
-  });
-
   Future<List<RestaurantDto>> getFavorites();
 
   Future<void> toggleFavorite(String id);
@@ -133,66 +121,6 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
       return raw
           .map((json) => OfferDto.fromJson(json as Map<String, dynamic>))
           .toList();
-    } on DioException catch (e) {
-      throw DioErrorMapper.map(e);
-    }
-  }
-
-  @override
-  Future<PageResponseRestaurantDto> getTopRated({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final response = await _dio.get<dynamic>(
-        ApiEndpoints.topRated,
-        queryParameters: {'page': page, 'size': size},
-      );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected paginated response');
-      }
-      return PageResponseRestaurantDto.fromJson(raw);
-    } on DioException catch (e) {
-      throw DioErrorMapper.map(e);
-    }
-  }
-
-  @override
-  Future<PageResponseRestaurantDto> getMostOrdered({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final response = await _dio.get<dynamic>(
-        ApiEndpoints.mostOrdered,
-        queryParameters: {'page': page, 'size': size},
-      );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected paginated response');
-      }
-      return PageResponseRestaurantDto.fromJson(raw);
-    } on DioException catch (e) {
-      throw DioErrorMapper.map(e);
-    }
-  }
-
-  @override
-  Future<PageResponseRestaurantDto> getWithOffers({
-    int page = 0,
-    int size = 20,
-  }) async {
-    try {
-      final response = await _dio.get<dynamic>(
-        ApiEndpoints.withOffers,
-        queryParameters: {'page': page, 'size': size},
-      );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected paginated response');
-      }
-      return PageResponseRestaurantDto.fromJson(raw);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

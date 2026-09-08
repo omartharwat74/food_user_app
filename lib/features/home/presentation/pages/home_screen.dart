@@ -15,16 +15,23 @@ import 'package:food_user_app/features/home/presentation/widgets/banner_slider.d
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/presentation/widgets/category_grid.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_state.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final addressesController = SavedAddressesScope.of(context);
     if (!addressesController.hasLoaded && !addressesController.isLoading) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -33,7 +40,16 @@ class HomeScreen extends StatelessWidget {
     }
     final copy = _HomeCopy.of(context);
 
-    return Scaffold(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SectionsCubit>(
+          create: (context) => sl<SectionsCubit>()..fetchSections(),
+        ),
+        BlocProvider<SpotlightsCubit>(
+          create: (context) => sl<SpotlightsCubit>()..fetchSpotlights(),
+        ),
+      ],
+      child: Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: CustomScrollView(
         slivers: [
@@ -42,41 +58,23 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
             sliver: SliverList.list(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
+                const Padding(
+                  padding: EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                   ),
-                  child: BlocProvider<SectionsCubit>(
-                    create: (context) => sl<SectionsCubit>(),
-                    child: const CategoryGrid(),
-                  ),
+                  child: CategoryGrid(),
                 ),
                 const SizedBox(height: 20),
                 const BannerSlider(),
                 const SizedBox(height: 18),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
-                  child: _SectionHeader(title: copy.missedOffersTitle),
-                ),
                 const SizedBox(height: 10),
-                const _OfferList(),
-                const SizedBox(height: 13),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
-                  child: _SectionHeader(title: copy.mostOrderedTitle),
-                ),
-                const SizedBox(height: 10),
-                _RestaurantList(copy: copy),
+                const _SpotlightsSections(),
               ],
             ),
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
@@ -285,175 +283,90 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-class _OfferList extends StatelessWidget {
-  const _OfferList();
+class _SpotlightsSections extends StatelessWidget {
+  const _SpotlightsSections();
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RestaurantFilterCubit>(
-      create: (context) => sl<RestaurantFilterCubit>()..fetchWithOffers(),
-      child: SizedBox(
-        height: 202,
-        child: BlocBuilder<RestaurantFilterCubit, RestaurantFilterState>(
-          builder: (context, state) {
-            return state.maybeWhen(
-              loaded: (restaurants, type) {
-                if (restaurants.isEmpty) {
-                  return Center(
-                    child: Text(AppLocalizations.of(context)!.noOffersAvailable),
-                  );
-                }
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: restaurants.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) => _OfferCard(restaurant: restaurants[index]),
-                );
-              },
-              orElse: () => const Center(child: CircularProgressIndicator()),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class _OfferCard extends StatelessWidget {
-  const _OfferCard({required this.restaurant});
-
-  final Restaurant restaurant;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => context.push(
-        RouteNames.restaurantDetailFor(restaurant.id),
-      ),
-      child: SizedBox(
-        width: 140,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: AppNetworkImage(
-                restaurant.coverImageUrl,
-                height: 110,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+    return BlocBuilder<SpotlightsCubit, SpotlightsState>(
+      builder: (context, state) {
+        if (state is SpotlightsLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is SpotlightsError) {
+          return Center(
+            child: Text(
+              state.message,
+              style: const TextStyle(color: AppColors.error),
             ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                ClipOval(
-                  child: AppRasterImage.asset(
-                    AppAssets.homeRestaurantLogo,
-                    width: 12,
-                    height: 12,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    restaurant.cuisineType,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.start,
-                    style: AppTextStyles.caption(context).copyWith(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w500,
-                      height: 1.25,
-                      color: AppColors.paragraph(context),
+          );
+        } else if (state is SpotlightsLoaded) {
+          final spotlights = state.spotlights;
+          if (spotlights.isEmpty) return const SizedBox.shrink();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: spotlights.map((spotlight) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: _SectionHeader(title: spotlight.name)),
+                        if (spotlight.hasMore)
+                          TextButton(
+                            onPressed: () {},
+                            child: Text(
+                              AppLocalizations.of(context)!.seeAll,
+                              style: AppTextStyles.caption(context).copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              restaurant.name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.body(context).copyWith(
-                fontSize: 12,
-                height: 1.3,
-                fontWeight: FontWeight.w400,
-                color: AppColors.onSurface(context),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.star, size: 14, color: Colors.orange),
-                const SizedBox(width: 4),
-                Text(
-                  restaurant.rating.toStringAsFixed(1),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.body(context).copyWith(
-                    fontSize: 14,
-                    height: 1.25,
-                    color: AppColors.onSurface(context),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    height: 209,
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: spotlight.stores.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 12),
+                      itemBuilder: (context, index) {
+                        final store = spotlight.stores[index];
+                        final restaurant = Restaurant(
+                          id: store.id.toString(),
+                          name: store.name,
+                          cuisineType: store.tags.isNotEmpty ? store.tags.first.name : '',
+                          coverImageUrl: store.cover ?? '',
+                          logoUrl: store.logo ?? '',
+                          rating: store.ratingAvg ?? 0.0,
+                          ratingCount: store.ratingCount ?? 0,
+                          deliveryTimeMin: store.prepTimeFrom ?? 0,
+                          deliveryTimeMax: store.prepTimeTo ?? 0,
+                          deliveryFee: 0.0,
+                          isFavorited: false,
+                          isMajor: store.isMajor,
+                          availability: store.availability,
+                          tags: store.tags.map((t) => t.name).toList(),
+                        );
+                        return RestaurantCard(restaurant: restaurant);
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _RestaurantList extends StatelessWidget {
-  const _RestaurantList({required this.copy});
-
-  final _HomeCopy copy;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<RestaurantFilterCubit>(
-      create: (context) => sl<RestaurantFilterCubit>()..fetchMostOrdered(),
-      child: SizedBox(
-        height: 209,
-        child: BlocBuilder<RestaurantFilterCubit, RestaurantFilterState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (message) => Center(
-                child: Text(
-                  message,
-                  style: const TextStyle(color: AppColors.error),
-                ),
-              ),
-              loaded: (restaurants, filterType) {
-                if (restaurants.isEmpty) {
-                  return Center(
-                    child: Text(AppLocalizations.of(context)!.noRestaurantsFound),
-                  );
-                }
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
-                  ),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: restaurants.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    return RestaurantCard(restaurant: restaurants[index]);
-                  },
-                );
-              },
-            );
-          },
-        ),
-      ),
+                  const SizedBox(height: 20),
+                ],
+              );
+            }).toList(),
+          );
+        }
+        return const SizedBox.shrink();
+      },
     );
   }
 }

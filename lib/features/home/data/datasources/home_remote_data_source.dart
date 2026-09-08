@@ -8,6 +8,7 @@ import 'package:food_user_app/features/home/data/models/banner_model.dart';
 import 'package:food_user_app/features/home/data/models/section_model.dart';
 import 'package:food_user_app/features/home/data/models/tag_model.dart';
 import 'package:food_user_app/features/home/data/models/store_model.dart';
+import 'package:food_user_app/features/home/data/models/spotlight_dto.dart';
 
 abstract class HomeRemoteDataSource {
   /// `GET /api/v1/general-settings` — public, no auth.
@@ -40,6 +41,9 @@ abstract class HomeRemoteDataSource {
     int page = 1,
     int perPage = 10,
   });
+
+  /// `GET /api/v1/spotlights`
+  Future<List<SpotlightDto>> getSpotlights({int? sectionId});
 }
 
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
@@ -196,6 +200,28 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         );
       }
       return StoreListResultModel.fromJson(data);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<List<SpotlightDto>> getSpotlights({int? sectionId}) async {
+    try {
+      final queryParams = <String, dynamic>{};
+      if (sectionId != null) {
+        queryParams['section_id'] = sectionId;
+      }
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.spotlights,
+        queryParameters: queryParams,
+      );
+      final data = _extractData(response);
+      if (data is! List) return [];
+      return data
+          .whereType<Map<String, dynamic>>()
+          .map(SpotlightDto.fromJson)
+          .toList();
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

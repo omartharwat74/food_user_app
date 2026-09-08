@@ -1,28 +1,26 @@
 import re
 
 with open('lib/features/home/domain/entities/store.dart', 'r') as f:
-    store_ent = f.read()
+    content = f.read()
 
-# Add fields to Store
-if 'final bool hasOffer;' not in store_ent:
-    store_ent = store_ent.replace('final List<Tag> tags;', 'final List<Tag> tags;\n  final bool hasOffer;\n  final double? ratingAvg;\n  final int? ratingCount;')
-    store_ent = store_ent.replace('this.tags = const [],', 'this.tags = const [],\n    this.hasOffer = false,\n    this.ratingAvg,\n    this.ratingCount,')
-    store_ent = store_ent.replace('tags]', 'tags, hasOffer, ratingAvg, ratingCount]')
+# Add final String availability;
+content = content.replace("final int? ratingCount;", "final int? ratingCount;\n  final String availability;")
+
+# Add to constructor
+content = content.replace("this.ratingCount,", "this.ratingCount,\n    this.availability = 'open',")
+
+# Add to props
+content = content.replace("ratingAvg, ratingCount", "ratingAvg, ratingCount, availability")
 
 with open('lib/features/home/domain/entities/store.dart', 'w') as f:
-    f.write(store_ent)
+    f.write(content)
 
-
+# Update StoreModel (Data layer) to parse availability
 with open('lib/features/home/data/models/store_model.dart', 'r') as f:
-    store_model = f.read()
+    content_model = f.read()
 
-# Add fields to StoreModel
-if 'super.tags,' in store_model and 'super.hasOffer,' not in store_model:
-    store_model = store_model.replace('super.tags,', 'super.tags,\n    super.hasOffer,\n    super.ratingAvg,\n    super.ratingCount,')
-
-# Add to StoreModel.fromJson
-if "json['has_offer']" not in store_model:
-    store_model = store_model.replace('tags: tags,', "tags: tags,\n      hasOffer: json['has_offer'] == true,\n      ratingAvg: json['rating_avg'] != null ? (json['rating_avg'] as num).toDouble() : null,\n      ratingCount: json['rating_count'] != null ? (json['rating_count'] as num).toInt() : null,")
+content_model = content_model.replace("ratingCount: json['rating_count'] as int?,", "ratingCount: json['rating_count'] as int?,\n      availability: json['availability'] as String? ?? 'open',")
 
 with open('lib/features/home/data/models/store_model.dart', 'w') as f:
-    f.write(store_model)
+    f.write(content_model)
+

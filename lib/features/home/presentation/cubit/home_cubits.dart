@@ -5,6 +5,7 @@ import 'package:food_user_app/features/home/domain/entities/app_settings.dart';
 import 'package:food_user_app/features/home/domain/entities/section.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart';
 import 'package:food_user_app/features/home/domain/entities/store.dart';
+import 'package:food_user_app/features/home/domain/entities/spotlight.dart';
 import 'package:food_user_app/features/home/domain/usecases/get_general_settings_usecase.dart';
 import 'package:food_user_app/features/home/domain/usecases/home_usecases.dart';
 
@@ -220,6 +221,43 @@ class MajorStoresCubit extends Cubit<MajorStoresState> {
     result.fold(
       (f) => emit(MajorStoresError(f.message)),
       (r) => emit(MajorStoresLoaded(items: r.items, meta: r.meta)),
+    );
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SpotlightsCubit
+// ══════════════════════════════════════════════════════════════════════════════
+
+abstract class SpotlightsState extends Equatable {
+  const SpotlightsState();
+  @override List<Object?> get props => [];
+}
+class SpotlightsInitial extends SpotlightsState { const SpotlightsInitial(); }
+class SpotlightsLoading extends SpotlightsState { const SpotlightsLoading(); }
+class SpotlightsLoaded extends SpotlightsState {
+  final List<Spotlight> spotlights;
+  const SpotlightsLoaded(this.spotlights);
+  @override List<Object?> get props => [spotlights];
+}
+class SpotlightsError extends SpotlightsState {
+  final String message;
+  const SpotlightsError(this.message);
+  @override List<Object?> get props => [message];
+}
+
+class SpotlightsCubit extends Cubit<SpotlightsState> {
+  SpotlightsCubit({required this.getSpotlightsUseCase}) : super(const SpotlightsInitial());
+
+  final GetSpotlightsUseCase getSpotlightsUseCase;
+
+  Future<void> fetchSpotlights({int? sectionId}) async {
+    emit(const SpotlightsLoading());
+    final result = await getSpotlightsUseCase(GetSpotlightsParams(sectionId: sectionId));
+    if (isClosed) return;
+    result.fold(
+      (f) => emit(SpotlightsError(f.message)),
+      (s) => emit(SpotlightsLoaded(s)),
     );
   }
 }

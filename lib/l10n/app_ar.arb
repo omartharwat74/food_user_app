@@ -541,6 +541,7 @@
   "cartConflictMessage": "إضافة عناصر من مطعم مختلف ستمسح سلتك الحالية. هل ترغب في المتابعة؟",
   "noCategoriesAvailable": "لا توجد فئات متاحة",
   "searchClearAll": "مسح الكل",
-  "searchClearHistoryConfirm": "هل أنت متأكد أنك تريد مسح سجل البحث؟",
-  "clear": "مسح"
+  "searchClearHistoryConfirm": "هل أنت متأكد من مسح سجل البحث؟",
+  "clear": "مسح",
+  "seeAll": "عرض الكل"
 }

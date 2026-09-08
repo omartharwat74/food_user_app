@@ -135,6 +135,10 @@ class ApiEndpoints {
   /// `GET /api/v1/stores/products/all?store_id={storeId}` — menu sections.
   static const String storeProducts = '/api/v1/stores/products/all';
 
+  // ── Spotlights ────────────────────────────────────────────────────────────
+  /// `GET /api/v1/spotlights`
+  static const String spotlights = '/api/v1/spotlights';
+
   // ── Search Logs ───────────────────────────────────────────────────────────
   static const String userSearchLogsAll = '/api/v1/user-search-logs/all';
   static const String userSearchLogsCreate = '/api/v1/user-search-logs/create';
@@ -156,10 +160,6 @@ class ApiEndpoints {
   static String itemModifiers(String itemId) =>
       '/menus/items/$itemId/modifiers';
 
-  static const String topRated = '/restaurants/top-rated';
-  static const String mostOrdered = '/restaurants/most-ordered';
-  static const String withOffers = '/restaurants/with-offers';
-  
   // ── Favorites ───────────────────────────────────────────────────────────────
   static const String favoritesList = '/api/v1/favorites';
   static const String favoritesToggle = '/api/v1/favorites/toggle';

@@ -5,6 +5,7 @@ import 'package:food_user_app/core/usecases/usecase.dart';
 import 'package:food_user_app/features/home/domain/entities/section.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart';
 import 'package:food_user_app/features/home/domain/entities/store.dart';
+import 'package:food_user_app/features/home/domain/entities/spotlight.dart';
 import 'package:food_user_app/features/home/domain/repositories/home_repository.dart';
 
 // ── Sections ──────────────────────────────────────────────────────────────────
@@ -117,5 +118,26 @@ class GetMajorStoresUseCase extends UseCase<StoreListResult, GetMajorStoresParam
       page: params.page,
       perPage: params.perPage,
     );
+  }
+}
+
+// ── Spotlights ────────────────────────────────────────────────────────────────
+
+class GetSpotlightsParams extends Equatable {
+  final int? sectionId;
+  const GetSpotlightsParams({this.sectionId});
+
+  @override
+  List<Object?> get props => [sectionId];
+}
+
+/// `GET /api/v1/spotlights`
+class GetSpotlightsUseCase extends UseCase<List<Spotlight>, GetSpotlightsParams> {
+  GetSpotlightsUseCase(this._repository);
+  final HomeRepository _repository;
+
+  @override
+  Future<Either<Failure, List<Spotlight>>> call(GetSpotlightsParams params) {
+    return _repository.getSpotlights(sectionId: params.sectionId);
   }
 }

@@ -52,7 +52,7 @@ class App extends StatelessWidget {
           create: (_) => sl<FavoriteCubit>()..loadFavorites(),
         ),
         BlocProvider<CartCubit>(
-          create: (_) => sl<CartCubit>()..loadCart(),
+          create: (_) => sl<CartCubit>(), // ..loadCart() Temporarily disabled until Cart API is ready
         ),
         BlocProvider<PaymentMethodCubit>(
           create: (_) => sl<PaymentMethodCubit>()..fetchSavedCards(),

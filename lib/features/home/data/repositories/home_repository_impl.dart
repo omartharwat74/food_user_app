@@ -9,6 +9,8 @@ import 'package:food_user_app/features/home/domain/entities/app_settings.dart';
 import 'package:food_user_app/features/home/domain/entities/section.dart';
 import 'package:food_user_app/features/home/domain/entities/store.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart';
+import 'package:food_user_app/features/home/domain/entities/spotlight.dart';
+import 'package:food_user_app/features/home/data/models/spotlight_dto.dart';
 import 'package:food_user_app/features/home/domain/repositories/home_repository.dart';
 
 class HomeRepositoryImpl implements HomeRepository {
@@ -87,6 +89,17 @@ class HomeRepositoryImpl implements HomeRepository {
         perPage: perPage,
       );
       return Right(result);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Spotlight>>> getSpotlights({int? sectionId}) async {
+    try {
+      final spotlightsDto = await remoteDataSource.getSpotlights(sectionId: sectionId);
+      final spotlights = spotlightsDto.map((dto) => dto.toEntity()).toList();
+      return Right(spotlights);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

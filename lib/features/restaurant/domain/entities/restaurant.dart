@@ -15,6 +15,8 @@ class Restaurant extends Equatable {
   final bool isFavorited;
   final bool isAvailable;
   final bool isMajor;
+  final String availability;
+  final List<String> tags;
 
   const Restaurant({
     required this.id,
@@ -31,6 +33,8 @@ class Restaurant extends Equatable {
     required this.isFavorited,
     this.isAvailable = true,
     this.isMajor = false,
+    this.availability = 'open',
+    this.tags = const [],
   });
 
   @override
@@ -49,5 +53,7 @@ class Restaurant extends Equatable {
     isFavorited,
     isAvailable,
     isMajor,
+    availability,
+    tags,
   ];
 }

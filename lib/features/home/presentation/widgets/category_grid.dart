@@ -11,19 +11,8 @@ import 'package:food_user_app/features/home/domain/entities/section.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_type.dart';
 
-class CategoryGrid extends StatefulWidget {
+class CategoryGrid extends StatelessWidget {
   const CategoryGrid({super.key});
-
-  @override
-  State<CategoryGrid> createState() => _CategoryGridState();
-}
-
-class _CategoryGridState extends State<CategoryGrid> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<SectionsCubit>().fetchSections();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -94,7 +94,7 @@ import 'package:food_user_app/features/restaurant/data/repositories/menu_reposit
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/menu_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_filter_cubit.dart';
+
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 import 'package:food_user_app/features/search/presentation/cubit/unified_results_cubit.dart';
 import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_source.dart';
@@ -337,6 +337,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => GetTagsUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton(() => GetStoresUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton(() => GetMajorStoresUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(() => GetSpotlightsUseCase(sl<HomeRepository>()));
 
   // Cubits
   sl.registerFactory<SettingsCubit>(
@@ -353,6 +354,9 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
   sl.registerFactory<MajorStoresCubit>(
     () => MajorStoresCubit(getMajorStoresUseCase: sl<GetMajorStoresUseCase>()),
+  );
+  sl.registerFactory<SpotlightsCubit>(
+    () => SpotlightsCubit(getSpotlightsUseCase: sl<GetSpotlightsUseCase>()),
   );
 
   // ── Restaurants ────────────────────────────────────────────────────────────
@@ -405,10 +409,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerFactory<FavoriteCubit>(
     () => FavoriteCubit(restaurantRepository: sl<RestaurantRepository>()),
   );
-  sl.registerFactory<RestaurantFilterCubit>(
-    () =>
-        RestaurantFilterCubit(restaurantRepository: sl<RestaurantRepository>()),
-  );
+
 
   sl.registerFactory<StoreDetailCubit>(
     () => StoreDetailCubit(

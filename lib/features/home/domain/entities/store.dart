@@ -20,6 +20,7 @@ class Store extends Equatable {
   final bool hasOffer;
   final double? ratingAvg;
   final int? ratingCount;
+  final String availability;
 
   const Store({
     required this.id,
@@ -34,10 +35,11 @@ class Store extends Equatable {
     this.hasOffer = false,
     this.ratingAvg,
     this.ratingCount,
+    this.availability = 'open',
   });
 
   @override
-  List<Object?> get props => [id, sectionId, name, logo, cover, isMajor, prepTimeFrom, prepTimeTo, tags, hasOffer, ratingAvg, ratingCount];
+  List<Object?> get props => [id, sectionId, name, logo, cover, isMajor, prepTimeFrom, prepTimeTo, tags, hasOffer, ratingAvg, ratingCount, availability];
 }
 
 /// The paginated result for stores including the `is_random` flag.

@@ -139,24 +139,43 @@ class RestaurantCard extends StatelessWidget {
                     Row(
                       children: [
                         Expanded(
-                          child: Text(
-                            restaurant.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.start,
-                            style: AppTextStyles.body(context).copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              height: 1.3,
-                            ),
+                          child: Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  restaurant.name,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                  style: AppTextStyles.body(context).copyWith(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              _AvailabilityBadge(availability: restaurant.availability),
+                            ],
                           ),
                         ),
                         const SizedBox(width: 8),
                         _RatingBadge(
-                          rating: restaurant.rating.toStringAsFixed(1),
+                          rating: (restaurant.rating).toStringAsFixed(1),
                         ),
                       ],
                     ),
+                    if (restaurant.tags.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        restaurant.tags.join(' ، '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
+                        style: AppTextStyles.caption(context).copyWith(fontSize: 10, height: 1.25),
+                      ),
+                    ] else
+                      const SizedBox.shrink(),
                     const SizedBox(height: 8),
                     Text(
                       restaurant.cuisineType,
@@ -178,8 +197,8 @@ class RestaurantCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           isArabic
-                              ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
-                              : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                              ? "${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة"
+                              : "${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min",
                           style: AppTextStyles.caption(context).copyWith(
                             fontSize: 10,
                             height: 1.25,
@@ -226,9 +245,58 @@ class _RatingBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: isRtl
-            ? [text, const SizedBox(width: 2), icon]
-            : [icon, const SizedBox(width: 2), text],
+            ? [icon, const SizedBox(width: 2), text]
+            : [text, const SizedBox(width: 2), icon],
       ),
+    );
+  }
+}
+
+
+class _AvailabilityBadge extends StatelessWidget {
+  const _AvailabilityBadge({required this.availability});
+  final String availability;
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+    String text;
+    switch (availability.toLowerCase()) {
+      case 'busy':
+        color = const Color(0xFFEFBE1C);
+        text = 'مشغول';
+        break;
+      case 'closed':
+        color = const Color(0xFFEC2D30);
+        text = 'مغلق';
+        break;
+      case 'open':
+      default:
+        color = const Color(0xFF0C9D61);
+        text = 'متاح';
+        break;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 2),
+        Text(
+          text,
+          style: AppTextStyles.caption(context).copyWith(
+            fontSize: 10,
+            color: color,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }

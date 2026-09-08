@@ -22,7 +22,6 @@ class _BannerSliderState extends State<BannerSlider> {
   void initState() {
     super.initState();
     _controller = PageController();
-    context.read<BannerCubit>().getActiveBanners();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' show Either, Unit;
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
+import 'package:food_user_app/features/auth/data/models/general_settings_model.dart';
 
 /// Outcome of verifying a phone OTP in the unified flow.
 ///
@@ -75,4 +76,7 @@ abstract class AuthRepository {
   Future<Either<Failure, AuthFlowResult>> loginWithFirebase({
     required String idToken,
   });
+
+  /// `GET /api/v1/general-settings`
+  Future<Either<Failure, GeneralSettings>> getGeneralSettings();
 }

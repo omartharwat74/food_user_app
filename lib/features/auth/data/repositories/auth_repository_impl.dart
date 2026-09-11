@@ -8,6 +8,7 @@ import 'package:food_user_app/core/network/network_info.dart';
 import 'package:food_user_app/features/auth/data/datasources/auth_local_data_source.dart';
 import 'package:food_user_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:food_user_app/features/auth/data/models/auth_response_model.dart';
+import 'package:food_user_app/features/auth/data/models/general_settings_model.dart';
 import 'package:food_user_app/features/auth/domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
@@ -237,5 +238,18 @@ class AuthRepositoryImpl implements AuthRepository {
     if (error is UnknownException) return UnknownFailure(error.message);
     if (error is CacheException) return CacheFailure(error.message);
     return UnknownFailure(error.toString());
+  }
+
+  @override
+  Future<Either<Failure, GeneralSettings>> getGeneralSettings() async {
+    if (!await networkInfo.isConnected) {
+      return const Left(NetworkFailure('No internet connection'));
+    }
+    try {
+      final result = await remoteDataSource.getGeneralSettings();
+      return Right(result);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
   }
 }

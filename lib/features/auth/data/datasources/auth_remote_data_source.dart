@@ -4,6 +4,7 @@ import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/features/auth/data/models/auth_flow_response_model.dart';
+import 'package:food_user_app/features/auth/data/models/general_settings_model.dart';
 import 'package:food_user_app/core/utils/device_meta_helper.dart';
 
 abstract class AuthRemoteDataSource {
@@ -39,6 +40,9 @@ abstract class AuthRemoteDataSource {
   Future<AuthFlowResponseModel> loginWithFirebase({
     required String idToken,
   });
+
+  /// `GET /api/v1/general-settings`
+  Future<GeneralSettings> getGeneralSettings();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -175,6 +179,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
       final data = _extractData(response);
       return AuthFlowResponseModel.fromDataJson(data);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<GeneralSettings> getGeneralSettings() async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.generalSettings,
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+      final data = _extractData(response);
+      return GeneralSettings.fromJson(data);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

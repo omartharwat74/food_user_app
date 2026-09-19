@@ -92,9 +92,9 @@ class AuthEntryScreen extends StatelessWidget {
                         children: [
                           const Center(
                             child: AppRasterImage.asset(
-                              AppAssets.authEntryLogo,
-                              width: 72,
-                              height: 64,
+                              AppAssets.onboardingLogo,
+                              width: 53,
+                              height: 52,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -177,6 +177,7 @@ class _AuthEntryHero extends StatelessWidget {
       width: double.infinity,
       child: Stack(
         children: [
+          // 1. الخلفية الحمراء
           PositionedDirectional(
             top: 0,
             start: 0,
@@ -184,23 +185,29 @@ class _AuthEntryHero extends StatelessWidget {
             height: _heroTotalHeight - 10,
             child: const ColoredBox(color: AppColors.primary),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: _artworkHeight,
-                width: double.infinity,
-                child: Center(
-                  child: AppRasterImage.asset(
-                    AppAssets.authEntryAstronaut,
-                    width: 207,
-                    height: 197,
-                    fit: BoxFit.contain,
-                  ),
-                ),
+          
+          // 2. الأفاتار (مفصول عن الشرايط ومتسنتر في مساحة الخلفية الحمراء بالظبط)
+          PositionedDirectional(
+            top: 0,
+            start: 0,
+            end: 0,
+            height: _heroTotalHeight - 10,
+            child: Center(
+              child: AppRasterImage.asset(
+                AppAssets.onboardingAvatar,
+                width: 113.35,
+                height: 169.7,
+                fit: BoxFit.contain,
               ),
-              const _AuthEntryStripes(),
-            ],
+            ),
+          ),
+
+          // 3. الشرايط اللي تحت (مرمية في آخر الـ Stack من تحت)
+          const PositionedDirectional(
+            bottom: 0,
+            start: 0,
+            end: 0,
+            child: _AuthEntryStripes(),
           ),
         ],
       ),

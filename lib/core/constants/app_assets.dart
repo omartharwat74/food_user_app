@@ -3,6 +3,10 @@ class AppAssets {
   AppAssets._();
 
   static const appLogo = 'assets/images/app_logo.svg';
+  static const appLogoSmall = 'assets/images/app_logo_small.png';
+  static const onboardingAvatar = 'assets/images/onboarding_avatar.png';
+  static const onboardingLogo = 'assets/images/onboarding_logo.png';
+  static const splashLogo = 'assets/images/splash_logo.png';
   static const splashObjects = 'assets/images/splash_objects.png';
   static const splashBottomStripe = 'assets/images/splash_bottom_stripe.png';
   static const authEntryAstronaut = 'assets/images/auth_entry_astronaut.png';

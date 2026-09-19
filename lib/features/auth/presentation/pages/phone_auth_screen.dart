@@ -170,9 +170,9 @@ class _AuthTopBar extends StatelessWidget {
           ),
           Center(
             child: AppRasterImage.asset(
-              AppAssets.authHeaderLogo,
-              width: 44,
-              height: 39,
+              AppAssets.appLogoSmall,
+              width: 28,
+              height: 28,
               fit: BoxFit.contain,
             ),
           ),

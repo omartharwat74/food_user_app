@@ -72,12 +72,12 @@ class _SplashScreenState extends State<SplashScreen> {
               clipBehavior: Clip.hardEdge,
               children: [
                 Positioned(
-                  left: (width - 142) / 2,
+                  left: (width - 200) / 2,
                   top: height * 0.43,
                   child: const AppRasterImage.asset(
-                    AppAssets.splashObjects,
-                    width: 142,
-                    height: 114,
+                    AppAssets.splashLogo,
+                    width: 200,
+                    height: 68,
                     fit: BoxFit.contain,
                   ),
                 ),

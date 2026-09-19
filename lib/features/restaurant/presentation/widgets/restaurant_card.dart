@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:food_user_app/core/constants/app_assets.dart';
+
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
@@ -42,12 +41,8 @@ class RestaurantCard extends StatelessWidget {
                 deliveryTime:
                     '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
                 rating: restaurant.rating,
-                logoAsset: restaurant.coverImageUrl.isNotEmpty
-                    ? restaurant.coverImageUrl
-                    : AppAssets.restaurantAzAlShamLogo,
-                coverAsset: restaurant.coverImageUrl.isNotEmpty
-                    ? restaurant.coverImageUrl
-                    : AppAssets.restaurantHeroBurger,
+                logoAsset: restaurant.logoUrl,
+                coverAsset: restaurant.coverImageUrl,
                 initialFavorite: restaurant.isFavorited,
               ),
             );
@@ -71,15 +66,17 @@ class RestaurantCard extends StatelessWidget {
                         borderRadius: const BorderRadius.vertical(
                           top: Radius.circular(12),
                         ),
-                        child: restaurant.coverImageUrl.isNotEmpty
-                            ? AppNetworkImage(
+                        child: (restaurant.coverImageUrl.isNotEmpty)
+                            ? Image.network(
                                 restaurant.coverImageUrl,
                                 fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => (restaurant.logoUrl.isNotEmpty)
+                                    ? Image.network(restaurant.logoUrl, fit: BoxFit.cover)
+                                    : const ColoredBox(color: Colors.grey),
                               )
-                            : const AppRasterImage.asset(
-                                AppAssets.restaurantHeroBurger,
-                                fit: BoxFit.cover,
-                              ),
+                            : (restaurant.logoUrl.isNotEmpty)
+                                ? Image.network(restaurant.logoUrl, fit: BoxFit.cover)
+                                : const ColoredBox(color: Colors.grey),
                       ),
                     ),
                     Positioned(

@@ -112,10 +112,6 @@ class AppAssets {
 
   // ── Restaurant Detail ────────────────────────────────────────────────────
   static const restaurantHeroFries = 'assets/images/restaurant/hero_fries.png';
-  static const restaurantHeroBurger =
-      'assets/images/restaurant/hero_burger.png';
-  static const restaurantAzAlShamLogo =
-      'assets/images/restaurant/az_al_sham_logo.png';
   static const restaurantMenuBurgerFries1 =
       'assets/images/restaurant/menu_burger_fries_1.png';
   static const restaurantMenuBurgerFries2 =
@@ -220,10 +216,6 @@ class AppAssets {
       'assets/images/home/home_most_ordered_restaurant_1.jpg';
   static const homeMostOrderedRestaurant2 =
       'assets/images/home/home_most_ordered_restaurant_2.jpg';
-  static const homeRestaurantLogo =
-      'assets/images/home/home_restaurant_logo.png';
-  static const storeIcon = 'assets/images/store/store_icon.png';
-  static const storeBanner = 'assets/images/store/store_banner.png';
 
   // ── Home SVG Icons ────────────────────────────────────────────────────────
   static const homeNavUser = 'assets/images/home/home_nav_user.svg';

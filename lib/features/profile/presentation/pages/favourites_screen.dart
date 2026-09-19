@@ -219,12 +219,10 @@ class _FavoriteRestaurantCard extends StatelessWidget {
         description: item.cuisineType,
         deliveryTime: deliveryTimeStr,
         rating: item.rating,
-        logoAsset: item.coverImageUrl.isNotEmpty
-            ? item.coverImageUrl
-            : AppAssets.restaurantAzAlShamLogo,
+        logoAsset: item.logoUrl,
         coverAsset: item.coverImageUrl.isNotEmpty
             ? item.coverImageUrl
-            : AppAssets.restaurantHeroBurger,
+            : item.logoUrl,
         initialFavorite: true,
       ),
     );
@@ -250,12 +248,12 @@ class _RestaurantImage extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                 FavouritesScreen._imageRadius,
               ),
-              child: item.coverImageUrl.isNotEmpty
-                  ? AppNetworkImage(item.coverImageUrl, fit: BoxFit.cover)
-                  : const AppRasterImage.asset(
-                      AppAssets.restaurantHeroBurger,
-                      fit: BoxFit.cover,
-                    ),
+              child: AppNetworkImage(
+                item.coverImageUrl.isNotEmpty 
+                    ? item.coverImageUrl 
+                    : item.logoUrl,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           Positioned(

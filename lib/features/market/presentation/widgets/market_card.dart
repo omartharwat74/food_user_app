@@ -119,26 +119,17 @@ class MarketCard extends StatelessWidget {
                       height: 140,
                       width: double.infinity,
                       color: Colors.grey.shade200,
-                      child: market.coverImage != null &&
-                              market.coverImage!.isNotEmpty
+                      child: (market.coverImage != null && market.coverImage!.isNotEmpty)
                           ? Image.network(
                               market.coverImage!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => const Center(
-                                child: Icon(
-                                  Icons.store,
-                                  size: 48,
-                                  color: Colors.grey,
-                                ),
-                              ),
+                              errorBuilder: (_, __, ___) => (market.logoImage != null && market.logoImage!.isNotEmpty)
+                                  ? Image.network(market.logoImage!, fit: BoxFit.cover)
+                                  : const ColoredBox(color: Colors.grey),
                             )
-                          : const Center(
-                              child: Icon(
-                                Icons.store,
-                                size: 48,
-                                color: Colors.grey,
-                              ),
-                            ),
+                          : (market.logoImage != null && market.logoImage!.isNotEmpty)
+                              ? Image.network(market.logoImage!, fit: BoxFit.cover)
+                              : const ColoredBox(color: Colors.grey),
                     ),
 
                     // Pickup Badge
@@ -212,19 +203,20 @@ class MarketCard extends StatelessWidget {
                           ],
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: market.logoImage != null &&
-                                market.logoImage!.isNotEmpty
+                        child: (market.logoImage != null && market.logoImage!.isNotEmpty)
                             ? Image.network(
                                 market.logoImage!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => const Icon(
-                                  Icons.storefront,
-                                  color: AppColors.primary,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.store,
+                                  color: Colors.grey,
+                                  size: 28,
                                 ),
                               )
                             : const Icon(
-                                Icons.storefront,
-                                color: AppColors.primary,
+                                Icons.store,
+                                color: Colors.grey,
+                                size: 28,
                               ),
                       ),
                     ),

@@ -77,7 +77,7 @@ class StoreDetailsScreen extends StatelessWidget {
                   slivers: [
                     SliverToBoxAdapter(child: _buildCustomHeader(context, store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    const SliverToBoxAdapter(child: _PromoBanners()),
+                    SliverToBoxAdapter(child: _PromoBanners(store: store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
                     _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
                     _buildCategoryGrid(context, store.id, categories),
@@ -170,9 +170,10 @@ class StoreDetailsScreen extends StatelessWidget {
                           color: AppColors.surfaceCard(context),
                           borderRadius: BorderRadius.circular(10), // Adjusted for smaller 36px size
                         ),
-                        child: const AppRasterImage.asset(
-                          AppAssets.storeIcon,
-                          fit: BoxFit.contain,
+                        child: Image.network(
+                          store.logoUrl,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.store),
                         ),
                       ),
                     ],
@@ -356,18 +357,40 @@ class StoreDetailsScreen extends StatelessWidget {
   }
 }
 
-class _PromoBanners extends StatelessWidget {
-  const _PromoBanners();
+class _PromoBanners extends StatefulWidget {
+  final Restaurant store;
+  const _PromoBanners({required this.store});
+
+  @override
+  State<_PromoBanners> createState() => _PromoBannersState();
+}
+
+class _PromoBannersState extends State<_PromoBanners> {
+  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    List<String> apiImages = [];
+    if (widget.store.coverImageUrl.isNotEmpty) {
+      apiImages.add(widget.store.coverImageUrl);
+    } else if (widget.store.logoUrl.isNotEmpty) {
+      apiImages.add(widget.store.logoUrl);
+    }
+
+    if (apiImages.isEmpty) return const SizedBox.shrink();
+
+    final displayImages = apiImages.length == 1 
+        ? [apiImages[0], apiImages[0], apiImages[0]] 
+        : apiImages;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 120, // Approximate promo banner height
+          height: 140, // Approximate promo banner height
           child: PageView.builder(
-            itemCount: 1, // Placeholder
+            itemCount: displayImages.length, // Placeholder
+            onPageChanged: (index) => setState(() => _currentIndex = index),
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -375,9 +398,10 @@ class _PromoBanners extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     color: Colors.red.shade900, // Fallback if image fails
-                    child: const AppRasterImage.asset(
-                      AppAssets.storeBanner, // Updated promo banner image
+                    child: Image.network(
+                      displayImages[index],
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.grey),
                     ),
                   ),
                 ),
@@ -388,34 +412,19 @@ class _PromoBanners extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 24,
-              height: 6,
+          children: List.generate(
+            displayImages.length,
+            (index) => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: _currentIndex == index ? 24 : 8,
+              height: 8,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: _currentIndex == index ? AppColors.primary : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
-            const SizedBox(width: 4),
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

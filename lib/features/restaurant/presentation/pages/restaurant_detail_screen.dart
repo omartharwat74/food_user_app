@@ -127,12 +127,17 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                   controller: _scrollController,
                   slivers: [
                     // ── 1. Collapsing hero + info-card header ──────────────────────────
-                    SliverPersistentHeader(
-                      pinned: true,
-                      delegate: _RestaurantHeaderDelegate(
-                        minExtent: minExtent,
-                        maxExtent: maxExtent,
-                        hero: _RestaurantHero(imageUrl: restaurant.coverImageUrl),
+                    Builder(
+                      builder: (context) {
+                        return SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _RestaurantHeaderDelegate(
+                            minExtent: minExtent,
+                            maxExtent: maxExtent,
+                            hero: _RestaurantHero(
+                              coverUrl: restaurant.coverImageUrl,
+                              logoUrl: restaurant.logoUrl,
+                            ),
                         infoCard: _RestaurantInfoCard(
                           restaurant: restaurant,
                           locale: locale,
@@ -154,7 +159,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           );
                         },
                       ),
-                    ),
+                    );
+                  },
+                ),
 
                     // ── 2. Scrolling coupon strip ──────────────────────────────────────
                     SliverPadding(
@@ -551,23 +558,26 @@ class _MenuTabsDelegate extends SliverPersistentHeaderDelegate {
 /// All interactive buttons live in [_RestaurantHeaderDelegate]'s pinned AppBar
 /// layer so they remain always accessible regardless of scroll position.
 class _RestaurantHero extends StatelessWidget {
-  const _RestaurantHero({required this.imageUrl});
-  final String imageUrl;
+  const _RestaurantHero({required this.coverUrl, required this.logoUrl});
+  final String coverUrl;
+  final String logoUrl;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (imageUrl.isNotEmpty)
-          AppNetworkImage(
-            imageUrl,
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          )
-        else
-          Container(color: AppColors.primary),
+        (coverUrl.isNotEmpty)
+            ? Image.network(
+                coverUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => (logoUrl.isNotEmpty)
+                    ? Image.network(logoUrl, fit: BoxFit.cover)
+                    : const ColoredBox(color: Colors.grey),
+              )
+            : (logoUrl.isNotEmpty)
+                ? Image.network(logoUrl, fit: BoxFit.cover)
+                : const ColoredBox(color: Colors.grey),
         Container(color: AppColors.black.withValues(alpha: 0.2)),
       ],
     );
@@ -607,12 +617,23 @@ class _RestaurantInfoCard extends StatelessWidget {
     );
     final logo = ClipRRect(
       borderRadius: const BorderRadius.all(Radius.circular(10)),
-      child: AppRasterImage.asset(
-        AppAssets.homeRestaurantLogo,
-        width: 40,
-        height: 40,
-        fit: BoxFit.cover,
-      ),
+      child: (restaurant.logoUrl.isNotEmpty)
+          ? Image.network(
+              restaurant.logoUrl,
+              width: 40,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(
+                Icons.store,
+                color: Colors.grey,
+                size: 28,
+              ),
+            )
+          : const Icon(
+              Icons.store,
+              color: Colors.grey,
+              size: 28,
+            ),
     );
     final restaurantText = Flexible(
       flex: 8,

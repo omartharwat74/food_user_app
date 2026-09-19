@@ -263,9 +263,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           color: AppColors.surfaceCard(context),
                           borderRadius: BorderRadius.circular(10), 
                         ),
-                        child: store.logoImage != null && store.logoImage!.isNotEmpty
-                          ? Image.network(store.logoImage!, fit: BoxFit.cover)
-                          : const AppRasterImage.asset(AppAssets.storeIcon, fit: BoxFit.contain),
+                        child: Image.network(store.logoImage ?? '', fit: BoxFit.cover),
                       ),
                     ],
                   ),
@@ -466,32 +464,54 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
   }
 }
 
-class _PromoBanners extends StatelessWidget {
-  final Market store;
+class _PromoBanners extends StatefulWidget {
+  final Market store; // Note: Change 'Market' to your exact entity name if different
   const _PromoBanners({required this.store});
 
   @override
+  State<_PromoBanners> createState() => _PromoBannersState();
+}
+
+class _PromoBannersState extends State<_PromoBanners> {
+  int _currentIndex = 0;
+
+  @override
   Widget build(BuildContext context) {
-    if (store.coverImage == null || store.coverImage!.isEmpty) {
-      return const SizedBox.shrink();
+    List<String> apiImages = [];
+    
+    // Fallback: Cover Image -> Logo Image
+    if (widget.store.coverImage != null && widget.store.coverImage!.isNotEmpty) {
+      apiImages.add(widget.store.coverImage!);
+    } else if (widget.store.logoImage != null && widget.store.logoImage!.isNotEmpty) {
+      apiImages.add(widget.store.logoImage!);
     }
 
+    if (apiImages.isEmpty) return const SizedBox.shrink();
+
+    // Force swipeability: if only 1 image exists, duplicate it to 3 slides so the user can swipe and see dots.
+    final displayImages = apiImages.length == 1 
+        ? [apiImages[0], apiImages[0], apiImages[0]] 
+        : apiImages;
+
     return Column(
-      mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 120, 
+          height: 140,
           child: PageView.builder(
-            itemCount: 1, 
+            itemCount: displayImages.length,
+            onPageChanged: (index) => setState(() => _currentIndex = index),
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: ClipRRect(
+              return Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    color: Colors.red.shade900,
-                    child: Image.network(store.coverImage!, fit: BoxFit.cover),
-                  ),
+                ),
+                child: Image.network(
+                  displayImages[index],
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.grey),
                 ),
               );
             },
@@ -500,34 +520,19 @@ class _PromoBanners extends StatelessWidget {
         const SizedBox(height: 12),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 24,
-              height: 6,
+          children: List.generate(
+            displayImages.length,
+            (index) => AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: _currentIndex == index ? 24 : 8,
+              height: 8,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                color: _currentIndex == index ? AppColors.primary : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
-            const SizedBox(width: 4),
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 4),
-            Container(
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+          ),
         ),
       ],
     );

@@ -16,8 +16,11 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart' as entity_tag;
-import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
+import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
+import 'package:food_user_app/core/router/route_names.dart';
+
+
 
 
 class ServiceListingScreen extends StatefulWidget {
@@ -199,7 +202,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                     _SectionTitle(title: l10n.serviceLargeStores),
                                     const SizedBox(height: 12),
                                     SizedBox(
-                                      height: 209,
+                                      height: 106,
                                       child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         padding: EdgeInsets.zero,
@@ -207,23 +210,27 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                         separatorBuilder: (_, _) => const SizedBox(width: 12),
                                         itemBuilder: (context, index) {
                                           final s = majorStores[index];
-                                          return RestaurantCard(
-                                            restaurant: Restaurant(
-                                              id: s.id.toString(),
-                                              name: s.name,
-                                              cuisineType: s.tags.isNotEmpty ? s.tags.first.name : '',
-                                              coverImageUrl: s.cover ?? s.logo ?? '',
-                                              logoUrl: s.logo ?? '',
-                                              rating: s.ratingAvg ?? 0.0,
-                                              ratingCount: s.ratingCount ?? 0,
-                                              deliveryTimeMin: s.prepTimeFrom ?? 0,
-                                              deliveryTimeMax: s.prepTimeTo ?? 0,
-                                              deliveryFee: 0.0,
-                                              isFavorited: false,
-                                              isMajor: true,
-                                              availability: s.availability,
-                                              tags: s.tags.map((t) => t.name).toList(),
-                                            ),
+                                          final mappedRestaurant = Restaurant(
+                                            id: s.id.toString(),
+                                            name: s.name,
+                                            cuisineType: s.tags.isNotEmpty ? s.tags.first.name : '',
+                                            coverImageUrl: s.cover ?? s.logo ?? '',
+                                            logoUrl: s.logo ?? '',
+                                            rating: s.ratingAvg ?? 0.0,
+                                            ratingCount: s.ratingCount ?? 0,
+                                            deliveryTimeMin: s.prepTimeFrom ?? 0,
+                                            deliveryTimeMax: s.prepTimeTo ?? 0,
+                                            deliveryFee: 0.0,
+                                            isFavorited: false,
+                                            isMajor: true,
+                                            availability: s.availability,
+                                            tags: s.tags.map((t) => t.name).toList(),
+                                          );
+                                          return HypermarketMiniCard(
+                                            market: mappedRestaurant,
+                                            onTap: () {
+                                              context.push(RouteNames.marketDetailsFor(mappedRestaurant.id));
+                                            },
                                           );
                                         },
                                       ),

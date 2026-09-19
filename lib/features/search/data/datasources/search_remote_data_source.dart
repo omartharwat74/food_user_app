@@ -158,7 +158,9 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
         return RestaurantDto(
           id: store['id']?.toString() ?? '',
           name: store['name'] as String?,
-          coverImageUrl: store['cover'] as String? ?? store['logo'] as String?,
+          logoUrl: store['logo']?.toString() ?? '',
+          coverUrl: store['cover']?.toString() ?? '',
+          coverImageUrl: store['cover']?.toString() ?? '',
           deliveryTimeMin: (store['prep_time_from'] as num?)?.toInt(),
           deliveryTimeMax: (store['prep_time_to'] as num?)?.toInt(),
           ratingAvg: store['rating_avg'],

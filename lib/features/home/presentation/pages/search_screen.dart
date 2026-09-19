@@ -27,6 +27,8 @@ import 'package:food_user_app/features/search/domain/entities/search_log.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
+import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
+
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -324,10 +326,10 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           sliver: SliverList.list(
             children: [
-              if (displayedLargeStores.isNotEmpty) ...[
+              if (majorStores.isNotEmpty) ...[
                 _SectionTitle(title: l10n.serviceLargeStores),
                 const SizedBox(height: 12),
-                _LargeStoreRow(items: displayedLargeStores),
+                _LargeStoreRow(items: majorStores),
                 const SizedBox(height: 22),
               ],
               if (!showFilters) ...[
@@ -676,130 +678,38 @@ class _FilterChip extends StatelessWidget {
 class _LargeStoreRow extends StatelessWidget {
   const _LargeStoreRow({required this.items});
 
-  final List<ServicePlaceData> items;
+  final List<Restaurant> items;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 98,
+      height: 106,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         itemCount: items.length,
         separatorBuilder: (_, _) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => _CompactStoreCard(item: items[index]),
+        itemBuilder: (context, index) {
+          final item = items[index];
+          return HypermarketMiniCard(
+            market: item,
+            onTap: () {
+              final storeId = item.id;
+              debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
+              if (item.isMajor == true) {
+                context.push(RouteNames.marketDetailsFor(storeId));
+              } else {
+                context.push(RouteNames.restaurantDetailFor(storeId));
+              }
+            },
+          );
+        },
       ),
     );
   }
 }
 
-class _CompactStoreCard extends StatelessWidget {
-  const _CompactStoreCard({required this.item});
 
-  final ServicePlaceData item;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final storeId = item.id;
-        if (storeId == null) return;
-        debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
-        if (item.isMajor == true) {
-          context.push(RouteNames.marketDetailsFor(storeId.toString()));
-        } else {
-          context.push(RouteNames.restaurantDetailFor(storeId.toString()));
-        }
-      },
-      child: Container(
-        width: 92,
-        height: 98,
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.onSurface(context).withValues(alpha: 0.08),
-              blurRadius: 2,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipOval(
-              child: _buildImage(
-                item.imageAsset,
-                width: 40,
-                height: 40,
-                fit: BoxFit.cover,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              item.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(
-                context,
-              ).copyWith(fontSize: 12, height: 1.3),
-            ),
-            const Spacer(),
-            _TimeLabel(
-              time: item.time,
-              iconSize: 14,
-              fontSize: 10,
-              textColor: AppColors.onSurface(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _TimeLabel extends StatelessWidget {
-  const _TimeLabel({
-    required this.time,
-    this.iconSize = 14,
-    this.fontSize = 10,
-    this.textColor,
-  });
-
-  final String time;
-  final double iconSize;
-  final double fontSize;
-  final Color? textColor;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = textColor ?? AppColors.onSurface(context);
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        AppRasterImage.asset(
-          AppAssets.serviceTimeIconPng,
-          width: iconSize,
-          height: iconSize,
-          color: color,
-        ),
-        const SizedBox(width: 4),
-        Flexible(
-          child: Text(
-            time,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.caption(
-              context,
-            ).copyWith(color: color, fontSize: fontSize, height: 1.25),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _MostSearchedTokens extends StatelessWidget {
   const _MostSearchedTokens({required this.tokens, required this.onTap});

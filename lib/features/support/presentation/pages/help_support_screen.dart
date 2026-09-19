@@ -204,11 +204,13 @@ class _SupportChatHeader extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.hardEdge,
         children: [
-          Container(color: AppColors.primary),
+          const Positioned.fill(
+            child: ColoredBox(color: AppColors.primary),
+          ),
           Positioned.fill(
             child: Image.asset(
-              AppAssets.supportHeaderPattern,
-              fit: BoxFit.fill,
+              AppAssets.headerPattern,
+              fit: BoxFit.cover,
             ),
           ),
           PositionedDirectional(

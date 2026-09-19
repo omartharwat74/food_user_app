@@ -108,23 +108,12 @@ class StoreDetailsScreen extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           // Background decorations
-          Positioned.fill(
-            child: const Opacity(
-              opacity: 0.1,
-              child: AppRasterImage.asset(
-                AppAssets.homeHeaderDecoration,
-                fit: BoxFit.cover,
-              ),
-            ),
+          const Positioned.fill(
+            child: ColoredBox(color: AppColors.primary),
           ),
-          const Positioned(
-            left: 0,
-            right: 0,
-            top: 24,
+          const Positioned.fill(
             child: AppRasterImage.asset(
-              AppAssets.homeHeaderDecorativeGroup,
-              height: 167,
-              width: double.infinity,
+              AppAssets.headerPattern,
               fit: BoxFit.cover,
             ),
           ),

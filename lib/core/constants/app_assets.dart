@@ -4,6 +4,7 @@ class AppAssets {
 
   static const appLogo = 'assets/images/app_logo.svg';
   static const appLogoSmall = 'assets/images/app_logo_small.png';
+  static const headerPattern = 'assets/images/header_pattern.png';
   static const onboardingAvatar = 'assets/images/onboarding_avatar.png';
   static const onboardingLogo = 'assets/images/onboarding_logo.png';
   static const splashLogo = 'assets/images/splash_logo.png';
@@ -181,8 +182,7 @@ class AppAssets {
   static const paymentDeleteDialogIcon =
       'assets/images/icons/payment/payment_delete_dialog.svg';
 
-  static const supportHeaderPattern =
-      'assets/images/support/header_pattern.png';
+
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
   static const supportBackIcon = 'assets/images/icons/support/back.svg';
   static const supportAttachmentIcon =
@@ -199,12 +199,7 @@ class AppAssets {
   static const onboardingArrow = 'assets/images/onboarding_arrow.svg';
 
   // ── Home ──────────────────────────────────────────────────────────────────
-  static const homeHeaderDecoration =
-      'assets/images/home/home_header_pattern.png';
-  static const homeHeaderDecorationIcons =
-      'assets/images/home/home_header_decoration_icons.png';
-  static const homeHeaderDecorativeGroup =
-      'assets/images/home/home_header_decorative_group.png';
+
   static const homeWaveDivider = 'assets/images/home/home_wave_divider.png';
   static const homeCategoryRestaurants =
       'assets/images/home/home_category_restaurants.png';

@@ -36,10 +36,18 @@ class SharedStoreListTile extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => context.push(
-              RouteNames.restaurantDetailFor(item.id ?? _detailId(item.name)),
-              extra: _toRestaurantDetailArgs(item),
-            ),
+            onTap: () {
+              final storeId = item.id ?? _detailId(item.name);
+              debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
+              if (item.isMajor == true) {
+                context.push(RouteNames.marketDetailsFor(storeId.toString()));
+              } else {
+                context.push(
+                  RouteNames.restaurantDetailFor(storeId.toString()),
+                  extra: _toRestaurantDetailArgs(item),
+                );
+              }
+            },
             borderRadius: BorderRadius.circular(10),
             child: Padding(
               padding: const EdgeInsetsDirectional.only(end: 12),

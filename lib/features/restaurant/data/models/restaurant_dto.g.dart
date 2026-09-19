@@ -24,7 +24,7 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String?,
       isAvailable: json['is_available'] as bool?,
       isOpen: json['is_open'] as bool?,
-      isMajor: json['is_major'] as bool?,
+      isMajor: parseBoolFromJson(json['is_major']),
     );
 
 Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>

@@ -105,7 +105,10 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   @override
   Future<MarketModel> getMarketDetails(String id) async {
     try {
-      final response = await _dio.get(ApiEndpoints.marketDetails(id));
+      final response = await _dio.get(
+        ApiEndpoints.storeShow,
+        queryParameters: {'id': id},
+      );
       final data = response.data;
       if (data is Map<String, dynamic>) {
         final inner = data['data'] ?? data;
@@ -122,7 +125,10 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   @override
   Future<List<MarketCategoryModel>> getMarketCategories(String marketId) async {
     try {
-      final response = await _dio.get(ApiEndpoints.marketCategories(marketId));
+      final response = await _dio.get(
+        ApiEndpoints.storeProductCategories,
+        queryParameters: {'store_id': marketId},
+      );
       final data = response.data;
       final rawList = data is Map<String, dynamic>
           ? (data['data'] ?? data['categories'] ?? [])
@@ -193,7 +199,7 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   @override
   Future<List<MarketOfferModel>> getMarketOffers(String marketId) async {
     try {
-      final response = await _dio.get(ApiEndpoints.marketOffers(marketId));
+      final response = await _dio.get(ApiEndpoints.restaurantOffers(marketId));
       final data = response.data;
       final rawList = data is Map<String, dynamic>
           ? (data['data'] ?? data['offers'] ?? [])
@@ -214,7 +220,7 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   Future<List<MarketModel>> getFavoriteMarkets() async {
     await _requireAuth();
     try {
-      final response = await _dio.get(ApiEndpoints.favoriteMarkets);
+      final response = await _dio.get(ApiEndpoints.favoritesList);
       final data = response.data;
       final rawList = data is Map<String, dynamic>
           ? (data['data'] ?? data['favorites'] ?? [])
@@ -236,7 +242,8 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
     await _requireAuth();
     try {
       final response = await _dio.post(
-        ApiEndpoints.toggleFavoriteMarket(marketId),
+        ApiEndpoints.favoritesToggle,
+        data: {'store_id': int.tryParse(marketId) ?? marketId},
       );
       final data = response.data;
       if (data is Map<String, dynamic>) {

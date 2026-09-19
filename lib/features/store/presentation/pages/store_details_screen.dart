@@ -8,83 +8,26 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
-import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
-import 'package:food_user_app/features/market/domain/entities/market.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/product_card.dart';
 import 'package:food_user_app/features/search/presentation/models/results_config.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
-import 'package:food_user_app/features/market/presentation/cubit/market_details_cubit.dart';
-import 'package:food_user_app/features/market/presentation/cubit/market_details_state.dart';
-import 'package:food_user_app/features/store/presentation/cubit/hypermarket/hypermarket_cubit.dart';
-import 'package:food_user_app/features/store/data/models/hyper_categories_response.dart';
-import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_state.dart';
 import 'package:food_user_app/core/utils/category_icon_helper.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
-class MarketDetailsScreen extends StatefulWidget {
-  final String marketId;
+class StoreDetailsScreen extends StatelessWidget {
+  final String storeId;
 
-  const MarketDetailsScreen({super.key, required this.marketId});
-
-  @override
-  State<MarketDetailsScreen> createState() => _MarketDetailsScreenState();
-}
-
-class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
-  late final MarketDetailsCubit _detailsCubit;
-  late final HypermarketCubit _hyperCubit;
-
-  @override
-  void initState() {
-    super.initState();
-    _detailsCubit = sl<MarketDetailsCubit>()..loadMarketDetails(widget.marketId);
-    _hyperCubit = sl<HypermarketCubit>()..fetchCategories(widget.marketId);
-  }
-
-  @override
-  void dispose() {
-    _detailsCubit.close();
-    _hyperCubit.close();
-    super.dispose();
-  }
-
-  MenuItem _fromHyperProduct(HyperProduct hp) {
-    return MenuItem(
-      id: hp.id.toString(),
-      name: hp.name,
-      description: hp.description ?? '',
-      price: hp.priceAfterDiscount ?? hp.price,
-      originalPrice: hp.price,
-      imageUrl: hp.mainImage ?? '',
-      available: hp.isAvailable,
-      discountValue: 0,
-      discountType: 'none',
-      options: const [],
-      includes: const [],
-    );
-  }
-
-  MenuCategory _fromHyperCategory(HyperCategory hc) {
-    return MenuCategory(
-      id: hc.id.toString(),
-      branchId: '',
-      name: hc.name,
-      imageUrl: hc.image,
-      sortOrder: 0,
-      items: const [],
-      visible: true,
-    );
-  }
+  const StoreDetailsScreen({super.key, required this.storeId});
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: _detailsCubit),
-        BlocProvider.value(value: _hyperCubit),
-      ],
+    return BlocProvider(
+      create: (_) => sl<StoreDetailCubit>()..loadStoreDetails(storeId),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
         body: BlocListener<CartCubit, CartState>(
@@ -123,80 +66,39 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               orElse: () {},
             );
           },
-          child: BlocBuilder<MarketDetailsCubit, MarketDetailsState>(
-            builder: (context, state) {
-              if (state is MarketDetailsLoading || state is MarketDetailsInitial) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (state is MarketDetailsError) {
-                return Center(child: Text(state.message, style: TextStyle(color: AppColors.error)));
-              }
-              if (state is MarketDetailsLoaded) {
-                final store = state.market;
+          child: BlocBuilder<StoreDetailCubit, StoreDetailState>(
+          builder: (context, state) {
+            return state.when(
+              initial: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (msg) => Center(child: Text(msg, style: TextStyle(color: AppColors.error))),
+              loaded: (store, categories, featuredProducts) {
                 return CustomScrollView(
                   slivers: [
                     SliverToBoxAdapter(child: _buildCustomHeader(context, store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    SliverToBoxAdapter(child: _PromoBanners(store: store)),
+                    const SliverToBoxAdapter(child: _PromoBanners()),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    
                     _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
-                    BlocBuilder<HypermarketCubit, HypermarketState>(
-                      builder: (context, hyperState) {
-                        if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
-                          return const SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 276,
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
-                          );
-                        }
-                        if (hyperState is HypermarketLoaded) {
-                          final cats = hyperState.categories.map(_fromHyperCategory).toList();
-                          return _buildCategoryGrid(context, store.id, cats);
-                        }
-                        return const SliverToBoxAdapter(child: SizedBox.shrink());
-                      },
-                    ),
+                    _buildCategoryGrid(context, store.id, categories),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    
                     _buildSectionTitle(context, 'المنتجات الاكثر طلباً'),
-                    BlocBuilder<HypermarketCubit, HypermarketState>(
-                      builder: (context, hyperState) {
-                        if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
-                          return const SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 230,
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
-                          );
-                        }
-                        if (hyperState is HypermarketLoaded) {
-                          // Flatten products from all sections to simulate featured products
-                          final List<HyperProduct> allProducts = [];
-                          for (var section in hyperState.sections) {
-                            allProducts.addAll(section.products);
-                          }
-                          final featuredItems = allProducts.map(_fromHyperProduct).toList();
-                          return _buildFeaturedProducts(context, featuredItems);
-                        }
-                        return const SliverToBoxAdapter(child: SizedBox.shrink());
-                      },
-                    ),
+                    _buildFeaturedProducts(context, featuredProducts),
                     const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
                   ],
                 );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
+              },
+            );
+          },
+        ),
         ),
       ),
     );
   }
 
-  Widget _buildCustomHeader(BuildContext context, Market store) {
+  Widget _buildCustomHeader(BuildContext context, Restaurant store) {
     final topPadding = MediaQuery.paddingOf(context).top;
+
     final contentHeight = 16.0 + 36.0 + 17.0 + 44.0 + 20.0; // 133
 
     return Container(
@@ -205,6 +107,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          // Background decorations
           Positioned.fill(
             child: const Opacity(
               opacity: 0.1,
@@ -214,7 +117,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               ),
             ),
           ),
-          Positioned(
+          const Positioned(
             left: 0,
             right: 0,
             top: 24,
@@ -225,18 +128,21 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               fit: BoxFit.cover,
             ),
           ),
+          // Content Column
           PositionedDirectional(
             top: topPadding + 16,
             start: AppSpacing.md,
             end: AppSpacing.md,
             child: Column(
               children: [
+                // Top Row: Name & Back Button, Logo (Height 36)
                 SizedBox(
                   height: 36,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // Store Name and Back Button
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -267,21 +173,25 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           ),
                         ],
                       ),
+                      // Store Logo
                       Container(
                         width: 36,
                         height: 36,
                         decoration: BoxDecoration(
                           color: AppColors.surfaceCard(context),
-                          borderRadius: BorderRadius.circular(10), 
+                          borderRadius: BorderRadius.circular(10), // Adjusted for smaller 36px size
                         ),
-                        child: store.logoImage != null && store.logoImage!.isNotEmpty
-                          ? Image.network(store.logoImage!, fit: BoxFit.cover)
-                          : const AppRasterImage.asset(AppAssets.storeIcon, fit: BoxFit.contain),
+                        child: const AppRasterImage.asset(
+                          AppAssets.storeIcon,
+                          fit: BoxFit.contain,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                // Exact 17px gap
                 const SizedBox(height: 17),
+                // Search Entry
                 GestureDetector(
                   onTap: () {
                     context.push(
@@ -317,6 +227,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               ],
             ),
           ),
+          // Wave divider
           Positioned(
             left: 0,
             right: 0,
@@ -337,56 +248,43 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return SliverPadding(
-      // Figma: horizontal 16px margin, 12px vertical spacing
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       sliver: SliverToBoxAdapter(
         child: Text(
-          title,
-          textAlign: TextAlign.right,
-          // Figma: Mobile/H4 → fontFamily: Expo Arabic, fontWeight: 600, fontSize: 15, color: #1B1B1B
-          style: const TextStyle(
-            fontFamily: 'Expo Arabic',
+          title, 
+          style: AppTextStyles.heading4(context).copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            height: 1.4,
-            color: Color(0xFF1B1B1B),
           ),
         ),
       ),
     );
   }
 
-
-  Widget _buildFeaturedProducts(BuildContext context, List<MenuItem> featuredProducts) {
+  Widget _buildFeaturedProducts(BuildContext context, featuredProducts) {
     if (featuredProducts.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
     }
 
     return SliverToBoxAdapter(
       child: SizedBox(
-        // Figma card height = 164px. Add 12px bottom margin for shadow clearance.
-        height: 176,
+        height: 230, // Updated to accommodate ProductCard's 120px image + content
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           itemCount: featuredProducts.length,
           separatorBuilder: (context, index) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
-            return SizedBox(
-              // Figma: EL-0dee7c3e layout width = 134px
-              width: 134,
-              child: ProductCard(
-                item: featuredProducts[index],
-                isGridMode: false,
-              ),
+            return Container(
+              width: 125, // Adjusted to match Figma visual proportions (cards are smaller)
+              margin: const EdgeInsets.only(right: 12),
+              child: ProductCard(item: featuredProducts[index]),
             );
           },
         ),
       ),
     );
   }
-
-
 
   Widget _buildCategoryGrid(BuildContext context, String storeId, List<MenuCategory> categories) {
     if (categories.isEmpty) {
@@ -402,15 +300,15 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 276,
+        height: 276, // Exact height for 3 rows of 84px + 2 spacings of 12px
         child: GridView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, 
-            mainAxisSpacing: 12, 
-            crossAxisSpacing: 12, 
-            childAspectRatio: 1.4, 
+            crossAxisCount: 3, // 3 rows
+            mainAxisSpacing: 12, // Spacing between columns
+            crossAxisSpacing: 12, // Spacing between rows
+            childAspectRatio: 1.4, // height(84) / width(60) = 1.4
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
@@ -419,11 +317,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               onTap: () {
                 context.push(
                   RouteNames.unifiedResults,
-                  extra: ResultsConfig(
-                    parentId: storeId, 
-                    categoryId: category.id,
-                    categoryName: category.name,
-                  ),
+                  extra: ResultsConfig(parentId: storeId, categoryId: category.id),
                 );
               },
               borderRadius: BorderRadius.circular(12),
@@ -432,29 +326,25 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 60, 
-                    height: 60, 
+                    width: 60, // Fixed width
+                    height: 60, // Fixed height
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F7F7), 
+                      color: const Color(0xFFF7F7F7), // Light grey background like Figma
                       borderRadius: BorderRadius.circular(16),
                     ),
                     alignment: Alignment.center,
-                    child: (category.imageUrl != null && category.imageUrl!.isNotEmpty)
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(category.imageUrl!, width: 40, height: 40, fit: BoxFit.contain)
-                        )
-                      : Image.asset(
-                          CategoryIconHelper.getLocalCategoryIcon(category.name),
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(AppAssets.homeCategoryGrocery, fit: BoxFit.contain);
-                          },
-                        ),
+                    child: Image.asset(
+                      CategoryIconHelper.getLocalCategoryIcon(category.name),
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback if the specific local asset isn't added yet
+                        return Image.asset(AppAssets.homeCategoryGrocery, fit: BoxFit.contain);
+                      },
+                    ),
                   ),
-                  const SizedBox(height: 8), 
+                  const SizedBox(height: 8), // Exact 8px spacing
                   Flexible(
                     child: Text(
                       category.name,
@@ -478,30 +368,28 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 }
 
 class _PromoBanners extends StatelessWidget {
-  final Market store;
-  const _PromoBanners({required this.store});
+  const _PromoBanners();
 
   @override
   Widget build(BuildContext context) {
-    if (store.coverImage == null || store.coverImage!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
-          height: 120, 
+          height: 120, // Approximate promo banner height
           child: PageView.builder(
-            itemCount: 1, 
+            itemCount: 1, // Placeholder
             itemBuilder: (context, index) {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    color: Colors.red.shade900,
-                    child: Image.network(store.coverImage!, fit: BoxFit.cover),
+                    color: Colors.red.shade900, // Fallback if image fails
+                    child: const AppRasterImage.asset(
+                      AppAssets.storeBanner, // Updated promo banner image
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );

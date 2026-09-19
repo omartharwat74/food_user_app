@@ -431,6 +431,7 @@ class _SearchScreenState extends State<SearchScreen> {
       hasOffer: false,
       fastDelivery: restaurant.deliveryTimeMax <= 30,
       topRated: restaurant.rating >= 4.5,
+      isMajor: restaurant.isMajor,
     );
   }
 }
@@ -699,49 +700,61 @@ class _CompactStoreCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 92,
-      height: 98,
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.onSurface(context).withValues(alpha: 0.08),
-            blurRadius: 2,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipOval(
-            child: _buildImage(
-              item.imageAsset,
-              width: 40,
-              height: 40,
-              fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () {
+        final storeId = item.id;
+        if (storeId == null) return;
+        debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
+        if (item.isMajor == true) {
+          context.push(RouteNames.marketDetailsFor(storeId.toString()));
+        } else {
+          context.push(RouteNames.restaurantDetailFor(storeId.toString()));
+        }
+      },
+      child: Container(
+        width: 92,
+        height: 98,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface(context).withValues(alpha: 0.08),
+              blurRadius: 2,
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            item.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body(
-              context,
-            ).copyWith(fontSize: 12, height: 1.3),
-          ),
-          const Spacer(),
-          _TimeLabel(
-            time: item.time,
-            iconSize: 14,
-            fontSize: 10,
-            textColor: AppColors.onSurface(context),
-          ),
-        ],
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipOval(
+              child: _buildImage(
+                item.imageAsset,
+                width: 40,
+                height: 40,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              item.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(
+                context,
+              ).copyWith(fontSize: 12, height: 1.3),
+            ),
+            const Spacer(),
+            _TimeLabel(
+              time: item.time,
+              iconSize: 14,
+              fontSize: 10,
+              textColor: AppColors.onSurface(context),
+            ),
+          ],
+        ),
       ),
     );
   }

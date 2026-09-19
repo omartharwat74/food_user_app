@@ -1,8 +1,11 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+import sys
+
+new_content = """import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'package:food_user_app/features/store/domain/repositories/store_repository.dart';
+import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
 import 'package:food_user_app/features/search/presentation/models/results_config.dart';
 
 import 'unified_results_state.dart';
@@ -98,11 +101,11 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
   }
 
   void _finalizeLoad(ResultsConfig config) {
-    _originalIsSearchMode = !config.isCategoryMode; // If not category mode, treat as search mode to hide tabs
+    _originalIsSearchMode = config.isSearchMode;
     _selectedTabIndex = 0;
     _activeQuery = config.searchQuery?.trim() ?? '';
 
-    if (_originalIsSearchMode) {
+    if (config.isSearchMode) {
       final results = _scopedFilter(_activeQuery);
       emit(UnifiedResultsState.loaded(
         categories: _cachedCategories,
@@ -182,3 +185,6 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
         .toList();
   }
 }
+"""
+with open('lib/features/search/presentation/cubit/unified_results_cubit.dart', 'w', encoding='utf-8') as f:
+    f.write(new_content)

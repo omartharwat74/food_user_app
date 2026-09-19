@@ -107,7 +107,7 @@ class MarketCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap ??
                 () {
-                  context.push(RouteNames.marketDetailFor(market.id));
+                  context.push(RouteNames.marketDetailsFor(market.id));
                 },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

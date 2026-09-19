@@ -140,13 +140,14 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
                               ),
                               delegate: SliverChildBuilderDelegate(
                                 (context, index) =>
-                                    ProductCard(item: displayItems[index]),
+                                    ProductCard(item: displayItems[index], isGridMode: true),
                                 childCount: displayItems.length,
                               ),
                             ),
                           ),
                       ],
                     ),
+
                   );
                 },
               );
@@ -198,7 +199,7 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
         isSearchMode ? 'ابحث عن ما تحب' : 'ابحث باسم المنتج';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 8.0, bottom: 0.0),
       child: Container(
         height: 48,
         decoration: BoxDecoration(
@@ -248,17 +249,19 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
     List<MenuCategory> categories, {
     required int selectedTabIndex,
   }) {
-    final unselectedColor = Theme.of(context).brightness == Brightness.dark
-        ? const Color(0xFF999999)
-        : const Color(0xFF787878);
-    final selectedColor = AppColors.onSurface(context);
+    // Figma: inactive text = fill_90c767fe = #787878, active text = #141414 (active underline fill)
+    const unselectedTextColor = Color(0xFF787878); // Figma: fill_90c767fe
+    const selectedTextColor = Color(0xFF141414);   // Figma: active fill = "#141414"
+    const activeUnderlineColor = Color(0xFF141414); // Figma: #8145:10028 fills=["#141414"]
     final strokeColor = AppColors.border(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Stack(
-        children: [
-          // Full-width bottom stroke
+    return Column(
+      children: [
+        const SizedBox(height: 4.0),
+        Stack(
+          children: [
+          // Full-width bottom stroke — Figma: EL-2a86f094 height=1.5px
+
           Positioned(
             bottom: 0,
             left: 0,
@@ -288,20 +291,26 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
                       decoration: BoxDecoration(
                         border: Border(
                           bottom: BorderSide(
-                            color:
-                                isSelected ? selectedColor : Colors.transparent,
-                            width: 2.0,
+                            // Figma: active underline = #141414, height 1.5px
+                            color: isSelected
+                                ? activeUnderlineColor
+                                : Colors.transparent,
+                            width: 1.5,
                           ),
                         ),
                       ),
                       child: Text(
                         title,
-                        style: AppTextStyles.body(context).copyWith(
-                          fontSize: 14,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.w500,
-                          color: isSelected ? selectedColor : unselectedColor,
+                        // Figma: active → Mobile/12 m (fontSize:12, weight:500, #141414)
+                        // Figma: inactive → Mobile/Body Rmd (fontSize:12, weight:400, #787878)
+                        style: TextStyle(
+                          fontFamily: 'Expo Arabic',
+                          fontSize: 12,
+                          fontWeight:
+                              isSelected ? FontWeight.w500 : FontWeight.w400,
+                          height: 1.3,
+                          color:
+                              isSelected ? selectedTextColor : unselectedTextColor,
                         ),
                       ),
                     ),
@@ -312,8 +321,10 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
           ),
         ],
       ),
+      ],
     );
   }
+
 
   Widget _buildSectionTitle(
     BuildContext context,
@@ -330,12 +341,16 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
       child: Text(
         sectionTitle,
         textAlign: TextAlign.right,
-        style: AppTextStyles.body(context).copyWith(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppColors.onSurface(context),
+        // Figma: #8145:10157 textStyle=Mobile/Button → fontSize:14, weight:500, color:#1B1B1B
+        style: const TextStyle(
+          fontFamily: 'Expo Arabic',
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          height: 1.25,
+          color: Color(0xFF1B1B1B),
         ),
       ),
     );
   }
 }
+

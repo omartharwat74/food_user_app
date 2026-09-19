@@ -418,7 +418,7 @@ class ServiceListingGroupData {
 
 enum ServicePlaceKind { restaurant, store, pickup }
 
-class ServicePlaceData {
+ class ServicePlaceData {
   const ServicePlaceData._({
     required this.kind,
     this.id,
@@ -431,6 +431,7 @@ class ServicePlaceData {
     this.topRated = true,
     this.showFavourite = false,
     this.subtitle,
+    this.isMajor = false,
   });
 
   final String? id;
@@ -445,6 +446,7 @@ class ServicePlaceData {
     bool hasOffer = false,
     bool fastDelivery = false,
     bool topRated = true,
+    bool isMajor = false,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.restaurant,
@@ -457,6 +459,7 @@ class ServicePlaceData {
       hasOffer: hasOffer,
       fastDelivery: fastDelivery,
       topRated: topRated,
+      isMajor: isMajor,
     );
   }
 
@@ -470,6 +473,7 @@ class ServicePlaceData {
     bool fastDelivery = false,
     bool topRated = true,
     bool showFavourite = false,
+    bool isMajor = false,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.store,
@@ -482,6 +486,7 @@ class ServicePlaceData {
       fastDelivery: fastDelivery,
       topRated: topRated,
       showFavourite: showFavourite,
+      isMajor: isMajor,
     );
   }
 
@@ -494,6 +499,7 @@ class ServicePlaceData {
     bool hasOffer = false,
     bool fastDelivery = false,
     bool topRated = true,
+    bool isMajor = false,
   }) {
     return ServicePlaceData._(
       kind: ServicePlaceKind.pickup,
@@ -505,6 +511,7 @@ class ServicePlaceData {
       hasOffer: hasOffer,
       fastDelivery: fastDelivery,
       topRated: topRated,
+      isMajor: isMajor,
     );
   }
 
@@ -518,4 +525,6 @@ class ServicePlaceData {
   final bool topRated;
   final bool showFavourite;
   final String? subtitle;
+  final bool isMajor;
 }
+

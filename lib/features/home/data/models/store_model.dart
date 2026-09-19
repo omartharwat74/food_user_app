@@ -1,4 +1,5 @@
 import 'package:food_user_app/features/home/domain/entities/store.dart';
+import 'package:food_user_app/core/utils/json_utils.dart';
 import 'tag_model.dart';
 
 /// Data model for a store object inside `GET /api/v1/stores` and
@@ -56,7 +57,7 @@ class StoreModel extends Store {
       name: json['name']?.toString() ?? '',
       logo: json['logo']?.toString(),
       cover: json['cover']?.toString(),
-      isMajor: json['is_major'] == true,
+      isMajor: parseBoolFromJson(json['is_major']),
       prepTimeFrom: json['prep_time_from'] != null ? (json['prep_time_from'] as num).toInt() : null,
       prepTimeTo: json['prep_time_to'] != null ? (json['prep_time_to'] as num).toInt() : null,
       tags: tags,

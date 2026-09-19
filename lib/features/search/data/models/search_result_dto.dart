@@ -1,6 +1,7 @@
 import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/menu_item_dto.dart';
 import 'package:food_user_app/features/search/domain/entities/search_result.dart';
+import 'package:food_user_app/core/utils/json_utils.dart';
 
 class SearchResultDto {
   final List<RestaurantDto>? restaurants;
@@ -28,7 +29,7 @@ class SearchResultDto {
         deliveryTimeMin: (store['prep_time_from'] as num?)?.toInt(),
         deliveryTimeMax: (store['prep_time_to'] as num?)?.toInt(),
         ratingAvg: store['rating_avg'],
-        isMajor: store['is_major'] == true,
+        isMajor: parseBoolFromJson(store['is_major']),
       );
     }).toList();
 

@@ -184,6 +184,14 @@ class AppRouter {
           marketId: s.pathParameters['id'] ?? '',
         ),
       ),
+      // Alias route: /market-details/:id — resolves to the same screen.
+      // Fixes "route could not be found" when navigation uses this path variant.
+      GoRoute(
+        path: RouteNames.marketDetails,
+        builder: (c, s) => MarketDetailsScreen(
+          marketId: s.pathParameters['id'] ?? '',
+        ),
+      ),
 
       GoRoute(
         path: RouteNames.unifiedResults,

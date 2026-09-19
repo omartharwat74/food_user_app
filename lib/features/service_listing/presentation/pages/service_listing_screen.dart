@@ -16,6 +16,9 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/domain/entities/tag.dart' as entity_tag;
+import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
+
 
 class ServiceListingScreen extends StatefulWidget {
   const ServiceListingScreen({
@@ -185,22 +188,75 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                 );
                               }
 
+                              final majorStores = stores.where((s) => s.isMajor).toList();
+                              final normalStores = stores.where((s) => !s.isMajor).toList();
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  _SectionTitle(title: l10n.serviceAllPlaces),
-                                  const SizedBox(height: 12),
-                                  _ServicePlaceCollection(
-                                    items: stores.map((s) => ServicePlaceData.store(
-                                      id: s.id.toString(),
-                                      name: s.name,
-                                      time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0}',
-                                      imageAsset: s.cover ?? s.logo ?? '',
-                                      rating: s.ratingAvg?.toStringAsFixed(1) ?? '0.0',
-                                      hasOffer: s.hasOffer,
-                                      topRated: false,
-                                    )).toList(),
-                                  ),
+                                  // ── Major Stores (المتاجر الكبرى) ─────────────
+                                  if (majorStores.isNotEmpty) ...[
+                                    _SectionTitle(title: l10n.serviceLargeStores),
+                                    const SizedBox(height: 12),
+                                    SizedBox(
+                                      height: 209,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        padding: EdgeInsets.zero,
+                                        itemCount: majorStores.length,
+                                        separatorBuilder: (_, _) => const SizedBox(width: 12),
+                                        itemBuilder: (context, index) {
+                                          final s = majorStores[index];
+                                          return RestaurantCard(
+                                            restaurant: Restaurant(
+                                              id: s.id.toString(),
+                                              name: s.name,
+                                              cuisineType: s.tags.isNotEmpty ? s.tags.first.name : '',
+                                              coverImageUrl: s.cover ?? s.logo ?? '',
+                                              logoUrl: s.logo ?? '',
+                                              rating: s.ratingAvg ?? 0.0,
+                                              ratingCount: s.ratingCount ?? 0,
+                                              deliveryTimeMin: s.prepTimeFrom ?? 0,
+                                              deliveryTimeMax: s.prepTimeTo ?? 0,
+                                              deliveryFee: 0.0,
+                                              isFavorited: false,
+                                              isMajor: true,
+                                              availability: s.availability,
+                                              tags: s.tags.map((t) => t.name).toList(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+
+                                  // ── All Normal Stores (كل الاماكن) ───────────
+                                  if (normalStores.isNotEmpty) ...[
+                                    _SectionTitle(title: l10n.serviceAllPlaces),
+                                    const SizedBox(height: 12),
+                                    _ServicePlaceCollection(
+                                      items: normalStores.map((s) => ServicePlaceData.store(
+                                        id: s.id.toString(),
+                                        name: s.name,
+                                        time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0}',
+                                        imageAsset: s.cover ?? s.logo ?? '',
+                                        rating: s.ratingAvg?.toStringAsFixed(1) ?? '0.0',
+                                        hasOffer: s.hasOffer,
+                                        topRated: false,
+                                        isMajor: false,
+                                      )).toList(),
+                                    ),
+                                  ],
+
+                                  // ── Nothing to show at all ───────────────────
+                                  if (majorStores.isEmpty && normalStores.isEmpty)
+                                    Column(
+                                      children: [
+                                        const SizedBox(height: 88),
+                                        _EmptyListingState(l10n: l10n),
+                                      ],
+                                    ),
                                 ],
                               );
                             }
@@ -214,6 +270,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                             return const SizedBox.shrink();
                           },
                         ),
+
                       ),
                     ),
                   ],

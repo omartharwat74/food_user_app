@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import sys
+
+new_content = """import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
@@ -137,7 +139,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                   slivers: [
                     SliverToBoxAdapter(child: _buildCustomHeader(context, store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    SliverToBoxAdapter(child: _PromoBanners(store: store)),
+                    const SliverToBoxAdapter(child: _PromoBanners()),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
                     
                     _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
@@ -275,7 +277,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           borderRadius: BorderRadius.circular(10), 
                         ),
                         child: store.logoImage != null && store.logoImage!.isNotEmpty
-                          ? Image.network(store.logoImage!, fit: BoxFit.cover)
+                          ? AppRasterImage.network(store.logoImage!, fit: BoxFit.cover)
                           : const AppRasterImage.asset(AppAssets.storeIcon, fit: BoxFit.contain),
                       ),
                     ],
@@ -337,25 +339,18 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return SliverPadding(
-      // Figma: horizontal 16px margin, 12px vertical spacing
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
       sliver: SliverToBoxAdapter(
         child: Text(
-          title,
-          textAlign: TextAlign.right,
-          // Figma: Mobile/H4 → fontFamily: Expo Arabic, fontWeight: 600, fontSize: 15, color: #1B1B1B
-          style: const TextStyle(
-            fontFamily: 'Expo Arabic',
+          title, 
+          style: AppTextStyles.heading4(context).copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w600,
-            height: 1.4,
-            color: Color(0xFF1B1B1B),
           ),
         ),
       ),
     );
   }
-
 
   Widget _buildFeaturedProducts(BuildContext context, List<MenuItem> featuredProducts) {
     if (featuredProducts.isEmpty) {
@@ -364,29 +359,23 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 
     return SliverToBoxAdapter(
       child: SizedBox(
-        // Figma card height = 164px. Add 12px bottom margin for shadow clearance.
-        height: 176,
+        height: 230, 
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           itemCount: featuredProducts.length,
           separatorBuilder: (context, index) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
-            return SizedBox(
-              // Figma: EL-0dee7c3e layout width = 134px
-              width: 134,
-              child: ProductCard(
-                item: featuredProducts[index],
-                isGridMode: false,
-              ),
+            return Container(
+              width: 125,
+              margin: const EdgeInsets.only(right: 12),
+              child: ProductCard(item: featuredProducts[index]),
             );
           },
         ),
       ),
     );
   }
-
-
 
   Widget _buildCategoryGrid(BuildContext context, String storeId, List<MenuCategory> categories) {
     if (categories.isEmpty) {
@@ -419,11 +408,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               onTap: () {
                 context.push(
                   RouteNames.unifiedResults,
-                  extra: ResultsConfig(
-                    parentId: storeId, 
-                    categoryId: category.id,
-                    categoryName: category.name,
-                  ),
+                  extra: ResultsConfig(parentId: storeId, categoryId: category.id),
                 );
               },
               borderRadius: BorderRadius.circular(12),
@@ -442,7 +427,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                     child: (category.imageUrl != null && category.imageUrl!.isNotEmpty)
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.network(category.imageUrl!, width: 40, height: 40, fit: BoxFit.contain)
+                          child: AppRasterImage.network(category.imageUrl!, width: 40, height: 40, fit: BoxFit.contain)
                         )
                       : Image.asset(
                           CategoryIconHelper.getLocalCategoryIcon(category.name),
@@ -478,15 +463,10 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 }
 
 class _PromoBanners extends StatelessWidget {
-  final Market store;
-  const _PromoBanners({required this.store});
+  const _PromoBanners();
 
   @override
   Widget build(BuildContext context) {
-    if (store.coverImage == null || store.coverImage!.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -501,7 +481,10 @@ class _PromoBanners extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
                     color: Colors.red.shade900,
-                    child: Image.network(store.coverImage!, fit: BoxFit.cover),
+                    child: const AppRasterImage.asset(
+                      AppAssets.storeBanner, 
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               );
@@ -544,3 +527,6 @@ class _PromoBanners extends StatelessWidget {
     );
   }
 }
+"""
+with open('lib/features/market/presentation/pages/market_details_screen.dart', 'w', encoding='utf-8') as f:
+    f.write(new_content)

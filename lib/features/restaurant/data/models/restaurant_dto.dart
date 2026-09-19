@@ -1,11 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
+import 'package:food_user_app/core/utils/json_utils.dart';
 
 part 'restaurant_dto.freezed.dart';
 part 'restaurant_dto.g.dart';
 
 // Top-level helper: safely converts any JSON value to String.
 String _idFromJson(dynamic value) => value?.toString() ?? '';
+
 
 @freezed
 abstract class RestaurantDto with _$RestaurantDto {
@@ -28,8 +30,9 @@ abstract class RestaurantDto with _$RestaurantDto {
     String? description,
     @JsonKey(name: 'is_available') bool? isAvailable,
     @JsonKey(name: 'is_open') bool? isOpen,
-    @JsonKey(name: 'is_major') bool? isMajor,
+    @JsonKey(name: 'is_major', fromJson: parseBoolFromJson) bool? isMajor,
   }) = _RestaurantDto;
+
 
   factory RestaurantDto.fromJson(Map<String, dynamic> json) =>
       _$RestaurantDtoFromJson(json);

@@ -28,24 +28,31 @@ class RestaurantCard extends StatelessWidget {
       borderRadius: const BorderRadius.all(AppRadius.md),
       child: InkWell(
         borderRadius: const BorderRadius.all(AppRadius.md),
-        onTap: () => context.push(
-          RouteNames.restaurantDetailFor(restaurant.id),
-          extra: RestaurantDetailArgs(
-            id: restaurant.id,
-            name: restaurant.name,
-            description: restaurant.cuisineType,
-            deliveryTime:
-                '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
-            rating: restaurant.rating,
-            logoAsset: restaurant.coverImageUrl.isNotEmpty
-                ? restaurant.coverImageUrl
-                : AppAssets.restaurantAzAlShamLogo,
-            coverAsset: restaurant.coverImageUrl.isNotEmpty
-                ? restaurant.coverImageUrl
-                : AppAssets.restaurantHeroBurger,
-            initialFavorite: restaurant.isFavorited,
-          ),
-        ),
+        onTap: () {
+          debugPrint('🛠️ Tapped Store: ${restaurant.name} | isMajor: ${restaurant.isMajor}');
+          if (restaurant.isMajor == true) {
+            context.push(RouteNames.marketDetailsFor(restaurant.id));
+          } else {
+            context.push(
+              RouteNames.restaurantDetailFor(restaurant.id),
+              extra: RestaurantDetailArgs(
+                id: restaurant.id,
+                name: restaurant.name,
+                description: restaurant.cuisineType,
+                deliveryTime:
+                    '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                rating: restaurant.rating,
+                logoAsset: restaurant.coverImageUrl.isNotEmpty
+                    ? restaurant.coverImageUrl
+                    : AppAssets.restaurantAzAlShamLogo,
+                coverAsset: restaurant.coverImageUrl.isNotEmpty
+                    ? restaurant.coverImageUrl
+                    : AppAssets.restaurantHeroBurger,
+                initialFavorite: restaurant.isFavorited,
+              ),
+            );
+          }
+        },
         child: Container(
           width: width,
           decoration: BoxDecoration(

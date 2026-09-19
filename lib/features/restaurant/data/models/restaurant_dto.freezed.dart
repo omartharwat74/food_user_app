@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RestaurantDto {
 
-@JsonKey(fromJson: _idFromJson) String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating;@JsonKey(name: 'rating_avg') dynamic get ratingAvg;@JsonKey(name: 'rating_count') int? get ratingCount;@JsonKey(name: 'prep_time_from') int? get deliveryTimeMin;@JsonKey(name: 'prep_time_to') int? get deliveryTimeMax;@JsonKey(name: 'delivery_fee') double? get deliveryFee;@JsonKey(name: 'is_favorited') bool? get isFavorited;@JsonKey(name: 'logo') String? get logoUrl;@JsonKey(name: 'cover') String? get coverUrl; String? get description;@JsonKey(name: 'is_available') bool? get isAvailable;@JsonKey(name: 'is_open') bool? get isOpen;@JsonKey(name: 'is_major') bool? get isMajor;
+@JsonKey(fromJson: _idFromJson) String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating;@JsonKey(name: 'rating_avg') dynamic get ratingAvg;@JsonKey(name: 'rating_count') int? get ratingCount;@JsonKey(name: 'prep_time_from') int? get deliveryTimeMin;@JsonKey(name: 'prep_time_to') int? get deliveryTimeMax;@JsonKey(name: 'delivery_fee') double? get deliveryFee;@JsonKey(name: 'is_favorited') bool? get isFavorited;@JsonKey(name: 'logo') String? get logoUrl;@JsonKey(name: 'cover') String? get coverUrl; String? get description;@JsonKey(name: 'is_available') bool? get isAvailable;@JsonKey(name: 'is_open') bool? get isOpen;@JsonKey(name: 'is_major', fromJson: parseBoolFromJson) bool? get isMajor;
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RestaurantDtoCopyWith<$Res>  {
   factory $RestaurantDtoCopyWith(RestaurantDto value, $Res Function(RestaurantDto) _then) = _$RestaurantDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@JsonKey(name: 'is_available') bool? isAvailable,@JsonKey(name: 'is_open') bool? isOpen,@JsonKey(name: 'is_major') bool? isMajor
+@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@JsonKey(name: 'is_available') bool? isAvailable,@JsonKey(name: 'is_open') bool? isOpen,@JsonKey(name: 'is_major', fromJson: parseBoolFromJson) bool? isMajor
 });
 
 
@@ -169,7 +169,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major')  bool? isMajor)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major', fromJson: parseBoolFromJson)  bool? isMajor)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
@@ -190,7 +190,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major')  bool? isMajor)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major', fromJson: parseBoolFromJson)  bool? isMajor)  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto():
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
@@ -210,7 +210,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major')  bool? isMajor)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @JsonKey(name: 'is_available')  bool? isAvailable, @JsonKey(name: 'is_open')  bool? isOpen, @JsonKey(name: 'is_major', fromJson: parseBoolFromJson)  bool? isMajor)?  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
 return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
@@ -225,7 +225,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 @JsonSerializable()
 
 class _RestaurantDto implements RestaurantDto {
-  const _RestaurantDto({@JsonKey(fromJson: _idFromJson) this.id = '', this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'rating_avg') this.ratingAvg, @JsonKey(name: 'rating_count') this.ratingCount, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @JsonKey(name: 'is_favorited') this.isFavorited, @JsonKey(name: 'logo') this.logoUrl, @JsonKey(name: 'cover') this.coverUrl, this.description, @JsonKey(name: 'is_available') this.isAvailable, @JsonKey(name: 'is_open') this.isOpen, @JsonKey(name: 'is_major') this.isMajor});
+  const _RestaurantDto({@JsonKey(fromJson: _idFromJson) this.id = '', this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'rating_avg') this.ratingAvg, @JsonKey(name: 'rating_count') this.ratingCount, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @JsonKey(name: 'is_favorited') this.isFavorited, @JsonKey(name: 'logo') this.logoUrl, @JsonKey(name: 'cover') this.coverUrl, this.description, @JsonKey(name: 'is_available') this.isAvailable, @JsonKey(name: 'is_open') this.isOpen, @JsonKey(name: 'is_major', fromJson: parseBoolFromJson) this.isMajor});
   factory _RestaurantDto.fromJson(Map<String, dynamic> json) => _$RestaurantDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -244,7 +244,7 @@ class _RestaurantDto implements RestaurantDto {
 @override final  String? description;
 @override@JsonKey(name: 'is_available') final  bool? isAvailable;
 @override@JsonKey(name: 'is_open') final  bool? isOpen;
-@override@JsonKey(name: 'is_major') final  bool? isMajor;
+@override@JsonKey(name: 'is_major', fromJson: parseBoolFromJson) final  bool? isMajor;
 
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
@@ -279,7 +279,7 @@ abstract mixin class _$RestaurantDtoCopyWith<$Res> implements $RestaurantDtoCopy
   factory _$RestaurantDtoCopyWith(_RestaurantDto value, $Res Function(_RestaurantDto) _then) = __$RestaurantDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@JsonKey(name: 'is_available') bool? isAvailable,@JsonKey(name: 'is_open') bool? isOpen,@JsonKey(name: 'is_major') bool? isMajor
+@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@JsonKey(name: 'is_available') bool? isAvailable,@JsonKey(name: 'is_open') bool? isOpen,@JsonKey(name: 'is_major', fromJson: parseBoolFromJson) bool? isMajor
 });
 
 

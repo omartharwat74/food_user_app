@@ -271,10 +271,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                 const SizedBox(height: 17),
                 GestureDetector(
                   onTap: () {
-                    context.push(
-                      RouteNames.unifiedResults,
-                      extra: ResultsConfig(parentId: store.id, searchQuery: ' '),
-                    );
+                    context.push(RouteNames.storeSearchFor(store.id));
                   },
                   child: Container(
                     height: 44,

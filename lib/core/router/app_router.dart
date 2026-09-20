@@ -53,6 +53,8 @@ import '../../features/search/presentation/pages/unified_results_screen.dart';
 import '../../features/search/presentation/models/results_config.dart';
 import '../../features/market/presentation/pages/markets_list_screen.dart';
 import '../../features/market/presentation/pages/market_details_screen.dart';
+import '../../features/market/presentation/pages/store_search_screen.dart';
+import '../../features/store/presentation/cubit/store_search/store_search_cubit.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -191,6 +193,19 @@ class AppRouter {
         builder: (c, s) => MarketDetailsScreen(
           marketId: s.pathParameters['id'] ?? '',
         ),
+      ),
+
+      // Store Search — dedicated screen for searching inside a hypermarket.
+      // Uses GET /api/v1/stores/products/search (NOT /all which is blocked for major stores).
+      GoRoute(
+        path: RouteNames.storeSearch,
+        builder: (c, s) {
+          final storeId = s.pathParameters['id'] ?? '';
+          return BlocProvider<StoreSearchCubit>(
+            create: (_) => sl<StoreSearchCubit>(),
+            child: StoreSearchScreen(storeId: storeId),
+          );
+        },
       ),
 
       GoRoute(

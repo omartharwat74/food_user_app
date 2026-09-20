@@ -45,6 +45,7 @@ class RouteNames {
   static const marketsList = '/markets';
   static const marketDetail = '/market/:id';
   static const marketDetails = '/market-details/:id'; // alias used by isMajor tap
+  static const storeSearch = '/market-details/:id/search';
 
   static const helpSupport = '/help';
 
@@ -56,6 +57,7 @@ class RouteNames {
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
   static String marketDetailFor(String id) => '/market/$id';
   static String marketDetailsFor(String id) => '/market-details/$id';
+  static String storeSearchFor(String id) => '/market-details/$id/search';
   static String orderDetailFor(String id) => '/order/$id';
   static String orderConfirmationFor(String id) => '/checkout/confirmation/$id';
   static String orderTrackingFor(String id) => '/order/$id/tracking';

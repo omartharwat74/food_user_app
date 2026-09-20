@@ -99,6 +99,7 @@ import 'package:food_user_app/features/store/data/datasources/store_remote_data_
 import 'package:food_user_app/features/store/domain/repositories/store_repository.dart';
 import 'package:food_user_app/features/store/data/repositories/store_repository_impl.dart';
 import 'package:food_user_app/features/store/presentation/cubit/hypermarket/hypermarket_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_search/store_search_cubit.dart';
 
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 import 'package:food_user_app/features/search/presentation/cubit/unified_results_cubit.dart';
@@ -434,6 +435,10 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
   sl.registerFactory<HypermarketCubit>(
     () => HypermarketCubit(repository: sl<StoreRepository>()),
+  );
+
+  sl.registerFactory<StoreSearchCubit>(
+    () => StoreSearchCubit(repository: sl<StoreRepository>()),
   );
 
   sl.registerFactory<UnifiedResultsCubit>(

@@ -141,6 +141,9 @@ class ApiEndpoints {
   /// `GET /api/v1/stores/products/category-sections?store_id={store_id}&menu_category_id={menu_category_id}`
   static const String storeProductCategorySections = '/api/v1/stores/products/category-sections';
 
+  /// `GET /api/v1/stores/products/search?store_id={id}&search={query}&page=1&per_page=10`
+  static const String storeProductSearch = '/api/v1/stores/products/search';
+
   /// `GET /api/v1/stores/products/show?id={productId}` — single product details.
   static const String storeProductShow = '/api/v1/stores/products/show';
 

@@ -40,9 +40,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         addressesController.loadAddressesIfNeeded();
       });
     }
-    final selectedSavedAddress = addressesController.selectedAddress?.location(
-      Localizations.localeOf(context),
-    );
+    final address = addressesController.selectedAddress;
+    final selectedSavedAddress = (address?.fullAddress?.isNotEmpty == true) 
+        ? address!.fullAddress 
+        : (address?.title(Localizations.localeOf(context)).isNotEmpty == true) 
+            ? address!.title(Localizations.localeOf(context)) 
+            : null;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -106,8 +109,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                     _CheckoutBottomBar(
                       label: l10n.checkoutConfirmOrder,
-                      totalLabel: l10n.orderGrandTotal,
-                      total: l10n.cartPrice((total).toFormattedPrice()),
                       onTap: () {
                         context.read<CheckoutCubit>().checkout();
                       },
@@ -329,86 +330,167 @@ class _MapStrip extends StatelessWidget {
   }
 }
 
-class _CheckoutBottomBar extends StatelessWidget {
+class _CheckoutBottomBar extends StatefulWidget {
   const _CheckoutBottomBar({
     required this.label,
-    required this.totalLabel,
-    required this.total,
     required this.onTap,
   });
 
   final String label;
-  final String totalLabel;
-  final String total;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final bottomSafe = MediaQuery.of(context).padding.bottom;
+  State<_CheckoutBottomBar> createState() => _CheckoutBottomBarState();
+}
 
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, bottomSafe + 20),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow.withValues(alpha: 0.08),
-            blurRadius: 4,
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
+  bool isSummaryExpanded = false;
+
+  Widget _buildSummaryRow(BuildContext context, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                totalLabel,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.onSurface(context),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.25,
-                ),
-              ),
-              Text(
-                total,
-                textAlign: TextAlign.end,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.onSurface(context),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.25,
-                ),
-              ),
-            ],
+          Text(
+            title,
+            style: const TextStyle(
+              color: Color(0xFF1B1B1B),
+              fontSize: 14,
+              fontFamily: 'Expo Arabic',
+              fontWeight: FontWeight.w500,
+              height: 1.30,
+            ),
           ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: Container(
-              height: 48,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                label,
-                style: AppTextStyles.primaryButtonLabel.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  height: 1.25,
-                ),
-              ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFF1B1B1B),
+              fontSize: 14,
+              fontFamily: 'Expo Arabic',
+              fontWeight: FontWeight.w500,
+              height: 1.30,
             ),
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomSafe = MediaQuery.of(context).padding.bottom;
+    
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        final cart = state.maybeWhen(
+          loaded: (cart, promo) => cart,
+          error: (cart, promo, message) => cart,
+          orElse: () => null,
+        );
+
+        final subtotal = cart?.subtotal ?? 0.0;
+        final deliveryFee = cart?.deliveryFee ?? 0.0;
+        final tax = cart?.tax ?? 0.0;
+        final discount = cart?.discount ?? 0.0;
+        final total = cart?.total ?? 0.0;
+
+        return Container(
+          width: double.infinity,
+          padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, bottomSafe > 0 ? bottomSafe : 16),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceCard(context),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.shadow.withValues(alpha: 0.08),
+                blurRadius: 4,
+                offset: const Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: isSummaryExpanded
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'ملخص الطلب :',
+                            style: TextStyle(
+                              color: Color(0xFF1B1B1B),
+                              fontSize: 16,
+                              fontFamily: 'Expo Arabic',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildSummaryRow(context, 'قيمة الطلب', '${subtotal.toFormattedPrice()} ج.م'),
+                          _buildSummaryRow(context, 'التوصيل', '${deliveryFee.toFormattedPrice()} ج.م'),
+                          _buildSummaryRow(context, 'الضريبة', '${tax.toFormattedPrice()} ج.م'),
+                          _buildSummaryRow(context, 'الخصم', '${discount.toFormattedPrice()} ج.م'),
+                          const Divider(color: Color(0xFFE5E5E5), thickness: 0.5, height: 0.5),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    isSummaryExpanded = !isSummaryExpanded;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'الاجمالي : ${total.toFormattedPrice()} ج.م',
+                        style: const TextStyle(
+                          color: Color(0xFF1B1B1B),
+                          fontSize: 16,
+                          fontFamily: 'Expo Arabic',
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Icon(
+                        isSummaryExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                        color: const Color(0xFF1B1B1B),
+                        size: 24,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: widget.onTap,
+                child: Container(
+                  height: 48,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    widget.label,
+                    style: AppTextStyles.primaryButtonLabel.copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      height: 1.25,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

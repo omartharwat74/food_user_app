@@ -77,10 +77,9 @@ class ApiEndpoints {
   static const String userSettings = '/user/settings';
   static const String user = '/user';
 
-  // ── Cart ──────────────────────────────────────────────────────────────────
-  static const String userCart = '/user/cart';
-  static const String userCartItems = '/user/cart/items';
-  static String userCartItem(String itemId) => '$userCartItems/$itemId';
+    // ── Cart ──────────────────────────────────────────────────────────────────
+  static const String cart = '/api/v1/cart';
+  static const String cartItems = '/api/v1/cart/items';
   static const String applyPromo = '/cart/promo';
 
   // ── Payment & Checkout ────────────────────────────────────────────────────

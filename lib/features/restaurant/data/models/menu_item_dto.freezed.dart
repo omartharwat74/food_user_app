@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MenuItemDto {
 
-@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? get categoryId; String? get name; String? get description;@JsonKey(name: 'price_after_discount') double? get priceAfterDiscount; double? get price;@JsonKey(name: 'base_price') double? get basePrice; double? get originalPrice;@JsonKey(name: 'main_image') String? get mainImage; String? get imageUrl; bool? get available; Map<String, dynamic>? get offer;
+@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? get categoryId; String? get name; String? get description;@JsonKey(name: 'price_after_discount') double? get priceAfterDiscount; double? get price;@JsonKey(name: 'base_price') double? get basePrice; double? get originalPrice;@JsonKey(name: 'main_image') String? get mainImage; String? get imageUrl;@IntBoolConverter() bool? get available; Map<String, dynamic>? get offer;
 /// Create a copy of MenuItemDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $MenuItemDtoCopyWith<$Res>  {
   factory $MenuItemDtoCopyWith(MenuItemDto value, $Res Function(MenuItemDto) _then) = _$MenuItemDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? categoryId, String? name, String? description,@JsonKey(name: 'price_after_discount') double? priceAfterDiscount, double? price,@JsonKey(name: 'base_price') double? basePrice, double? originalPrice,@JsonKey(name: 'main_image') String? mainImage, String? imageUrl, bool? available, Map<String, dynamic>? offer
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? categoryId, String? name, String? description,@JsonKey(name: 'price_after_discount') double? priceAfterDiscount, double? price,@JsonKey(name: 'base_price') double? basePrice, double? originalPrice,@JsonKey(name: 'main_image') String? mainImage, String? imageUrl,@IntBoolConverter() bool? available, Map<String, dynamic>? offer
 });
 
 
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl,  bool? available,  Map<String, dynamic>? offer)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl, @IntBoolConverter()  bool? available,  Map<String, dynamic>? offer)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MenuItemDto() when $default != null:
 return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.priceAfterDiscount,_that.price,_that.basePrice,_that.originalPrice,_that.mainImage,_that.imageUrl,_that.available,_that.offer);case _:
@@ -185,7 +185,7 @@ return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.pri
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl,  bool? available,  Map<String, dynamic>? offer)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl, @IntBoolConverter()  bool? available,  Map<String, dynamic>? offer)  $default,) {final _that = this;
 switch (_that) {
 case _MenuItemDto():
 return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.priceAfterDiscount,_that.price,_that.basePrice,_that.originalPrice,_that.mainImage,_that.imageUrl,_that.available,_that.offer);case _:
@@ -205,7 +205,7 @@ return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.pri
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl,  bool? available,  Map<String, dynamic>? offer)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)  String? categoryId,  String? name,  String? description, @JsonKey(name: 'price_after_discount')  double? priceAfterDiscount,  double? price, @JsonKey(name: 'base_price')  double? basePrice,  double? originalPrice, @JsonKey(name: 'main_image')  String? mainImage,  String? imageUrl, @IntBoolConverter()  bool? available,  Map<String, dynamic>? offer)?  $default,) {final _that = this;
 switch (_that) {
 case _MenuItemDto() when $default != null:
 return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.priceAfterDiscount,_that.price,_that.basePrice,_that.originalPrice,_that.mainImage,_that.imageUrl,_that.available,_that.offer);case _:
@@ -220,7 +220,7 @@ return $default(_that.id,_that.categoryId,_that.name,_that.description,_that.pri
 @JsonSerializable()
 
 class _MenuItemDto implements MenuItemDto {
-  const _MenuItemDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) this.categoryId, this.name, this.description, @JsonKey(name: 'price_after_discount') this.priceAfterDiscount, this.price, @JsonKey(name: 'base_price') this.basePrice, this.originalPrice, @JsonKey(name: 'main_image') this.mainImage, this.imageUrl, this.available, final  Map<String, dynamic>? offer}): _offer = offer;
+  const _MenuItemDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) this.categoryId, this.name, this.description, @JsonKey(name: 'price_after_discount') this.priceAfterDiscount, this.price, @JsonKey(name: 'base_price') this.basePrice, this.originalPrice, @JsonKey(name: 'main_image') this.mainImage, this.imageUrl, @IntBoolConverter() this.available, final  Map<String, dynamic>? offer}): _offer = offer;
   factory _MenuItemDto.fromJson(Map<String, dynamic> json) => _$MenuItemDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -233,7 +233,7 @@ class _MenuItemDto implements MenuItemDto {
 @override final  double? originalPrice;
 @override@JsonKey(name: 'main_image') final  String? mainImage;
 @override final  String? imageUrl;
-@override final  bool? available;
+@override@IntBoolConverter() final  bool? available;
  final  Map<String, dynamic>? _offer;
 @override Map<String, dynamic>? get offer {
   final value = _offer;
@@ -277,7 +277,7 @@ abstract mixin class _$MenuItemDtoCopyWith<$Res> implements $MenuItemDtoCopyWith
   factory _$MenuItemDtoCopyWith(_MenuItemDto value, $Res Function(_MenuItemDto) _then) = __$MenuItemDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? categoryId, String? name, String? description,@JsonKey(name: 'price_after_discount') double? priceAfterDiscount, double? price,@JsonKey(name: 'base_price') double? basePrice, double? originalPrice,@JsonKey(name: 'main_image') String? mainImage, String? imageUrl, bool? available, Map<String, dynamic>? offer
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? categoryId, String? name, String? description,@JsonKey(name: 'price_after_discount') double? priceAfterDiscount, double? price,@JsonKey(name: 'base_price') double? basePrice, double? originalPrice,@JsonKey(name: 'main_image') String? mainImage, String? imageUrl,@IntBoolConverter() bool? available, Map<String, dynamic>? offer
 });
 
 

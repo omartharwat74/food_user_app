@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'hyper_categories_response.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'hyper_sections_response.g.dart';
 
 @JsonSerializable()
@@ -47,6 +49,7 @@ class HyperProduct {
   @JsonKey(name: 'main_image')
   final String? mainImage;
   @JsonKey(name: 'is_available', defaultValue: true)
+  @IntBoolConverter()
   final bool isAvailable;
 
   HyperProduct({

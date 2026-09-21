@@ -13,7 +13,7 @@ _BranchDto _$BranchDtoFromJson(Map<String, dynamic> json) => _BranchDto(
   lat: (json['lat'] as num?)?.toDouble(),
   lng: (json['lng'] as num?)?.toDouble(),
   operatingHours: json['operatingHours'] as Map<String, dynamic>?,
-  active: json['active'] as bool?,
+  active: const IntBoolConverter().fromJson(json['active']),
 );
 
 Map<String, dynamic> _$BranchDtoToJson(_BranchDto instance) =>
@@ -24,5 +24,13 @@ Map<String, dynamic> _$BranchDtoToJson(_BranchDto instance) =>
       'lat': instance.lat,
       'lng': instance.lng,
       'operatingHours': instance.operatingHours,
-      'active': instance.active,
+      'active': _$JsonConverterToJson<dynamic, bool>(
+        instance.active,
+        const IntBoolConverter().toJson,
+      ),
     };
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) => value == null ? null : toJson(value);

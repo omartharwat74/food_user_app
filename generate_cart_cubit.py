@@ -1,6 +1,6 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
+cubit_code = """import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
-
+import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/get_cart_usecase.dart';
@@ -241,3 +241,8 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 }
+"""
+
+with open('lib/features/cart/presentation/cubit/cart_cubit.dart', 'w') as f:
+    f.write(cubit_code)
+

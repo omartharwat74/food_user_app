@@ -2,6 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/home/data/models/store_model.dart';
 import 'package:food_user_app/features/home/domain/entities/spotlight.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'spotlight_dto.g.dart';
 
 @JsonSerializable(createToJson: false)
@@ -9,6 +11,7 @@ class SpotlightDto {
   final int id;
   final String name;
   @JsonKey(name: 'has_more')
+  @IntBoolConverter()
   final bool hasMore;
   final List<StoreModel> stores;
 

@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/branch.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'branch_dto.freezed.dart';
 part 'branch_dto.g.dart';
 
@@ -16,6 +18,7 @@ abstract class BranchDto with _$BranchDto {
     double? lat,
     double? lng,
     Map<String, dynamic>? operatingHours,
+    @IntBoolConverter()
     bool? active,
   }) = _BranchDto;
 

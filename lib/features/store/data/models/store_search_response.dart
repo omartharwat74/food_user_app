@@ -1,6 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'hyper_sections_response.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'store_search_response.g.dart';
 
 @JsonSerializable()
@@ -31,6 +33,7 @@ class StoreSearchData {
 @JsonSerializable()
 class StoreSearchMeta {
   @JsonKey(name: 'is_random', defaultValue: false)
+  @IntBoolConverter()
   final bool isRandom;
 
   @JsonKey(name: 'current_page')

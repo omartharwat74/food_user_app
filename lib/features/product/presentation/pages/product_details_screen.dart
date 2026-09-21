@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
+
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
@@ -88,9 +91,41 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             onIncrement: () => setState(() => _quantity++),
             onDecrement: () =>
                 setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
-            onSubmit: () {
-              // TODO: Add to cart
-              context.pop();
+            onSubmit: () async {
+              final List<int> modifierIdsList = [];
+              _selectedOptions.forEach((modId, selectedIds) {
+                for (final optId in selectedIds) {
+                  final idInt = int.tryParse(optId);
+                  if (idInt != null) {
+                    modifierIdsList.add(idInt);
+                  }
+                }
+              });
+
+              try {
+                await context.read<CartCubit>().addItem(
+                  productId: product.id.toString(),
+                  quantity: _quantity,
+                  optionValueIds: modifierIdsList,
+                );
+                
+                if (!context.mounted) return;
+
+                Navigator.of(context).pop();
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('تم إضافة المنتج للسلة بنجاح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    backgroundColor: Colors.green,
+                    duration: Duration(seconds: 3),
+                  ),
+                );
+              } catch (e) {
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('حدث خطأ أثناء الإضافة'), backgroundColor: Colors.red),
+                );
+              }
             },
           ),
           body: SafeArea(
@@ -801,46 +836,79 @@ class _ProductBottomBar extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: enabled ? onSubmit : null,
-                  child: Container(
-                    height: 48,
-                    padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
-                    decoration: BoxDecoration(
-                      color: enabled
-                          ? AppColors.primary
-                          : AppColors.inactiveIndicator,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.productAddToCart,
-                          style: AppTextStyles.buttonHeading(context).copyWith(
-                            color: enabled
-                                ? AppColors.text
-                                : AppColors.paragraph(context),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            height: 1.25,
-                          ),
+                child: BlocBuilder<CartCubit, CartState>(
+                  builder: (context, state) {
+                    final isLoading = state.maybeWhen(
+                      loading: () => true,
+                      orElse: () => false,
+                    );
+                    final isError = state.maybeWhen(
+                      error: (cart, promo, msg) => true,
+                      orElse: () => false,
+                    );
+                    final message = state.maybeWhen(
+                      error: (cart, promo, msg) => msg,
+                      orElse: () => null,
+                    );
+
+                    return GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: (enabled && !isLoading) ? onSubmit : null,
+                      child: Container(
+                        height: 48,
+                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                        decoration: BoxDecoration(
+                          color: (enabled && !isLoading)
+                              ? AppColors.primary
+                              : AppColors.inactiveIndicator,
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        Text(
-                          l10n.cartPrice(total),
-                          style: AppTextStyles.buttonHeading(context).copyWith(
-                            color: enabled
-                                ? AppColors.text
-                                : AppColors.paragraph(context),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            height: 1.25,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                        child: isLoading
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      isError ? (message ?? 'حدث خطأ') : l10n.productAddToCart,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextStyles.buttonHeading(context).copyWith(
+                                        color: (enabled && !isLoading)
+                                            ? AppColors.text
+                                            : AppColors.paragraph(context),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.25,
+                                      ),
+                                    ),
+                                  ),
+                                  if (!isError)
+                                    Text(
+                                      l10n.cartPrice(total),
+                                      style: AppTextStyles.buttonHeading(context).copyWith(
+                                        color: (enabled && !isLoading)
+                                            ? AppColors.text
+                                            : AppColors.paragraph(context),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.25,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

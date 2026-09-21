@@ -17,7 +17,7 @@ _MenuItemDto _$MenuItemDtoFromJson(Map<String, dynamic> json) => _MenuItemDto(
   originalPrice: (json['originalPrice'] as num?)?.toDouble(),
   mainImage: json['main_image'] as String?,
   imageUrl: json['imageUrl'] as String?,
-  available: json['available'] as bool?,
+  available: const IntBoolConverter().fromJson(json['available']),
   offer: json['offer'] as Map<String, dynamic>?,
 );
 
@@ -33,6 +33,14 @@ Map<String, dynamic> _$MenuItemDtoToJson(_MenuItemDto instance) =>
       'originalPrice': instance.originalPrice,
       'main_image': instance.mainImage,
       'imageUrl': instance.imageUrl,
-      'available': instance.available,
+      'available': _$JsonConverterToJson<dynamic, bool>(
+        instance.available,
+        const IntBoolConverter().toJson,
+      ),
       'offer': instance.offer,
     };
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) => value == null ? null : toJson(value);

@@ -4,7 +4,7 @@ import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_source.dart';
-import 'package:food_user_app/features/cart/data/models/cart_dto.dart';
+import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/promo.dart';
@@ -27,17 +27,15 @@ class CartRepositoryImpl implements CartRepository {
 
   @override
   Future<Either<Failure, Cart>> addToCart({
-    required String menuItemId,
+    required String productId,
     required int quantity,
-    List<Map<String, dynamic>>? selectedModifiers,
-    String? notes,
+    required List<int> optionValueIds,
   }) async {
     try {
-      final dto = await remoteDataSource.addToCart(
-        menuItemId: menuItemId,
+      final dto = await remoteDataSource.addItem(
+        productId: productId,
         quantity: quantity,
-        selectedModifiers: selectedModifiers,
-        notes: notes,
+        optionValueIds: optionValueIds,
       );
       return Right(dto.toEntity());
     } catch (e) {

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OfferDto {
 
-@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? get restaurantId; String? get title; int? get discountPercent; double? get minOrderAmount; String? get description; String? get expiresAt; bool? get active;
+@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? get restaurantId; String? get title; int? get discountPercent; double? get minOrderAmount; String? get description; String? get expiresAt;@IntBoolConverter() bool? get active;
 /// Create a copy of OfferDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $OfferDtoCopyWith<$Res>  {
   factory $OfferDtoCopyWith(OfferDto value, $Res Function(OfferDto) _then) = _$OfferDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? title, int? discountPercent, double? minOrderAmount, String? description, String? expiresAt, bool? active
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? title, int? discountPercent, double? minOrderAmount, String? description, String? expiresAt,@IntBoolConverter() bool? active
 });
 
 
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt,  bool? active)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt, @IntBoolConverter()  bool? active)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OfferDto() when $default != null:
 return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_that.minOrderAmount,_that.description,_that.expiresAt,_that.active);case _:
@@ -181,7 +181,7 @@ return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt,  bool? active)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt, @IntBoolConverter()  bool? active)  $default,) {final _that = this;
 switch (_that) {
 case _OfferDto():
 return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_that.minOrderAmount,_that.description,_that.expiresAt,_that.active);case _:
@@ -201,7 +201,7 @@ return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt,  bool? active)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? title,  int? discountPercent,  double? minOrderAmount,  String? description,  String? expiresAt, @IntBoolConverter()  bool? active)?  $default,) {final _that = this;
 switch (_that) {
 case _OfferDto() when $default != null:
 return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_that.minOrderAmount,_that.description,_that.expiresAt,_that.active);case _:
@@ -216,7 +216,7 @@ return $default(_that.id,_that.restaurantId,_that.title,_that.discountPercent,_t
 @JsonSerializable()
 
 class _OfferDto implements OfferDto {
-  const _OfferDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) this.restaurantId, this.title, this.discountPercent, this.minOrderAmount, this.description, this.expiresAt, this.active});
+  const _OfferDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) this.restaurantId, this.title, this.discountPercent, this.minOrderAmount, this.description, this.expiresAt, @IntBoolConverter() this.active});
   factory _OfferDto.fromJson(Map<String, dynamic> json) => _$OfferDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -226,7 +226,7 @@ class _OfferDto implements OfferDto {
 @override final  double? minOrderAmount;
 @override final  String? description;
 @override final  String? expiresAt;
-@override final  bool? active;
+@override@IntBoolConverter() final  bool? active;
 
 /// Create a copy of OfferDto
 /// with the given fields replaced by the non-null parameter values.
@@ -261,7 +261,7 @@ abstract mixin class _$OfferDtoCopyWith<$Res> implements $OfferDtoCopyWith<$Res>
   factory _$OfferDtoCopyWith(_OfferDto value, $Res Function(_OfferDto) _then) = __$OfferDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? title, int? discountPercent, double? minOrderAmount, String? description, String? expiresAt, bool? active
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? title, int? discountPercent, double? minOrderAmount, String? description, String? expiresAt,@IntBoolConverter() bool? active
 });
 
 

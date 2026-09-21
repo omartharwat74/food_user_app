@@ -2,6 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/data/models/menu_item_dto.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'menu_category_dto.freezed.dart';
 part 'menu_category_dto.g.dart';
 
@@ -16,6 +18,7 @@ abstract class MenuCategoryDto with _$MenuCategoryDto {
     String? name,
     @Default(0) int sortOrder,
     @Default([]) List<MenuItemDto> items,
+    @IntBoolConverter()
     @Default(true) bool visible,
   }) = _MenuCategoryDto;
 

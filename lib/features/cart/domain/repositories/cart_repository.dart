@@ -6,10 +6,9 @@ import 'package:food_user_app/features/cart/domain/entities/promo.dart';
 abstract class CartRepository {
   Future<Either<Failure, Cart>> getCart();
   Future<Either<Failure, Cart>> addToCart({
-    required String menuItemId,
+    required String productId,
     required int quantity,
-    List<Map<String, dynamic>>? selectedModifiers,
-    String? notes,
+    required List<int> optionValueIds,
   });
   Future<Either<Failure, Cart>> updateCartItem({
     required String itemId,

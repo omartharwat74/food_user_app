@@ -2,6 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/page_response_restaurant.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'page_response_restaurant_dto.freezed.dart';
 part 'page_response_restaurant_dto.g.dart';
 
@@ -13,6 +15,7 @@ abstract class PageResponseRestaurantDto with _$PageResponseRestaurantDto {
     @Default(0) int size,
     @Default(0) int totalElements,
     @Default(0) int totalPages,
+    @IntBoolConverter()
     @Default(true) bool last,
   }) = _PageResponseRestaurantDto;
 

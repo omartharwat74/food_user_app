@@ -1,28 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/usecases/usecase.dart';
 
-class AddToCartParams extends Equatable {
-  final String menuItemId;
-  final int quantity;
-  final List<Map<String, dynamic>>? selectedModifiers;
-  final String? notes;
-
-  const AddToCartParams({
-    required this.menuItemId,
-    required this.quantity,
-    this.selectedModifiers,
-    this.notes,
-  });
-
-  @override
-  List<Object?> get props => [menuItemId, quantity, selectedModifiers, notes];
-}
-
-class AddToCartUseCase extends UseCase<Cart, AddToCartParams> {
+class AddToCartUseCase implements UseCase<Cart, AddToCartParams> {
   final CartRepository repository;
 
   AddToCartUseCase({required this.repository});
@@ -30,10 +13,24 @@ class AddToCartUseCase extends UseCase<Cart, AddToCartParams> {
   @override
   Future<Either<Failure, Cart>> call(AddToCartParams params) async {
     return await repository.addToCart(
-      menuItemId: params.menuItemId,
+      productId: params.productId,
       quantity: params.quantity,
-      selectedModifiers: params.selectedModifiers,
-      notes: params.notes,
+      optionValueIds: params.optionValueIds,
     );
   }
+}
+
+class AddToCartParams extends Equatable {
+  final String productId;
+  final int quantity;
+  final List<int> optionValueIds;
+
+  const AddToCartParams({
+    required this.productId,
+    required this.quantity,
+    required this.optionValueIds,
+  });
+
+  @override
+  List<Object?> get props => [productId, quantity, optionValueIds];
 }

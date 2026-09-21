@@ -2,6 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/core/utils/json_utils.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'restaurant_dto.freezed.dart';
 part 'restaurant_dto.g.dart';
 
@@ -23,14 +25,18 @@ abstract class RestaurantDto with _$RestaurantDto {
     @JsonKey(name: 'prep_time_from') int? deliveryTimeMin,
     @JsonKey(name: 'prep_time_to') int? deliveryTimeMax,
     @JsonKey(name: 'delivery_fee') double? deliveryFee,
+    @IntBoolConverter()
     @JsonKey(name: 'is_favorited') bool? isFavorited,
     // Store-detail fields (new API snake_case)
     @JsonKey(name: 'logo') String? logoUrl,
     @JsonKey(name: 'cover') String? coverUrl,
     String? description,
+    @IntBoolConverter()
     @JsonKey(name: 'is_available') bool? isAvailable,
+    @IntBoolConverter()
     @JsonKey(name: 'is_open') bool? isOpen,
-    @JsonKey(name: 'is_major', fromJson: parseBoolFromJson) bool? isMajor,
+    @IntBoolConverter()
+    @JsonKey(name: 'is_major') bool? isMajor,
   }) = _RestaurantDto;
 
 

@@ -48,7 +48,7 @@ class RestaurantListScreen extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
                     return SizedBox(
-                      height: 209, // Keep consistent with home screen height
+                      height: 207, // Keep consistent with home screen height
                       child: RestaurantCard(restaurant: restaurants[index]),
                     );
                   },

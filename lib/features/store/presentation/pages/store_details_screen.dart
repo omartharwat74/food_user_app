@@ -33,6 +33,26 @@ class StoreDetailsScreen extends StatelessWidget {
         body: BlocListener<CartCubit, CartState>(
           listener: (context, state) {
             state.maybeWhen(
+              loaded: (cart, promo) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('تم إضافة المنتج للسلة بنجاح'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                if (!(ModalRoute.of(context)?.isCurrent ?? true)) {
+                  Navigator.of(context).pop();
+                }
+              },
+              error: (cart, promo, message) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              },
+
               conflict: (cart, newRestaurantId, menuItemId, name, price, quantity, modifiers, notes) {
                 showDialog(
                   context: context,

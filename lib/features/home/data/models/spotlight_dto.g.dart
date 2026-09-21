@@ -9,7 +9,9 @@ part of 'spotlight_dto.dart';
 SpotlightDto _$SpotlightDtoFromJson(Map<String, dynamic> json) => SpotlightDto(
   id: (json['id'] as num).toInt(),
   name: json['name'] as String,
-  hasMore: json['has_more'] as bool? ?? false,
+  hasMore: json['has_more'] == null
+      ? false
+      : const IntBoolConverter().fromJson(json['has_more']),
   stores:
       (json['stores'] as List<dynamic>?)
           ?.map((e) => StoreModel.fromJson(e as Map<String, dynamic>))

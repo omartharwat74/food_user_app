@@ -18,7 +18,9 @@ _PageResponseRestaurantDto _$PageResponseRestaurantDtoFromJson(
   size: (json['size'] as num?)?.toInt() ?? 0,
   totalElements: (json['totalElements'] as num?)?.toInt() ?? 0,
   totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
-  last: json['last'] as bool? ?? true,
+  last: json['last'] == null
+      ? true
+      : const IntBoolConverter().fromJson(json['last']),
 );
 
 Map<String, dynamic> _$PageResponseRestaurantDtoToJson(
@@ -29,5 +31,5 @@ Map<String, dynamic> _$PageResponseRestaurantDtoToJson(
   'size': instance.size,
   'totalElements': instance.totalElements,
   'totalPages': instance.totalPages,
-  'last': instance.last,
+  'last': const IntBoolConverter().toJson(instance.last),
 };

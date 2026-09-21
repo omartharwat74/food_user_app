@@ -50,7 +50,9 @@ HyperProduct _$HyperProductFromJson(Map<String, dynamic> json) => HyperProduct(
   price: (json['price'] as num?)?.toDouble() ?? 0.0,
   priceAfterDiscount: (json['price_after_discount'] as num?)?.toDouble(),
   mainImage: json['main_image'] as String?,
-  isAvailable: json['is_available'] as bool? ?? true,
+  isAvailable: json['is_available'] == null
+      ? true
+      : const IntBoolConverter().fromJson(json['is_available']),
 );
 
 Map<String, dynamic> _$HyperProductToJson(HyperProduct instance) =>
@@ -61,5 +63,5 @@ Map<String, dynamic> _$HyperProductToJson(HyperProduct instance) =>
       'price': instance.price,
       'price_after_discount': instance.priceAfterDiscount,
       'main_image': instance.mainImage,
-      'is_available': instance.isAvailable,
+      'is_available': const IntBoolConverter().toJson(instance.isAvailable),
     };

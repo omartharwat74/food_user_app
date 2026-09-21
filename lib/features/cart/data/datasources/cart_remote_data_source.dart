@@ -1,23 +1,22 @@
 import 'package:dio/dio.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
-import 'package:food_user_app/features/cart/data/models/cart_dto.dart';
+import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 
 abstract class CartRemoteDataSource {
-  Future<CartDto> getCart();
-  Future<CartDto> addToCart({
-    required String menuItemId,
+  Future<CartResponseDto> getCart();
+  Future<CartResponseDto> addItem({
+    required String productId,
     required int quantity,
-    List<Map<String, dynamic>>? selectedModifiers,
-    String? notes,
+    required List<int> optionValueIds,
   });
-  Future<CartDto> updateCartItem({
+  Future<CartResponseDto> updateCartItem({
     required String itemId,
     required int quantity,
   });
-  Future<CartDto> removeFromCart(String itemId);
-  Future<void> clearCart();
+  Future<CartResponseDto> removeFromCart(String itemId);
+  Future<CartResponseDto> clearCart();
   Future<PromoPreviewResponseDto> applyPromo({
     required String code,
     required double subtotal,
@@ -30,91 +29,73 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   CartRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   @override
-  Future<CartDto> getCart() async {
+  Future<CartResponseDto> getCart() async {
     try {
-      final response = await _dio.get<dynamic>(ApiEndpoints.userCart);
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected cart object');
-      }
-      return CartDto.fromJson(raw);
+      final response = await _dio.get<dynamic>(ApiEndpoints.cart);
+      return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
   }
 
   @override
-  Future<CartDto> addToCart({
-    required String menuItemId,
+  Future<CartResponseDto> addItem({
+    required String productId,
     required int quantity,
-    List<Map<String, dynamic>>? selectedModifiers,
-    String? notes,
+    required List<int> optionValueIds,
   }) async {
     try {
       final data = <String, dynamic>{
-        'menuItemId': menuItemId,
+        'product_id': productId,
         'quantity': quantity,
       };
-      if (selectedModifiers != null) {
-        data['selectedModifiers'] = selectedModifiers;
-      }
-      if (notes != null) {
-        data['notes'] = notes;
+      if (optionValueIds.isNotEmpty) {
+        data['option_value_ids'] = optionValueIds;
       }
       final response = await _dio.post<dynamic>(
-        ApiEndpoints.userCartItems,
+        ApiEndpoints.cartItems,
+        queryParameters: {'self_pickup': 0},
         data: data,
       );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected cart object');
-      }
-      return CartDto.fromJson(raw);
+      return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
   }
 
   @override
-  Future<CartDto> updateCartItem({
+  Future<CartResponseDto> updateCartItem({
     required String itemId,
     required int quantity,
   }) async {
     try {
       final response = await _dio.put<dynamic>(
-        ApiEndpoints.userCartItem(itemId),
-        queryParameters: {'quantity': quantity},
+        '${ApiEndpoints.cartItems}/$itemId',
+        data: {'quantity': quantity},
       );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected cart object');
-      }
-      return CartDto.fromJson(raw);
+      return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
   }
 
   @override
-  Future<CartDto> removeFromCart(String itemId) async {
+  Future<CartResponseDto> removeFromCart(String itemId) async {
     try {
       final response = await _dio.delete<dynamic>(
-        ApiEndpoints.userCartItem(itemId),
+        '${ApiEndpoints.cartItems}/$itemId',
       );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected cart object');
-      }
-      return CartDto.fromJson(raw);
+      return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
   }
 
   @override
-  Future<void> clearCart() async {
+  Future<CartResponseDto> clearCart() async {
     try {
-      await _dio.delete<dynamic>(ApiEndpoints.userCart);
+      final response = await _dio.delete<dynamic>(ApiEndpoints.cart);
+      return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -133,11 +114,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
           'subtotal': subtotal,
         },
       );
-      final raw = response.data;
-      if (raw is! Map<String, dynamic>) {
-        throw const FormatException('Expected promo preview response object');
-      }
-      return PromoPreviewResponseDto.fromJson(raw);
+      return PromoPreviewResponseDto.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

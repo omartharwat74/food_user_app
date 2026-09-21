@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MenuCategoryDto {
 
-@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'branchId', fromJson: _idFromJson) String get branchId; String? get name; int get sortOrder; List<MenuItemDto> get items; bool get visible;
+@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'branchId', fromJson: _idFromJson) String get branchId; String? get name; int get sortOrder; List<MenuItemDto> get items;@IntBoolConverter() bool get visible;
 /// Create a copy of MenuCategoryDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $MenuCategoryDtoCopyWith<$Res>  {
   factory $MenuCategoryDtoCopyWith(MenuCategoryDto value, $Res Function(MenuCategoryDto) _then) = _$MenuCategoryDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'branchId', fromJson: _idFromJson) String branchId, String? name, int sortOrder, List<MenuItemDto> items, bool visible
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'branchId', fromJson: _idFromJson) String branchId, String? name, int sortOrder, List<MenuItemDto> items,@IntBoolConverter() bool visible
 });
 
 
@@ -158,7 +158,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items,  bool visible)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items, @IntBoolConverter()  bool visible)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MenuCategoryDto() when $default != null:
 return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_that.visible);case _:
@@ -179,7 +179,7 @@ return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items,  bool visible)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items, @IntBoolConverter()  bool visible)  $default,) {final _that = this;
 switch (_that) {
 case _MenuCategoryDto():
 return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_that.visible);case _:
@@ -199,7 +199,7 @@ return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items,  bool visible)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'branchId', fromJson: _idFromJson)  String branchId,  String? name,  int sortOrder,  List<MenuItemDto> items, @IntBoolConverter()  bool visible)?  $default,) {final _that = this;
 switch (_that) {
 case _MenuCategoryDto() when $default != null:
 return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_that.visible);case _:
@@ -214,7 +214,7 @@ return $default(_that.id,_that.branchId,_that.name,_that.sortOrder,_that.items,_
 @JsonSerializable()
 
 class _MenuCategoryDto implements MenuCategoryDto {
-  const _MenuCategoryDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'branchId', fromJson: _idFromJson) this.branchId = '', this.name, this.sortOrder = 0, final  List<MenuItemDto> items = const [], this.visible = true}): _items = items;
+  const _MenuCategoryDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'branchId', fromJson: _idFromJson) this.branchId = '', this.name, this.sortOrder = 0, final  List<MenuItemDto> items = const [], @IntBoolConverter() this.visible = true}): _items = items;
   factory _MenuCategoryDto.fromJson(Map<String, dynamic> json) => _$MenuCategoryDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -228,7 +228,7 @@ class _MenuCategoryDto implements MenuCategoryDto {
   return EqualUnmodifiableListView(_items);
 }
 
-@override@JsonKey() final  bool visible;
+@override@JsonKey()@IntBoolConverter() final  bool visible;
 
 /// Create a copy of MenuCategoryDto
 /// with the given fields replaced by the non-null parameter values.
@@ -263,7 +263,7 @@ abstract mixin class _$MenuCategoryDtoCopyWith<$Res> implements $MenuCategoryDto
   factory _$MenuCategoryDtoCopyWith(_MenuCategoryDto value, $Res Function(_MenuCategoryDto) _then) = __$MenuCategoryDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'branchId', fromJson: _idFromJson) String branchId, String? name, int sortOrder, List<MenuItemDto> items, bool visible
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'branchId', fromJson: _idFromJson) String branchId, String? name, int sortOrder, List<MenuItemDto> items,@IntBoolConverter() bool visible
 });
 
 

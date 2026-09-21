@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BranchDto {
 
-@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? get restaurantId; String? get address; double? get lat; double? get lng; Map<String, dynamic>? get operatingHours; bool? get active;
+@JsonKey(fromJson: _idFromJson) String get id;@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? get restaurantId; String? get address; double? get lat; double? get lng; Map<String, dynamic>? get operatingHours;@IntBoolConverter() bool? get active;
 /// Create a copy of BranchDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $BranchDtoCopyWith<$Res>  {
   factory $BranchDtoCopyWith(BranchDto value, $Res Function(BranchDto) _then) = _$BranchDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? address, double? lat, double? lng, Map<String, dynamic>? operatingHours, bool? active
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? address, double? lat, double? lng, Map<String, dynamic>? operatingHours,@IntBoolConverter() bool? active
 });
 
 
@@ -159,7 +159,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours,  bool? active)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours, @IntBoolConverter()  bool? active)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BranchDto() when $default != null:
 return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_that.operatingHours,_that.active);case _:
@@ -180,7 +180,7 @@ return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours,  bool? active)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours, @IntBoolConverter()  bool? active)  $default,) {final _that = this;
 switch (_that) {
 case _BranchDto():
 return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_that.operatingHours,_that.active);case _:
@@ -200,7 +200,7 @@ return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours,  bool? active)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id, @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)  String? restaurantId,  String? address,  double? lat,  double? lng,  Map<String, dynamic>? operatingHours, @IntBoolConverter()  bool? active)?  $default,) {final _that = this;
 switch (_that) {
 case _BranchDto() when $default != null:
 return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_that.operatingHours,_that.active);case _:
@@ -215,7 +215,7 @@ return $default(_that.id,_that.restaurantId,_that.address,_that.lat,_that.lng,_t
 @JsonSerializable()
 
 class _BranchDto implements BranchDto {
-  const _BranchDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) this.restaurantId, this.address, this.lat, this.lng, final  Map<String, dynamic>? operatingHours, this.active}): _operatingHours = operatingHours;
+  const _BranchDto({@JsonKey(fromJson: _idFromJson) this.id = '', @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) this.restaurantId, this.address, this.lat, this.lng, final  Map<String, dynamic>? operatingHours, @IntBoolConverter() this.active}): _operatingHours = operatingHours;
   factory _BranchDto.fromJson(Map<String, dynamic> json) => _$BranchDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -232,7 +232,7 @@ class _BranchDto implements BranchDto {
   return EqualUnmodifiableMapView(value);
 }
 
-@override final  bool? active;
+@override@IntBoolConverter() final  bool? active;
 
 /// Create a copy of BranchDto
 /// with the given fields replaced by the non-null parameter values.
@@ -267,7 +267,7 @@ abstract mixin class _$BranchDtoCopyWith<$Res> implements $BranchDtoCopyWith<$Re
   factory _$BranchDtoCopyWith(_BranchDto value, $Res Function(_BranchDto) _then) = __$BranchDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? address, double? lat, double? lng, Map<String, dynamic>? operatingHours, bool? active
+@JsonKey(fromJson: _idFromJson) String id,@JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId, String? address, double? lat, double? lng, Map<String, dynamic>? operatingHours,@IntBoolConverter() bool? active
 });
 
 

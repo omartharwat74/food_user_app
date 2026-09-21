@@ -17,7 +17,9 @@ _MenuCategoryDto _$MenuCategoryDtoFromJson(Map<String, dynamic> json) =>
               ?.map((e) => MenuItemDto.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
-      visible: json['visible'] as bool? ?? true,
+      visible: json['visible'] == null
+          ? true
+          : const IntBoolConverter().fromJson(json['visible']),
     );
 
 Map<String, dynamic> _$MenuCategoryDtoToJson(_MenuCategoryDto instance) =>
@@ -27,5 +29,5 @@ Map<String, dynamic> _$MenuCategoryDtoToJson(_MenuCategoryDto instance) =>
       'name': instance.name,
       'sortOrder': instance.sortOrder,
       'items': instance.items,
-      'visible': instance.visible,
+      'visible': const IntBoolConverter().toJson(instance.visible),
     };

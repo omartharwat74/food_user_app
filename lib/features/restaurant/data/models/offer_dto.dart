@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/offer.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'offer_dto.freezed.dart';
 part 'offer_dto.g.dart';
 
@@ -17,6 +19,7 @@ abstract class OfferDto with _$OfferDto {
     double? minOrderAmount,
     String? description,
     String? expiresAt,
+    @IntBoolConverter()
     bool? active,
   }) = _OfferDto;
 

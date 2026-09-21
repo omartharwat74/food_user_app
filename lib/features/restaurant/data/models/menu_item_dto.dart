@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 
+import 'package:food_user_app/core/utils/bool_converter.dart';
+
 part 'menu_item_dto.freezed.dart';
 part 'menu_item_dto.g.dart';
 
@@ -21,6 +23,7 @@ abstract class MenuItemDto with _$MenuItemDto {
     double? originalPrice,
     @JsonKey(name: 'main_image') String? mainImage,
     String? imageUrl,
+    @IntBoolConverter()
     bool? available,
     Map<String, dynamic>? offer,
   }) = _MenuItemDto;

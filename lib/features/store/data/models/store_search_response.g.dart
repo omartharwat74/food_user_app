@@ -32,7 +32,9 @@ Map<String, dynamic> _$StoreSearchDataToJson(StoreSearchData instance) =>
 
 StoreSearchMeta _$StoreSearchMetaFromJson(Map<String, dynamic> json) =>
     StoreSearchMeta(
-      isRandom: json['is_random'] as bool? ?? false,
+      isRandom: json['is_random'] == null
+          ? false
+          : const IntBoolConverter().fromJson(json['is_random']),
       currentPage: (json['current_page'] as num?)?.toInt(),
       lastPage: (json['last_page'] as num?)?.toInt(),
       total: (json['total'] as num?)?.toInt(),
@@ -40,7 +42,7 @@ StoreSearchMeta _$StoreSearchMetaFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$StoreSearchMetaToJson(StoreSearchMeta instance) =>
     <String, dynamic>{
-      'is_random': instance.isRandom,
+      'is_random': const IntBoolConverter().toJson(instance.isRandom),
       'current_page': instance.currentPage,
       'last_page': instance.lastPage,
       'total': instance.total,

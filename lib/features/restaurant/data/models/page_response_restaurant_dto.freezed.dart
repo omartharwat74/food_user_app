@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PageResponseRestaurantDto {
 
- List<RestaurantDto> get content; int get page; int get size; int get totalElements; int get totalPages; bool get last;
+ List<RestaurantDto> get content; int get page; int get size; int get totalElements; int get totalPages;@IntBoolConverter() bool get last;
 /// Create a copy of PageResponseRestaurantDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $PageResponseRestaurantDtoCopyWith<$Res>  {
   factory $PageResponseRestaurantDtoCopyWith(PageResponseRestaurantDto value, $Res Function(PageResponseRestaurantDto) _then) = _$PageResponseRestaurantDtoCopyWithImpl;
 @useResult
 $Res call({
- List<RestaurantDto> content, int page, int size, int totalElements, int totalPages, bool last
+ List<RestaurantDto> content, int page, int size, int totalElements, int totalPages,@IntBoolConverter() bool last
 });
 
 
@@ -158,7 +158,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages,  bool last)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages, @IntBoolConverter()  bool last)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PageResponseRestaurantDto() when $default != null:
 return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.totalPages,_that.last);case _:
@@ -179,7 +179,7 @@ return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.to
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages,  bool last)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages, @IntBoolConverter()  bool last)  $default,) {final _that = this;
 switch (_that) {
 case _PageResponseRestaurantDto():
 return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.totalPages,_that.last);case _:
@@ -199,7 +199,7 @@ return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.to
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages,  bool last)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<RestaurantDto> content,  int page,  int size,  int totalElements,  int totalPages, @IntBoolConverter()  bool last)?  $default,) {final _that = this;
 switch (_that) {
 case _PageResponseRestaurantDto() when $default != null:
 return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.totalPages,_that.last);case _:
@@ -214,7 +214,7 @@ return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.to
 @JsonSerializable()
 
 class _PageResponseRestaurantDto implements PageResponseRestaurantDto {
-  const _PageResponseRestaurantDto({final  List<RestaurantDto> content = const [], this.page = 0, this.size = 0, this.totalElements = 0, this.totalPages = 0, this.last = true}): _content = content;
+  const _PageResponseRestaurantDto({final  List<RestaurantDto> content = const [], this.page = 0, this.size = 0, this.totalElements = 0, this.totalPages = 0, @IntBoolConverter() this.last = true}): _content = content;
   factory _PageResponseRestaurantDto.fromJson(Map<String, dynamic> json) => _$PageResponseRestaurantDtoFromJson(json);
 
  final  List<RestaurantDto> _content;
@@ -228,7 +228,7 @@ class _PageResponseRestaurantDto implements PageResponseRestaurantDto {
 @override@JsonKey() final  int size;
 @override@JsonKey() final  int totalElements;
 @override@JsonKey() final  int totalPages;
-@override@JsonKey() final  bool last;
+@override@JsonKey()@IntBoolConverter() final  bool last;
 
 /// Create a copy of PageResponseRestaurantDto
 /// with the given fields replaced by the non-null parameter values.
@@ -263,7 +263,7 @@ abstract mixin class _$PageResponseRestaurantDtoCopyWith<$Res> implements $PageR
   factory _$PageResponseRestaurantDtoCopyWith(_PageResponseRestaurantDto value, $Res Function(_PageResponseRestaurantDto) _then) = __$PageResponseRestaurantDtoCopyWithImpl;
 @override @useResult
 $Res call({
- List<RestaurantDto> content, int page, int size, int totalElements, int totalPages, bool last
+ List<RestaurantDto> content, int page, int size, int totalElements, int totalPages,@IntBoolConverter() bool last
 });
 
 

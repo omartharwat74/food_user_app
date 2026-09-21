@@ -14,7 +14,7 @@ _OfferDto _$OfferDtoFromJson(Map<String, dynamic> json) => _OfferDto(
   minOrderAmount: (json['minOrderAmount'] as num?)?.toDouble(),
   description: json['description'] as String?,
   expiresAt: json['expiresAt'] as String?,
-  active: json['active'] as bool?,
+  active: const IntBoolConverter().fromJson(json['active']),
 );
 
 Map<String, dynamic> _$OfferDtoToJson(_OfferDto instance) => <String, dynamic>{
@@ -25,5 +25,13 @@ Map<String, dynamic> _$OfferDtoToJson(_OfferDto instance) => <String, dynamic>{
   'minOrderAmount': instance.minOrderAmount,
   'description': instance.description,
   'expiresAt': instance.expiresAt,
-  'active': instance.active,
+  'active': _$JsonConverterToJson<dynamic, bool>(
+    instance.active,
+    const IntBoolConverter().toJson,
+  ),
 };
+
+Json? _$JsonConverterToJson<Json, Value>(
+  Value? value,
+  Json? Function(Value value) toJson,
+) => value == null ? null : toJson(value);

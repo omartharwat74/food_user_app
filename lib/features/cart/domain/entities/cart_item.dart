@@ -6,7 +6,7 @@ class CartItem extends Equatable {
   final String restaurantId;
   final String name;
   final String description;
-  final int price;
+  final double price;
   final double unitPrice;
   final double totalPrice;
   final String imageAsset;
@@ -35,7 +35,7 @@ class CartItem extends Equatable {
     String? restaurantId,
     String? name,
     String? description,
-    int? price,
+    double? price,
     double? unitPrice,
     double? totalPrice,
     String? imageAsset,

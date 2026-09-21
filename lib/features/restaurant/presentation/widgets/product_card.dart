@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_cubit.dart';
@@ -139,7 +140,7 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       // Price: Mobile/12 m → fontSize:12, weight:500
                       Text(
-                        '${item.price.toStringAsFixed(0)} ج.م',
+                        '${item.price.toFormattedPrice()} ج.م',
                         textAlign: TextAlign.start,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

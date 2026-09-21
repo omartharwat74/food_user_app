@@ -12,6 +12,7 @@ import 'package:food_user_app/features/checkout/presentation/widgets/checkout_pa
 import 'package:food_user_app/features/checkout/presentation/widgets/payment_options_section.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
@@ -106,7 +107,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     _CheckoutBottomBar(
                       label: l10n.checkoutConfirmOrder,
                       totalLabel: l10n.orderGrandTotal,
-                      total: l10n.cartPrice(total),
+                      total: l10n.cartPrice((total).toFormattedPrice()),
                       onTap: () {
                         context.read<CheckoutCubit>().checkout();
                       },
@@ -144,7 +145,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final l10n = AppLocalizations.of(context)!;
     final confirmed = await showCheckoutConfirmPaymentSheet(
       context,
-      total: l10n.cartPrice(total),
+      total: l10n.cartPrice((total).toFormattedPrice()),
     );
     if (!mounted || confirmed != true) return;
 

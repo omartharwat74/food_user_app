@@ -6,6 +6,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
@@ -69,7 +70,7 @@ class CartItemTile extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                l10n.cartPrice(item.price),
+                l10n.cartPrice((item.price).toFormattedPrice()),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,

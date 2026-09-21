@@ -136,7 +136,7 @@ class RestaurantCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(8, 8, 8, 4),
+                padding: const EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -170,7 +170,7 @@ class RestaurantCard extends StatelessWidget {
                       ],
                     ),
                     if (restaurant.tags.isNotEmpty) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
                           Expanded(
@@ -179,24 +179,16 @@ class RestaurantCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.start,
-                              style: AppTextStyles.caption(context).copyWith(fontSize: 10, height: 1.25),
+                              style: AppTextStyles.caption(context).copyWith(
+                                fontSize: 10,
+                                height: 1.25,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ] else
-                      const SizedBox.shrink(),
-                    const SizedBox(height: 2),
-                    Text(
-                      restaurant.cuisineType,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.start,
-                      style: AppTextStyles.caption(
-                        context,
-                      ).copyWith(fontSize: 10, height: 1.25),
-                    ),
-                    const SizedBox(height: 2),
+                    ],
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         const Icon(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -290,7 +291,7 @@ class MarketCard extends StatelessWidget {
                           Text(
                             market.deliveryFee == 0
                                 ? (isArabic ? 'مجاني' : 'Free')
-                                : '${market.deliveryFee.toStringAsFixed(2)} ${isArabic ? "ج.م" : "EGP"}',
+                                : '${market.deliveryFee.toFormattedPrice()} ${isArabic ? "ج.م" : "EGP"}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.hintColor,
                             ),

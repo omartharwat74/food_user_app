@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product.dart';
 
@@ -149,7 +150,7 @@ class _ProductCardState extends State<ProductCard> {
                     children: [
                       // Current Price
                       Text(
-                        '${p.price.toStringAsFixed(2)} $currencyText',
+                        '${p.price.toFormattedPrice()} $currencyText',
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
@@ -160,7 +161,7 @@ class _ProductCardState extends State<ProductCard> {
                       // Strike-through Original Price if discount exists
                       if (p.hasDiscount) ...[
                         Text(
-                          '${p.originalPrice!.toStringAsFixed(2)} $currencyText',
+                          '${p.originalPrice!.toFormattedPrice()} $currencyText',
                           style: theme.textTheme.bodySmall?.copyWith(
                             decoration: TextDecoration.lineThrough,
                             color: theme.hintColor,

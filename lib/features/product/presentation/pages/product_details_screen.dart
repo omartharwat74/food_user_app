@@ -14,6 +14,7 @@ import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart
 import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({required this.item, super.key});
@@ -80,8 +81,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           }
         }
 
-        final int unitPrice = (calculatedBasePrice + addonsTotal).toInt();
-        final int total = unitPrice * _quantity;
+        final double unitPrice = calculatedBasePrice + addonsTotal;
+        final double total = unitPrice * _quantity;
 
         return Scaffold(
           backgroundColor: AppColors.scaffoldBackground(context),
@@ -302,8 +303,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             if (val.price > 0)
                                               Text(
                                                 modifier.priceType == 'addon'
-                                                    ? '(+${val.price.toInt()} ج.م)'
-                                                    : '(${val.price.toInt()} ج.م)',
+                                                    ? '(+${(val.price).toFormattedPrice()} ج.م)'
+                                                    : '(${(val.price).toFormattedPrice()} ج.م)',
                                                 style: AppTextStyles.textLink(context).copyWith(
                                                   color: AppColors.onSurface(context),
                                                   fontSize: 14,
@@ -807,7 +808,7 @@ class _ProductBottomBar extends StatelessWidget {
   });
 
   final int quantity;
-  final int total;
+  final double total;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onSubmit;
@@ -894,7 +895,7 @@ class _ProductBottomBar extends StatelessWidget {
                                   ),
                                   if (!isError)
                                     Text(
-                                      l10n.cartPrice(total),
+                                      l10n.cartPrice((total).toFormattedPrice()),
                                       style: AppTextStyles.buttonHeading(context).copyWith(
                                         color: (enabled && !isLoading)
                                             ? AppColors.text

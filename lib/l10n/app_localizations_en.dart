@@ -517,7 +517,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get checkoutAddressUpdated => 'Address updated successfully';
 
   @override
-  String cartPrice(int amount) {
+  String cartPrice(String amount) {
     return '$amount EGP';
   }
 

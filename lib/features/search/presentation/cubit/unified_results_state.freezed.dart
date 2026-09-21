@@ -128,7 +128,7 @@ return loaded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String message)?  error,TResult Function( List<MenuCategory> categories,  List<MenuItem> searchResults,  bool isSearchMode,  int selectedTabIndex,  String activeQuery)?  loaded,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( String message)?  error,TResult Function( List<MenuCategory> categories,  List<MenuItem> searchResults, @IntBoolConverter()  bool isSearchMode,  int selectedTabIndex,  String activeQuery)?  loaded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -152,7 +152,7 @@ return loaded(_that.categories,_that.searchResults,_that.isSearchMode,_that.sele
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String message)  error,required TResult Function( List<MenuCategory> categories,  List<MenuItem> searchResults,  bool isSearchMode,  int selectedTabIndex,  String activeQuery)  loaded,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( String message)  error,required TResult Function( List<MenuCategory> categories,  List<MenuItem> searchResults, @IntBoolConverter()  bool isSearchMode,  int selectedTabIndex,  String activeQuery)  loaded,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
@@ -175,7 +175,7 @@ return loaded(_that.categories,_that.searchResults,_that.isSearchMode,_that.sele
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String message)?  error,TResult? Function( List<MenuCategory> categories,  List<MenuItem> searchResults,  bool isSearchMode,  int selectedTabIndex,  String activeQuery)?  loaded,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( String message)?  error,TResult? Function( List<MenuCategory> categories,  List<MenuItem> searchResults, @IntBoolConverter()  bool isSearchMode,  int selectedTabIndex,  String activeQuery)?  loaded,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -323,7 +323,7 @@ as String,
 
 
 class _Loaded implements UnifiedResultsState {
-  const _Loaded({required final  List<MenuCategory> categories, required final  List<MenuItem> searchResults, required this.isSearchMode, this.selectedTabIndex = 0, this.activeQuery = ''}): _categories = categories,_searchResults = searchResults;
+  const _Loaded({required final  List<MenuCategory> categories, required final  List<MenuItem> searchResults, @IntBoolConverter() required this.isSearchMode, this.selectedTabIndex = 0, this.activeQuery = ''}): _categories = categories,_searchResults = searchResults;
   
 
  final  List<MenuCategory> _categories;
@@ -340,7 +340,7 @@ class _Loaded implements UnifiedResultsState {
   return EqualUnmodifiableListView(_searchResults);
 }
 
- final  bool isSearchMode;
+@IntBoolConverter() final  bool isSearchMode;
 @JsonKey() final  int selectedTabIndex;
 @JsonKey() final  String activeQuery;
 
@@ -374,7 +374,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $UnifiedResultsStateCopyW
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<MenuCategory> categories, List<MenuItem> searchResults, bool isSearchMode, int selectedTabIndex, String activeQuery
+ List<MenuCategory> categories, List<MenuItem> searchResults,@IntBoolConverter() bool isSearchMode, int selectedTabIndex, String activeQuery
 });
 
 

@@ -128,7 +128,7 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Restaurant> restaurants,  bool hasMore,  int currentPage)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<Restaurant> restaurants, @IntBoolConverter()  bool hasMore,  int currentPage)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -152,7 +152,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Restaurant> restaurants,  bool hasMore,  int currentPage)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<Restaurant> restaurants, @IntBoolConverter()  bool hasMore,  int currentPage)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
@@ -175,7 +175,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Restaurant> restaurants,  bool hasMore,  int currentPage)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<Restaurant> restaurants, @IntBoolConverter()  bool hasMore,  int currentPage)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
@@ -257,7 +257,7 @@ String toString() {
 
 
 class _Loaded implements RestaurantListState {
-  const _Loaded({final  List<Restaurant> restaurants = const [], this.hasMore = false, this.currentPage = 0}): _restaurants = restaurants;
+  const _Loaded({final  List<Restaurant> restaurants = const [], @IntBoolConverter() this.hasMore = false, this.currentPage = 0}): _restaurants = restaurants;
   
 
  final  List<Restaurant> _restaurants;
@@ -267,7 +267,7 @@ class _Loaded implements RestaurantListState {
   return EqualUnmodifiableListView(_restaurants);
 }
 
-@JsonKey() final  bool hasMore;
+@JsonKey()@IntBoolConverter() final  bool hasMore;
 @JsonKey() final  int currentPage;
 
 /// Create a copy of RestaurantListState
@@ -300,7 +300,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $RestaurantListStateCopyW
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- List<Restaurant> restaurants, bool hasMore, int currentPage
+ List<Restaurant> restaurants,@IntBoolConverter() bool hasMore, int currentPage
 });
 
 

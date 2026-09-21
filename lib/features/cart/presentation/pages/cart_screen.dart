@@ -86,11 +86,11 @@ class _CartScreenState extends State<CartScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                final subtotal = cart.subtotal.round();
-                final delivery = cart.deliveryFee.round();
-                final tax = cart.tax.round();
-                final discount = cart.discount.round();
-                final total = cart.total.round();
+                final subtotal = cart.subtotal;
+                final delivery = cart.deliveryFee;
+                final tax = cart.tax;
+                final discount = cart.discount;
+                final total = cart.total;
 
                 return CustomScrollView(
                   physics: const ClampingScrollPhysics(),

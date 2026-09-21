@@ -1080,7 +1080,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'{amount} EGP'**
-  String cartPrice(int amount);
+  String cartPrice(String amount);
 
   /// No description provided for @productDetailsTitle.
   ///

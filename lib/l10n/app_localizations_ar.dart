@@ -510,7 +510,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkoutAddressUpdated => 'تم تحديث العنوان بنجاح';
 
   @override
-  String cartPrice(int amount) {
+  String cartPrice(String amount) {
     return '$amount ج.م';
   }
 

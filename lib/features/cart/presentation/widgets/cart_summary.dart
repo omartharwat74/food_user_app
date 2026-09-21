@@ -5,6 +5,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/utils/price_extension.dart';
 
 class CartSummary extends StatelessWidget {
   const CartSummary({
@@ -19,11 +20,11 @@ class CartSummary extends StatelessWidget {
     super.key,
   });
 
-  final int subtotal;
-  final int delivery;
-  final int tax;
-  final int discount;
-  final int total;
+  final double subtotal;
+  final double delivery;
+  final double tax;
+  final double discount;
+  final double total;
   final VoidCallback onCheckout;
   final VoidCallback onAddMore;
   final ValueChanged<String>? onApplyPromo;
@@ -55,29 +56,29 @@ class CartSummary extends StatelessWidget {
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderSubtotal,
-            value: l10n.cartPrice(subtotal),
+            value: l10n.cartPrice((subtotal).toFormattedPrice()),
           ),
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderDeliveryFee,
-            value: l10n.cartPrice(delivery),
+            value: l10n.cartPrice((delivery).toFormattedPrice()),
           ),
           const SizedBox(height: 12),
           _SummaryRow(
             label: 'الضريبة',
-            value: l10n.cartPrice(tax),
+            value: l10n.cartPrice((tax).toFormattedPrice()),
           ),
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderDiscount,
-            value: l10n.cartPrice(discount),
+            value: l10n.cartPrice((discount).toFormattedPrice()),
           ),
           const SizedBox(height: 12),
           Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderGrandTotal,
-            value: l10n.cartPrice(total),
+            value: l10n.cartPrice((total).toFormattedPrice()),
             emphasized: true,
           ),
           const SizedBox(height: 16),

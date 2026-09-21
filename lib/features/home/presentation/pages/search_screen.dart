@@ -412,7 +412,7 @@ class _SearchScreenState extends State<SearchScreen> {
       rating: '4.8',
       deliveryTime: '30 min',
       price: '${item.price.toStringAsFixed(2)} EGP',
-      priceValue: item.price.toInt(),
+      priceValue: item.price.toDouble(),
       imageAsset: item.imageUrl,
       isRestaurant: false,
       keywords: const [],
@@ -1220,8 +1220,8 @@ class _SearchCopy {
           subtitle: l10n.serviceRestaurantDescription,
           rating: l10n.orderCourierRating,
           deliveryTime: l10n.serviceDeliveryTimeRange,
-          price: l10n.cartPrice(190),
-          priceValue: 190,
+          price: l10n.cartPrice("190"),
+          priceValue: 190.0,
           imageAsset: AppAssets.favoriteRestaurantAzAlSham,
           isRestaurant: true,
           keywords: [
@@ -1237,8 +1237,8 @@ class _SearchCopy {
           subtitle: l10n.serviceRestaurantAzAlSham,
           rating: l10n.orderCourierRating,
           deliveryTime: l10n.serviceDeliveryTimeRange,
-          price: l10n.cartPrice(190),
-          priceValue: 190,
+          price: l10n.cartPrice("190"),
+          priceValue: 190.0,
           imageAsset: AppAssets.productBurgerCombo,
           isRestaurant: false,
           keywords: [
@@ -1254,7 +1254,7 @@ class _SearchCopy {
           rating: '4.3',
           deliveryTime: l10n.favoriteDeliveryTime,
           price: l10n.searchResultFalafelPrice,
-          priceValue: 45,
+          priceValue: 45.0,
           imageAsset: AppAssets.cartProductImage,
           isRestaurant: false,
           keywords: [
@@ -1288,7 +1288,7 @@ class _SearchResult {
   final String rating;
   final String deliveryTime;
   final String price;
-  final int priceValue;
+  final double priceValue;
   final String imageAsset;
   final bool isRestaurant;
   final List<String> keywords;

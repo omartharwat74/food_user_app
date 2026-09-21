@@ -146,7 +146,7 @@ extension CartResponseDtoMapper on CartResponseDto {
         id: item.id?.toString() ?? '',
         menuItemId: item.productId?.toString() ?? '',
         name: item.name ?? '',
-        price: (item.unitPrice ?? item.price ?? 0).toInt(),
+        price: (item.unitPrice ?? item.price ?? 0).toDouble(),
         unitPrice: (item.unitPrice ?? item.price ?? 0).toDouble(),
         totalPrice: (item.totalPrice ?? item.total ?? 0).toDouble(),
         imageAsset: item.image ?? '',

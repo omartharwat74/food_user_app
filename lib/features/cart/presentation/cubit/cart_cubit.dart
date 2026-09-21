@@ -233,6 +233,7 @@ class CartCubit extends Cubit<CartState> {
           items: currentCart.items,
           subtotal: currentCart.subtotal,
           deliveryFee: currentCart.deliveryFee,
+          tax: currentCart.tax,
           discount: promo.discountAmount,
           total: promo.total,
         );

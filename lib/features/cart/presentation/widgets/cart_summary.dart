@@ -10,6 +10,7 @@ class CartSummary extends StatelessWidget {
   const CartSummary({
     required this.subtotal,
     required this.delivery,
+    required this.tax,
     required this.discount,
     required this.total,
     required this.onCheckout,
@@ -20,6 +21,7 @@ class CartSummary extends StatelessWidget {
 
   final int subtotal;
   final int delivery;
+  final int tax;
   final int discount;
   final int total;
   final VoidCallback onCheckout;
@@ -59,6 +61,11 @@ class CartSummary extends StatelessWidget {
           _SummaryRow(
             label: l10n.orderDeliveryFee,
             value: l10n.cartPrice(delivery),
+          ),
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: 'الضريبة',
+            value: l10n.cartPrice(tax),
           ),
           const SizedBox(height: 12),
           _SummaryRow(

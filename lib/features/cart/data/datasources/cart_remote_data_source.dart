@@ -69,7 +69,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     required int quantity,
   }) async {
     try {
-      final response = await _dio.put<dynamic>(
+      final response = await _dio.patch<dynamic>(
         '${ApiEndpoints.cartItems}/$itemId',
         data: {'quantity': quantity},
       );

@@ -26,6 +26,26 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.isActive) {
+        context.read<CartCubit>().loadCart();
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant CartScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      context.read<CartCubit>().loadCart();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -68,6 +88,7 @@ class _CartScreenState extends State<CartScreen> {
 
                 final subtotal = cart.subtotal.round();
                 final delivery = cart.deliveryFee.round();
+                final tax = cart.tax.round();
                 final discount = cart.discount.round();
                 final total = cart.total.round();
 
@@ -131,6 +152,7 @@ class _CartScreenState extends State<CartScreen> {
                         child: CartSummary(
                           subtotal: subtotal,
                           delivery: delivery,
+                          tax: tax,
                           discount: discount,
                           total: total,
                           onCheckout: _openCheckout,
@@ -178,6 +200,8 @@ class _CartEmptyPlaceholder extends StatelessWidget {
 
   final AppLocalizations l10n;
 
+
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -214,6 +238,8 @@ class _CartHeader extends StatelessWidget {
 
   final AppLocalizations l10n;
   final String? restaurantName;
+
+
 
   @override
   Widget build(BuildContext context) {

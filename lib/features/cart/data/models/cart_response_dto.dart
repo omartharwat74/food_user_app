@@ -23,18 +23,40 @@ class CartResponseDto {
 }
 
 @JsonSerializable()
+class CartSummaryDetailsDto {
+  @JsonKey(name: 'items_subtotal')
+  final num? itemsSubtotal;
+  @JsonKey(name: 'offer_discount')
+  final num? offerDiscount;
+  @JsonKey(name: 'coupon_discount')
+  final num? couponDiscount;
+  final num? delivery;
+  final num? tax;
+  final num? total;
+
+  CartSummaryDetailsDto({
+    this.itemsSubtotal,
+    this.offerDiscount,
+    this.couponDiscount,
+    this.delivery,
+    this.tax,
+    this.total,
+  });
+
+  factory CartSummaryDetailsDto.fromJson(Map<String, dynamic> json) =>
+      _$CartSummaryDetailsDtoFromJson(json);
+}
+
+@JsonSerializable()
 class CartSummaryDto {
   final int? id;
   @JsonKey(name: 'user_id')
   final int? userId;
   @JsonKey(name: 'store_id')
   final int? storeId;
-  final num? subtotal;
-  @JsonKey(name: 'delivery_fee')
-  final num? deliveryFee;
-  final num? discount;
-  final num? tax;
-  final num? total;
+
+  final CartSummaryDetailsDto? summary;
+
   @JsonKey(name: 'coupon_code')
   final String? couponCode;
   
@@ -47,11 +69,7 @@ class CartSummaryDto {
     required this.id,
     required this.userId,
     this.storeId,
-    required this.subtotal,
-    required this.deliveryFee,
-    required this.discount,
-    required this.tax,
-    required this.total,
+    this.summary,
     this.couponCode,
     required this.items,
     this.store,
@@ -68,7 +86,11 @@ class CartItemDto {
   final int? productId;
   final int? quantity;
   final num? price;
+  @JsonKey(name: 'unit_price')
+  final num? unitPrice;
   final num? total;
+  @JsonKey(name: 'total_price')
+  final num? totalPrice;
   final String? name;
   final String? image;
   
@@ -79,8 +101,10 @@ class CartItemDto {
     required this.id,
     required this.productId,
     required this.quantity,
-    required this.price,
-    required this.total,
+    this.price,
+    this.unitPrice,
+    this.total,
+    this.totalPrice,
     required this.name,
     this.image,
     required this.optionValueIds,
@@ -112,7 +136,6 @@ class CartStoreBriefDto {
       _$CartStoreBriefDtoFromJson(json);
 }
 
-
 extension CartResponseDtoMapper on CartResponseDto {
   Cart toEntity() {
     return Cart(
@@ -123,17 +146,19 @@ extension CartResponseDtoMapper on CartResponseDto {
         id: item.id?.toString() ?? '',
         menuItemId: item.productId?.toString() ?? '',
         name: item.name ?? '',
-        price: (item.price ?? 0).toInt(),
-        unitPrice: (item.price ?? 0).toDouble(),
-        totalPrice: (item.total ?? 0).toDouble(),
+        price: (item.unitPrice ?? item.price ?? 0).toInt(),
+        unitPrice: (item.unitPrice ?? item.price ?? 0).toDouble(),
+        totalPrice: (item.totalPrice ?? item.total ?? 0).toDouble(),
+        imageAsset: item.image ?? '',
         quantity: item.quantity ?? 1,
         selectedModifiers: (item.optionValueIds ?? []).map((id) => <String, dynamic>{'option_id': id}).toList(),
         notes: '',
       )).toList(),
-      subtotal: (data.subtotal ?? 0).toDouble(),
-      deliveryFee: (data.deliveryFee ?? 0).toDouble(),
-      discount: (data.discount ?? 0).toDouble(),
-      total: (data.total ?? 0).toDouble(),
+      subtotal: (data.summary?.itemsSubtotal ?? 0).toDouble(),
+      deliveryFee: (data.summary?.delivery ?? 0).toDouble(),
+      tax: (data.summary?.tax ?? 0).toDouble(),
+      discount: ((data.summary?.offerDiscount ?? 0) + (data.summary?.couponDiscount ?? 0)).toDouble(),
+      total: (data.summary?.total ?? 0).toDouble(),
     );
   }
 }

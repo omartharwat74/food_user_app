@@ -8,6 +8,7 @@ class Cart extends Equatable {
   final List<CartItem> items;
   final double subtotal;
   final double deliveryFee;
+  final double tax;
   final double discount;
   final double total;
 
@@ -18,6 +19,7 @@ class Cart extends Equatable {
     required this.items,
     required this.subtotal,
     required this.deliveryFee,
+    required this.tax,
     required this.discount,
     required this.total,
   });
@@ -29,6 +31,7 @@ class Cart extends Equatable {
         items = const [],
         subtotal = 0.0,
         deliveryFee = 0.0,
+        tax = 0.0,
         discount = 0.0,
         total = 0.0;
 
@@ -40,6 +43,7 @@ class Cart extends Equatable {
         items,
         subtotal,
         deliveryFee,
+        tax,
         discount,
         total,
       ];

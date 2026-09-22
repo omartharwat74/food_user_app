@@ -200,6 +200,7 @@ class _AuthEntryHero extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
+            
           ),
 
           // 3. الشرايط اللي تحت (مرمية في آخر الـ Stack من تحت)

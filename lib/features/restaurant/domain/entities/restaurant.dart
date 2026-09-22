@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
 
 class Restaurant extends Equatable {
   final String id;
@@ -17,6 +18,10 @@ class Restaurant extends Equatable {
   final bool isMajor;
   final String availability;
   final List<String> tags;
+  final String address;
+  final Map<String, dynamic> ratingDistribution;
+  final List<Review> reviews;
+  final bool reviewsHasMore;
 
   const Restaurant({
     required this.id,
@@ -35,6 +40,10 @@ class Restaurant extends Equatable {
     this.isMajor = false,
     this.availability = 'open',
     this.tags = const [],
+    this.address = '',
+    this.ratingDistribution = const {},
+    this.reviews = const [],
+    this.reviewsHasMore = false,
   });
 
   @override
@@ -55,5 +64,9 @@ class Restaurant extends Equatable {
     isMajor,
     availability,
     tags,
+    address,
+    ratingDistribution,
+    reviews,
+    reviewsHasMore,
   ];
 }

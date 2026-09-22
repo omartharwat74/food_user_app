@@ -6,9 +6,12 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
 
 class CartFloatingBanner extends StatelessWidget {
-  const CartFloatingBanner({super.key});
+  const CartFloatingBanner({required this.currentStoreId, super.key});
+
+  final String currentStoreId;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +22,7 @@ class CartFloatingBanner extends StatelessWidget {
           orElse: () => null,
         );
         
-        if (cart != null && cart.items.isNotEmpty) {
+        if (cart != null && cart.items.isNotEmpty && cart.restaurantId == currentStoreId) {
           final totalItems = cart.items.fold<int>(0, (sum, item) => sum + item.quantity);
           
           return Container(
@@ -28,7 +31,12 @@ class CartFloatingBanner extends StatelessWidget {
             child: SafeArea(
               top: false,
               child: InkWell(
-                onTap: () => context.push(RouteNames.cart),
+                onTap: () {
+                  MainLayout.globalKey.currentState?.changeIndex(1);
+                  while (context.canPop()) {
+                    context.pop();
+                  }
+                },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
                   height: 48,
@@ -40,14 +48,6 @@ class CartFloatingBanner extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'اطلع على السلة',
-                        style: AppTextStyles.body(context).copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                         decoration: BoxDecoration(
@@ -61,6 +61,14 @@ class CartFloatingBanner extends StatelessWidget {
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'اطلع على السلة',
+                        style: AppTextStyles.body(context).copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],

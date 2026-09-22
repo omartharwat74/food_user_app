@@ -22,6 +22,7 @@ import 'package:food_user_app/core/utils/category_icon_helper.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
 
 class MarketDetailsScreen extends StatefulWidget {
   final String marketId;
@@ -87,6 +88,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
       ],
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
+        bottomNavigationBar: CartFloatingBanner(currentStoreId: widget.marketId),
         body: BlocListener<CartCubit, CartState>(
           listener: (context, state) {
             state.maybeWhen(

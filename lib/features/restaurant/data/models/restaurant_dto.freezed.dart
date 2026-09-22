@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RestaurantDto {
 
-@JsonKey(fromJson: _idFromJson) String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating;@JsonKey(name: 'rating_avg') dynamic get ratingAvg;@JsonKey(name: 'rating_count') int? get ratingCount;@JsonKey(name: 'prep_time_from') int? get deliveryTimeMin;@JsonKey(name: 'prep_time_to') int? get deliveryTimeMax;@JsonKey(name: 'delivery_fee') double? get deliveryFee;@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? get isFavorited;@JsonKey(name: 'logo') String? get logoUrl;@JsonKey(name: 'cover') String? get coverUrl; String? get description;@IntBoolConverter()@JsonKey(name: 'is_available') bool? get isAvailable;@IntBoolConverter()@JsonKey(name: 'is_open') bool? get isOpen;@IntBoolConverter()@JsonKey(name: 'is_major') bool? get isMajor;
+@JsonKey(fromJson: _idFromJson) String get id; String? get name; String? get cuisineType; String? get coverImageUrl; double? get rating;@JsonKey(name: 'rating_avg') dynamic get ratingAvg;@JsonKey(name: 'rating_count') int? get ratingCount;@JsonKey(name: 'prep_time_from') int? get deliveryTimeMin;@JsonKey(name: 'prep_time_to') int? get deliveryTimeMax;@JsonKey(name: 'delivery_fee') double? get deliveryFee;@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? get isFavorited;@JsonKey(name: 'logo') String? get logoUrl;@JsonKey(name: 'cover') String? get coverUrl; String? get description;@IntBoolConverter()@JsonKey(name: 'is_available') bool? get isAvailable;@IntBoolConverter()@JsonKey(name: 'is_open') bool? get isOpen;@IntBoolConverter()@JsonKey(name: 'is_major') bool? get isMajor; String? get address;@JsonKey(name: 'rating_distribution') Map<String, dynamic>? get ratingDistribution; List<ReviewDto> get reviews;@IntBoolConverter()@JsonKey(name: 'reviews_has_more') bool? get reviewsHasMore;
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RestaurantDtoCopyWith<RestaurantDto> get copyWith => _$RestaurantDtoCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.ratingDistribution, ratingDistribution)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.reviewsHasMore, reviewsHasMore) || other.reviewsHasMore == reviewsHasMore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor);
+int get hashCode => Object.hashAll([runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor,address,const DeepCollectionEquality().hash(ratingDistribution),const DeepCollectionEquality().hash(reviews),reviewsHasMore]);
 
 @override
 String toString() {
-  return 'RestaurantDto(id: $id, name: $name, cuisineType: $cuisineType, coverImageUrl: $coverImageUrl, rating: $rating, ratingAvg: $ratingAvg, ratingCount: $ratingCount, deliveryTimeMin: $deliveryTimeMin, deliveryTimeMax: $deliveryTimeMax, deliveryFee: $deliveryFee, isFavorited: $isFavorited, logoUrl: $logoUrl, coverUrl: $coverUrl, description: $description, isAvailable: $isAvailable, isOpen: $isOpen, isMajor: $isMajor)';
+  return 'RestaurantDto(id: $id, name: $name, cuisineType: $cuisineType, coverImageUrl: $coverImageUrl, rating: $rating, ratingAvg: $ratingAvg, ratingCount: $ratingCount, deliveryTimeMin: $deliveryTimeMin, deliveryTimeMax: $deliveryTimeMax, deliveryFee: $deliveryFee, isFavorited: $isFavorited, logoUrl: $logoUrl, coverUrl: $coverUrl, description: $description, isAvailable: $isAvailable, isOpen: $isOpen, isMajor: $isMajor, address: $address, ratingDistribution: $ratingDistribution, reviews: $reviews, reviewsHasMore: $reviewsHasMore)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RestaurantDtoCopyWith<$Res>  {
   factory $RestaurantDtoCopyWith(RestaurantDto value, $Res Function(RestaurantDto) _then) = _$RestaurantDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@IntBoolConverter()@JsonKey(name: 'is_available') bool? isAvailable,@IntBoolConverter()@JsonKey(name: 'is_open') bool? isOpen,@IntBoolConverter()@JsonKey(name: 'is_major') bool? isMajor
+@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@IntBoolConverter()@JsonKey(name: 'is_available') bool? isAvailable,@IntBoolConverter()@JsonKey(name: 'is_open') bool? isOpen,@IntBoolConverter()@JsonKey(name: 'is_major') bool? isMajor, String? address,@JsonKey(name: 'rating_distribution') Map<String, dynamic>? ratingDistribution, List<ReviewDto> reviews,@IntBoolConverter()@JsonKey(name: 'reviews_has_more') bool? reviewsHasMore
 });
 
 
@@ -65,7 +65,7 @@ class _$RestaurantDtoCopyWithImpl<$Res>
 
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? cuisineType = freezed,Object? coverImageUrl = freezed,Object? rating = freezed,Object? ratingAvg = freezed,Object? ratingCount = freezed,Object? deliveryTimeMin = freezed,Object? deliveryTimeMax = freezed,Object? deliveryFee = freezed,Object? isFavorited = freezed,Object? logoUrl = freezed,Object? coverUrl = freezed,Object? description = freezed,Object? isAvailable = freezed,Object? isOpen = freezed,Object? isMajor = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = freezed,Object? cuisineType = freezed,Object? coverImageUrl = freezed,Object? rating = freezed,Object? ratingAvg = freezed,Object? ratingCount = freezed,Object? deliveryTimeMin = freezed,Object? deliveryTimeMax = freezed,Object? deliveryFee = freezed,Object? isFavorited = freezed,Object? logoUrl = freezed,Object? coverUrl = freezed,Object? description = freezed,Object? isAvailable = freezed,Object? isOpen = freezed,Object? isMajor = freezed,Object? address = freezed,Object? ratingDistribution = freezed,Object? reviews = null,Object? reviewsHasMore = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -84,6 +84,10 @@ as String?,description: freezed == description ? _self.description : description
 as String?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,isOpen: freezed == isOpen ? _self.isOpen : isOpen // ignore: cast_nullable_to_non_nullable
 as bool?,isMajor: freezed == isMajor ? _self.isMajor : isMajor // ignore: cast_nullable_to_non_nullable
+as bool?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,ratingDistribution: freezed == ratingDistribution ? _self.ratingDistribution : ratingDistribution // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
+as List<ReviewDto>,reviewsHasMore: freezed == reviewsHasMore ? _self.reviewsHasMore : reviewsHasMore // ignore: cast_nullable_to_non_nullable
 as bool?,
   ));
 }
@@ -169,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor,  String? address, @JsonKey(name: 'rating_distribution')  Map<String, dynamic>? ratingDistribution,  List<ReviewDto> reviews, @IntBoolConverter()@JsonKey(name: 'reviews_has_more')  bool? reviewsHasMore)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
-return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
+return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor,_that.address,_that.ratingDistribution,_that.reviews,_that.reviewsHasMore);case _:
   return orElse();
 
 }
@@ -190,10 +194,10 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor,  String? address, @JsonKey(name: 'rating_distribution')  Map<String, dynamic>? ratingDistribution,  List<ReviewDto> reviews, @IntBoolConverter()@JsonKey(name: 'reviews_has_more')  bool? reviewsHasMore)  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto():
-return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
+return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor,_that.address,_that.ratingDistribution,_that.reviews,_that.reviewsHasMore);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +214,10 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(fromJson: _idFromJson)  String id,  String? name,  String? cuisineType,  String? coverImageUrl,  double? rating, @JsonKey(name: 'rating_avg')  dynamic ratingAvg, @JsonKey(name: 'rating_count')  int? ratingCount, @JsonKey(name: 'prep_time_from')  int? deliveryTimeMin, @JsonKey(name: 'prep_time_to')  int? deliveryTimeMax, @JsonKey(name: 'delivery_fee')  double? deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited')  bool? isFavorited, @JsonKey(name: 'logo')  String? logoUrl, @JsonKey(name: 'cover')  String? coverUrl,  String? description, @IntBoolConverter()@JsonKey(name: 'is_available')  bool? isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open')  bool? isOpen, @IntBoolConverter()@JsonKey(name: 'is_major')  bool? isMajor,  String? address, @JsonKey(name: 'rating_distribution')  Map<String, dynamic>? ratingDistribution,  List<ReviewDto> reviews, @IntBoolConverter()@JsonKey(name: 'reviews_has_more')  bool? reviewsHasMore)?  $default,) {final _that = this;
 switch (_that) {
 case _RestaurantDto() when $default != null:
-return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor);case _:
+return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.rating,_that.ratingAvg,_that.ratingCount,_that.deliveryTimeMin,_that.deliveryTimeMax,_that.deliveryFee,_that.isFavorited,_that.logoUrl,_that.coverUrl,_that.description,_that.isAvailable,_that.isOpen,_that.isMajor,_that.address,_that.ratingDistribution,_that.reviews,_that.reviewsHasMore);case _:
   return null;
 
 }
@@ -225,7 +229,7 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 @JsonSerializable()
 
 class _RestaurantDto implements RestaurantDto {
-  const _RestaurantDto({@JsonKey(fromJson: _idFromJson) this.id = '', this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'rating_avg') this.ratingAvg, @JsonKey(name: 'rating_count') this.ratingCount, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited') this.isFavorited, @JsonKey(name: 'logo') this.logoUrl, @JsonKey(name: 'cover') this.coverUrl, this.description, @IntBoolConverter()@JsonKey(name: 'is_available') this.isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open') this.isOpen, @IntBoolConverter()@JsonKey(name: 'is_major') this.isMajor});
+  const _RestaurantDto({@JsonKey(fromJson: _idFromJson) this.id = '', this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'rating_avg') this.ratingAvg, @JsonKey(name: 'rating_count') this.ratingCount, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited') this.isFavorited, @JsonKey(name: 'logo') this.logoUrl, @JsonKey(name: 'cover') this.coverUrl, this.description, @IntBoolConverter()@JsonKey(name: 'is_available') this.isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open') this.isOpen, @IntBoolConverter()@JsonKey(name: 'is_major') this.isMajor, this.address, @JsonKey(name: 'rating_distribution') final  Map<String, dynamic>? ratingDistribution, final  List<ReviewDto> reviews = const [], @IntBoolConverter()@JsonKey(name: 'reviews_has_more') this.reviewsHasMore}): _ratingDistribution = ratingDistribution,_reviews = reviews;
   factory _RestaurantDto.fromJson(Map<String, dynamic> json) => _$RestaurantDtoFromJson(json);
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
@@ -245,6 +249,24 @@ class _RestaurantDto implements RestaurantDto {
 @override@IntBoolConverter()@JsonKey(name: 'is_available') final  bool? isAvailable;
 @override@IntBoolConverter()@JsonKey(name: 'is_open') final  bool? isOpen;
 @override@IntBoolConverter()@JsonKey(name: 'is_major') final  bool? isMajor;
+@override final  String? address;
+ final  Map<String, dynamic>? _ratingDistribution;
+@override@JsonKey(name: 'rating_distribution') Map<String, dynamic>? get ratingDistribution {
+  final value = _ratingDistribution;
+  if (value == null) return null;
+  if (_ratingDistribution is EqualUnmodifiableMapView) return _ratingDistribution;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(value);
+}
+
+ final  List<ReviewDto> _reviews;
+@override@JsonKey() List<ReviewDto> get reviews {
+  if (_reviews is EqualUnmodifiableListView) return _reviews;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_reviews);
+}
+
+@override@IntBoolConverter()@JsonKey(name: 'reviews_has_more') final  bool? reviewsHasMore;
 
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
@@ -259,16 +281,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other._ratingDistribution, _ratingDistribution)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.reviewsHasMore, reviewsHasMore) || other.reviewsHasMore == reviewsHasMore));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor);
+int get hashCode => Object.hashAll([runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor,address,const DeepCollectionEquality().hash(_ratingDistribution),const DeepCollectionEquality().hash(_reviews),reviewsHasMore]);
 
 @override
 String toString() {
-  return 'RestaurantDto(id: $id, name: $name, cuisineType: $cuisineType, coverImageUrl: $coverImageUrl, rating: $rating, ratingAvg: $ratingAvg, ratingCount: $ratingCount, deliveryTimeMin: $deliveryTimeMin, deliveryTimeMax: $deliveryTimeMax, deliveryFee: $deliveryFee, isFavorited: $isFavorited, logoUrl: $logoUrl, coverUrl: $coverUrl, description: $description, isAvailable: $isAvailable, isOpen: $isOpen, isMajor: $isMajor)';
+  return 'RestaurantDto(id: $id, name: $name, cuisineType: $cuisineType, coverImageUrl: $coverImageUrl, rating: $rating, ratingAvg: $ratingAvg, ratingCount: $ratingCount, deliveryTimeMin: $deliveryTimeMin, deliveryTimeMax: $deliveryTimeMax, deliveryFee: $deliveryFee, isFavorited: $isFavorited, logoUrl: $logoUrl, coverUrl: $coverUrl, description: $description, isAvailable: $isAvailable, isOpen: $isOpen, isMajor: $isMajor, address: $address, ratingDistribution: $ratingDistribution, reviews: $reviews, reviewsHasMore: $reviewsHasMore)';
 }
 
 
@@ -279,7 +301,7 @@ abstract mixin class _$RestaurantDtoCopyWith<$Res> implements $RestaurantDtoCopy
   factory _$RestaurantDtoCopyWith(_RestaurantDto value, $Res Function(_RestaurantDto) _then) = __$RestaurantDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@IntBoolConverter()@JsonKey(name: 'is_available') bool? isAvailable,@IntBoolConverter()@JsonKey(name: 'is_open') bool? isOpen,@IntBoolConverter()@JsonKey(name: 'is_major') bool? isMajor
+@JsonKey(fromJson: _idFromJson) String id, String? name, String? cuisineType, String? coverImageUrl, double? rating,@JsonKey(name: 'rating_avg') dynamic ratingAvg,@JsonKey(name: 'rating_count') int? ratingCount,@JsonKey(name: 'prep_time_from') int? deliveryTimeMin,@JsonKey(name: 'prep_time_to') int? deliveryTimeMax,@JsonKey(name: 'delivery_fee') double? deliveryFee,@IntBoolConverter()@JsonKey(name: 'is_favorited') bool? isFavorited,@JsonKey(name: 'logo') String? logoUrl,@JsonKey(name: 'cover') String? coverUrl, String? description,@IntBoolConverter()@JsonKey(name: 'is_available') bool? isAvailable,@IntBoolConverter()@JsonKey(name: 'is_open') bool? isOpen,@IntBoolConverter()@JsonKey(name: 'is_major') bool? isMajor, String? address,@JsonKey(name: 'rating_distribution') Map<String, dynamic>? ratingDistribution, List<ReviewDto> reviews,@IntBoolConverter()@JsonKey(name: 'reviews_has_more') bool? reviewsHasMore
 });
 
 
@@ -296,7 +318,7 @@ class __$RestaurantDtoCopyWithImpl<$Res>
 
 /// Create a copy of RestaurantDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? cuisineType = freezed,Object? coverImageUrl = freezed,Object? rating = freezed,Object? ratingAvg = freezed,Object? ratingCount = freezed,Object? deliveryTimeMin = freezed,Object? deliveryTimeMax = freezed,Object? deliveryFee = freezed,Object? isFavorited = freezed,Object? logoUrl = freezed,Object? coverUrl = freezed,Object? description = freezed,Object? isAvailable = freezed,Object? isOpen = freezed,Object? isMajor = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = freezed,Object? cuisineType = freezed,Object? coverImageUrl = freezed,Object? rating = freezed,Object? ratingAvg = freezed,Object? ratingCount = freezed,Object? deliveryTimeMin = freezed,Object? deliveryTimeMax = freezed,Object? deliveryFee = freezed,Object? isFavorited = freezed,Object? logoUrl = freezed,Object? coverUrl = freezed,Object? description = freezed,Object? isAvailable = freezed,Object? isOpen = freezed,Object? isMajor = freezed,Object? address = freezed,Object? ratingDistribution = freezed,Object? reviews = null,Object? reviewsHasMore = freezed,}) {
   return _then(_RestaurantDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: freezed == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -315,6 +337,10 @@ as String?,description: freezed == description ? _self.description : description
 as String?,isAvailable: freezed == isAvailable ? _self.isAvailable : isAvailable // ignore: cast_nullable_to_non_nullable
 as bool?,isOpen: freezed == isOpen ? _self.isOpen : isOpen // ignore: cast_nullable_to_non_nullable
 as bool?,isMajor: freezed == isMajor ? _self.isMajor : isMajor // ignore: cast_nullable_to_non_nullable
+as bool?,address: freezed == address ? _self.address : address // ignore: cast_nullable_to_non_nullable
+as String?,ratingDistribution: freezed == ratingDistribution ? _self._ratingDistribution : ratingDistribution // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,reviews: null == reviews ? _self._reviews : reviews // ignore: cast_nullable_to_non_nullable
+as List<ReviewDto>,reviewsHasMore: freezed == reviewsHasMore ? _self.reviewsHasMore : reviewsHasMore // ignore: cast_nullable_to_non_nullable
 as bool?,
   ));
 }

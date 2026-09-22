@@ -3,6 +3,7 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 import 'package:food_user_app/core/utils/json_utils.dart';
 
 import 'package:food_user_app/core/utils/bool_converter.dart';
+import 'package:food_user_app/features/restaurant/data/models/review_dto.dart';
 
 part 'restaurant_dto.freezed.dart';
 part 'restaurant_dto.g.dart';
@@ -37,6 +38,11 @@ abstract class RestaurantDto with _$RestaurantDto {
     @JsonKey(name: 'is_open') bool? isOpen,
     @IntBoolConverter()
     @JsonKey(name: 'is_major') bool? isMajor,
+    String? address,
+    @JsonKey(name: 'rating_distribution') Map<String, dynamic>? ratingDistribution,
+    @Default([]) List<ReviewDto> reviews,
+    @IntBoolConverter()
+    @JsonKey(name: 'reviews_has_more') bool? reviewsHasMore,
   }) = _RestaurantDto;
 
 
@@ -63,7 +69,13 @@ extension RestaurantDtoMapper on RestaurantDto {
       deliveryFee: deliveryFee ?? 0.0,
       isFavorited: isFavorited ?? false,
       isAvailable: isAvailable ?? isOpen ?? true,
+      
       isMajor: isMajor ?? false,
+      address: address ?? '',
+      ratingDistribution: ratingDistribution ?? const {},
+      reviews: reviews.map((r) => r.toEntity()).toList(),
+      reviewsHasMore: reviewsHasMore ?? false,
     );
+
   }
 }

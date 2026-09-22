@@ -121,7 +121,7 @@ class AppRouter {
         path: RouteNames.termsAndConditions,
         builder: (c, s) => const TermsAndConditionsScreen(),
       ),
-      GoRoute(path: RouteNames.home, builder: (c, s) => const MainLayout()),
+      GoRoute(path: RouteNames.home, builder: (c, s) => MainLayout(key: MainLayout.globalKey)),
       GoRoute(path: RouteNames.search, builder: (c, s) => const SearchScreen()),
       GoRoute(
         path: RouteNames.searchResults,

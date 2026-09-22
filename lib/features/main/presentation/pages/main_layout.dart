@@ -16,13 +16,19 @@ import 'package:food_user_app/features/order/presentation/pages/order_history_sc
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class MainLayout extends StatefulWidget {
+  static final GlobalKey<MainLayoutState> globalKey = GlobalKey();
+
   const MainLayout({super.key});
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  State<MainLayout> createState() => MainLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class MainLayoutState extends State<MainLayout> {
+  void changeIndex(int index) {
+    if (mounted) setState(() => _selectedIndex = index);
+  }
+
   int _selectedIndex = 0;
 
   @override

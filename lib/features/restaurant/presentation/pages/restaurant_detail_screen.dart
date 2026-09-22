@@ -1,4 +1,5 @@
 import 'package:food_user_app/features/restaurant/presentation/widgets/menu_item_tile.dart';
+import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -123,6 +124,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
               return Scaffold(
                 backgroundColor: AppColors.scaffoldBackground(context),
+                bottomNavigationBar: CartFloatingBanner(currentStoreId: restaurant.id),
                 body: CustomScrollView(
                   controller: _scrollController,
                   slivers: [

@@ -25,6 +25,16 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       isAvailable: const IntBoolConverter().fromJson(json['is_available']),
       isOpen: const IntBoolConverter().fromJson(json['is_open']),
       isMajor: const IntBoolConverter().fromJson(json['is_major']),
+      address: json['address'] as String?,
+      ratingDistribution: json['rating_distribution'] as Map<String, dynamic>?,
+      reviews:
+          (json['reviews'] as List<dynamic>?)
+              ?.map((e) => ReviewDto.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      reviewsHasMore: const IntBoolConverter().fromJson(
+        json['reviews_has_more'],
+      ),
     );
 
 Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
@@ -56,6 +66,13 @@ Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
       ),
       'is_major': _$JsonConverterToJson<dynamic, bool>(
         instance.isMajor,
+        const IntBoolConverter().toJson,
+      ),
+      'address': instance.address,
+      'rating_distribution': instance.ratingDistribution,
+      'reviews': instance.reviews,
+      'reviews_has_more': _$JsonConverterToJson<dynamic, bool>(
+        instance.reviewsHasMore,
         const IntBoolConverter().toJson,
       ),
     };

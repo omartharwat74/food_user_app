@@ -21,15 +21,27 @@ class RestaurantRateScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('--- RESTAURANT DATA DUMP ---');
+    debugPrint('ID: ${restaurant.id}');
+    debugPrint('Name: ${restaurant.name}');
+    debugPrint(
+      'Rating: ${restaurant.rating} (${restaurant.ratingCount} reviews)',
+    );
+    debugPrint('Delivery Fee: ${restaurant.deliveryFee}');
+    debugPrint(
+      'Delivery Time: ${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax}',
+    );
+    debugPrint('Address: ${restaurant.address}');
+    debugPrint('Reviews Count: ${restaurant.reviews.length}');
+    debugPrint('Rating Distribution: ${restaurant.ratingDistribution}');
+    debugPrint('-----------------------------');
+
     final copy = _RateCopy.of(context);
     final locale = Localizations.localeOf(context);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.scaffoldBackground(context),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: SafeArea(
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground(context),
+      body: SafeArea(
         bottom: false,
         child: CustomScrollView(
           slivers: [

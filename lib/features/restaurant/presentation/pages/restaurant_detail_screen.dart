@@ -614,15 +614,9 @@ class _RestaurantInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = locale.languageCode == 'ar';
-    final backButton = IconButton(
-      onPressed: () => context.pop(),
-      visualDensity: VisualDensity.compact,
-      style: IconButton.styleFrom(
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        minimumSize: const Size(28, 28),
-        padding: EdgeInsets.zero,
-      ),
-      icon: Transform.scale(
+    final backButton = Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Transform.scale(
         scaleX: isArabic ? 1 : -1,
         child: const AppRasterImage.asset(
           AppAssets.restaurantInfoBackIcon,
@@ -696,13 +690,10 @@ class _RestaurantInfoCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => FractionallySizedBox(
-            heightFactor: 0.9,
-            child: RestaurantRateScreen(restaurant: restaurant),
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RestaurantRateScreen(restaurant: restaurant),
           ),
         );
       },

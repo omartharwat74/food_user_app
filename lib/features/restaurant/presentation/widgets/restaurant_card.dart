@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -71,7 +70,7 @@ class RestaurantCard extends StatelessWidget {
                             ? Image.network(
                                 restaurant.coverImageUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => (restaurant.logoUrl.isNotEmpty)
+                                errorBuilder: (_, _, _) => (restaurant.logoUrl.isNotEmpty)
                                     ? Image.network(restaurant.logoUrl, fit: BoxFit.cover)
                                     : const ColoredBox(color: Colors.grey),
                               )

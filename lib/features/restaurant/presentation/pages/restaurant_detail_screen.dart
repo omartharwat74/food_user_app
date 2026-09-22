@@ -588,7 +588,7 @@ class _RestaurantHero extends StatelessWidget {
             ? Image.network(
                 coverUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => (logoUrl.isNotEmpty)
+                errorBuilder: (_, _, _) => (logoUrl.isNotEmpty)
                     ? Image.network(logoUrl, fit: BoxFit.cover)
                     : const ColoredBox(color: Colors.grey),
               )
@@ -634,7 +634,7 @@ class _RestaurantInfoCard extends StatelessWidget {
               width: 40,
               height: 40,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
+              errorBuilder: (_, _, _) =>
                   const Icon(Icons.store, color: Colors.grey, size: 28),
             )
           : const Icon(Icons.store, color: Colors.grey, size: 28),

@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
-import 'package:food_user_app/core/utils/json_utils.dart';
 
 import 'package:food_user_app/core/utils/bool_converter.dart';
 import 'package:food_user_app/features/restaurant/data/models/review_dto.dart';

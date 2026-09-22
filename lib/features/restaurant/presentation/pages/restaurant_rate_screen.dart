@@ -14,7 +14,6 @@ import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
 
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
-import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 
 class RestaurantRateScreen extends StatelessWidget {
   const RestaurantRateScreen({required this.restaurant, super.key});

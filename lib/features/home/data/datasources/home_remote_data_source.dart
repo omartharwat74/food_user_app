@@ -152,9 +152,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         'page': page,
         'per_page': perPage,
         if (search != null && search.isNotEmpty) 'search': search,
-        if (fastPrep != null) 'fast_prep': fastPrep,
-        if (topRated != null) 'top_rated': topRated,
-        if (hasOffers != null) 'has_offers': hasOffers,
+        'fast_prep': ?fastPrep,
+        'top_rated': ?topRated,
+        'has_offers': ?hasOffers,
       };
       // tag_ids[] as separate query params
       if (tagIds != null && tagIds.isNotEmpty) {

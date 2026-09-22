@@ -5,7 +5,6 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
-import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
 
 class CartFloatingBanner extends StatelessWidget {

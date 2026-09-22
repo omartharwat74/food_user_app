@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -125,7 +124,7 @@ class MarketCard extends StatelessWidget {
                           ? Image.network(
                               market.coverImage!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => (market.logoImage != null && market.logoImage!.isNotEmpty)
+                              errorBuilder: (_, _, _) => (market.logoImage != null && market.logoImage!.isNotEmpty)
                                   ? Image.network(market.logoImage!, fit: BoxFit.cover)
                                   : const ColoredBox(color: Colors.grey),
                             )
@@ -209,7 +208,7 @@ class MarketCard extends StatelessWidget {
                             ? Image.network(
                                 market.logoImage!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(
+                                errorBuilder: (_, _, _) => const Icon(
                                   Icons.store,
                                   color: Colors.grey,
                                   size: 28,

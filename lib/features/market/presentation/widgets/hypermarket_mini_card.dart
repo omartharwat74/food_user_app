@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class HypermarketMiniCard extends StatelessWidget {
@@ -51,7 +50,7 @@ class HypermarketMiniCard extends StatelessWidget {
                     ? Image.network(
                         market.logoUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.store, color: Colors.grey, size: 20),
+                        errorBuilder: (_, _, _) => const Icon(Icons.store, color: Colors.grey, size: 20),
                       )
                     : const Icon(Icons.store, color: Colors.grey, size: 20),
               ),

@@ -16,7 +16,7 @@ import '../../features/home/presentation/pages/search_screen.dart';
 import '../../features/home/presentation/pages/search_results_screen.dart';
 import '../../features/restaurant/presentation/models/restaurant_detail_args.dart';
 import '../../features/restaurant/presentation/pages/restaurant_detail_screen.dart';
-import '../../features/restaurant/presentation/pages/restaurant_rate_screen.dart';
+
 import '../../features/restaurant/presentation/pages/restaurant_search_screen.dart';
 import '../../features/restaurant/presentation/pages/menu_item_detail_screen.dart';
 import '../../features/restaurant/presentation/cubit/product_detail_cubit.dart';
@@ -164,12 +164,7 @@ class AppRouter {
               : null,
         ),
       ),
-      GoRoute(
-        path: RouteNames.restaurantRate,
-        builder: (c, s) => RestaurantRateScreen(
-          restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
-        ),
-      ),
+
       GoRoute(
         path: RouteNames.restaurantSearch,
         builder: (c, s) => RestaurantSearchScreen(

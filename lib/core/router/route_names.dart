@@ -13,7 +13,6 @@ class RouteNames {
   static const serviceListing = '/service-listing/:type';
   static const restaurantList = '/restaurants';
   static const restaurantDetail = '/restaurant/:id';
-  static const restaurantRate = '/restaurant/:id/rate';
   static const restaurantSearch = '/restaurant/:id/search';
   static const unifiedResults = '/unified-results';
   static const menuItemDetail = '/menu-item/:id';
@@ -53,7 +52,6 @@ class RouteNames {
 
   static String serviceListingFor(String type, int sectionId) => '/service-listing/$type?sectionId=$sectionId';
   static String restaurantDetailFor(String id) => '/restaurant/$id';
-  static String restaurantRateFor(String id) => '/restaurant/$id/rate';
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
   static String marketDetailFor(String id) => '/market/$id';
   static String marketDetailsFor(String id) => '/market-details/$id';

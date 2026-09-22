@@ -12,10 +12,6 @@ void main() {
       '/restaurant/az-al-sham',
     );
     expect(
-      RouteNames.restaurantRateFor('az-al-sham'),
-      '/restaurant/az-al-sham/rate',
-    );
-    expect(
       RouteNames.restaurantSearchFor('az-al-sham'),
       '/restaurant/az-al-sham/search',
     );

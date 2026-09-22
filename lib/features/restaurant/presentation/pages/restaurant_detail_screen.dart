@@ -1,5 +1,6 @@
 import 'package:food_user_app/features/restaurant/presentation/widgets/menu_item_tile.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
+import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +13,6 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_status_dot_label.dart';
 import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
-
 
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -100,9 +100,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     return MultiBlocProvider(
       providers: [
         // MenuCubit is still available for item modifier lookups
-        BlocProvider<MenuCubit>(
-          create: (context) => sl<MenuCubit>(),
-        ),
+        BlocProvider<MenuCubit>(create: (context) => sl<MenuCubit>()),
         BlocProvider<RestaurantDetailCubit>(
           create: (context) =>
               sl<RestaurantDetailCubit>()..fetchStoreData(widget.restaurantId),
@@ -111,8 +109,12 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
       child: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
         builder: (context, detailState) {
           return detailState.when(
-            initial: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-            loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+            initial: () => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
+            loading: () => const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            ),
             error: (message) => Scaffold(body: Center(child: Text(message))),
             loaded: (restaurant, menuCategories, branches, offers) {
               if (_sectionKeys.length != menuCategories.length) {
@@ -124,7 +126,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
               return Scaffold(
                 backgroundColor: AppColors.scaffoldBackground(context),
-                bottomNavigationBar: CartFloatingBanner(currentStoreId: restaurant.id),
+                bottomNavigationBar: CartFloatingBanner(
+                  currentStoreId: restaurant.id,
+                ),
                 body: CustomScrollView(
                   controller: _scrollController,
                   slivers: [
@@ -140,35 +144,43 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                               coverUrl: restaurant.coverImageUrl,
                               logoUrl: restaurant.logoUrl,
                             ),
-                        infoCard: _RestaurantInfoCard(
-                          restaurant: restaurant,
-                          locale: locale,
-                          copy: copy,
-                        ),
-                        restaurantName: restaurant.name,
-                        restaurantId: restaurant.id,
-                        isFavorite: isFav,
-                        onFavoriteTap: () {
-                          context.read<FavoriteCubit>().toggleFavorite(restaurant.id);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                isFav
-                                    ? AppLocalizations.of(context)!.itemRemovedFromFavorites
-                                    : AppLocalizations.of(context)!.itemAddedToFavorites,
-                              ),
+                            infoCard: _RestaurantInfoCard(
+                              restaurant: restaurant,
+                              locale: locale,
+                              copy: copy,
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                            restaurantName: restaurant.name,
+                            restaurantId: restaurant.id,
+                            isFavorite: isFav,
+                            onFavoriteTap: () {
+                              context.read<FavoriteCubit>().toggleFavorite(
+                                restaurant.id,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isFav
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.itemRemovedFromFavorites
+                                        : AppLocalizations.of(
+                                            context,
+                                          )!.itemAddedToFavorites,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
 
                     // ── 2. Scrolling coupon strip ──────────────────────────────────────
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(vertical: 21),
-                      sliver: SliverToBoxAdapter(child: _CouponStrip(copy: copy)),
+                      sliver: SliverToBoxAdapter(
+                        child: _CouponStrip(copy: copy),
+                      ),
                     ),
 
                     // ── 3. Sticky category tabs ────────────────────────────────────────
@@ -178,7 +190,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         delegate: _MenuTabsDelegate(
                           minExtent: _kTabBarHeight,
                           maxExtent: _kTabBarHeight,
-                          categories: menuCategories.map((c) => c.name).toList(),
+                          categories: menuCategories
+                              .map((c) => c.name)
+                              .toList(),
                           selectedIndex: _selectedCategoryIndex,
                           onTap: _scrollToCategory,
                         ),
@@ -578,8 +592,8 @@ class _RestaurantHero extends StatelessWidget {
                     : const ColoredBox(color: Colors.grey),
               )
             : (logoUrl.isNotEmpty)
-                ? Image.network(logoUrl, fit: BoxFit.cover)
-                : const ColoredBox(color: Colors.grey),
+            ? Image.network(logoUrl, fit: BoxFit.cover)
+            : const ColoredBox(color: Colors.grey),
         Container(color: AppColors.black.withValues(alpha: 0.2)),
       ],
     );
@@ -625,17 +639,10 @@ class _RestaurantInfoCard extends StatelessWidget {
               width: 40,
               height: 40,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => const Icon(
-                Icons.store,
-                color: Colors.grey,
-                size: 28,
-              ),
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.store, color: Colors.grey, size: 28),
             )
-          : const Icon(
-              Icons.store,
-              color: Colors.grey,
-              size: 28,
-            ),
+          : const Icon(Icons.store, color: Colors.grey, size: 28),
     );
     final restaurantText = Flexible(
       flex: 8,
@@ -687,84 +694,102 @@ class _RestaurantInfoCard extends StatelessWidget {
       ),
     );
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceCard(context),
-        borderRadius: const BorderRadius.all(Radius.circular(16)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.08),
-            blurRadius: 2,
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => FractionallySizedBox(
+            heightFactor: 0.9,
+            child: RestaurantRateScreen(restaurant: restaurant),
           ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Row(
-            textDirection: TextDirection.ltr,
-            children: isArabic
-                ? [
-                    backButton,
-                    const Spacer(),
-                    restaurantText,
-                    const SizedBox(width: AppSpacing.sm),
-                    logo,
-                  ]
-                : [
-                    logo,
-                    const SizedBox(width: AppSpacing.sm),
-                    restaurantText,
-                    const Spacer(),
-                    backButton,
-                  ],
-          ),
-          const SizedBox(height: 12),
-          Row(
-            textDirection: TextDirection.ltr,
-            children: isArabic
-                ? [
-                    _RatingMetric(restaurant: restaurant, isArabic: isArabic),
-                    _VerticalDivider(),
-                    Expanded(
-                      child: _InfoMetric(
-                        assetName: AppAssets.restaurantDeliveryScooterIcon,
-                        label: isArabic ? '${restaurant.deliveryFee} ج.م' : 'EGP ${restaurant.deliveryFee}',
-                        iconOnRight: true,
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.08),
+              blurRadius: 2,
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              textDirection: TextDirection.ltr,
+              children: isArabic
+                  ? [
+                      backButton,
+                      const Spacer(),
+                      restaurantText,
+                      const SizedBox(width: AppSpacing.sm),
+                      logo,
+                    ]
+                  : [
+                      logo,
+                      const SizedBox(width: AppSpacing.sm),
+                      restaurantText,
+                      const Spacer(),
+                      backButton,
+                    ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              textDirection: TextDirection.ltr,
+              children: isArabic
+                  ? [
+                      _RatingMetric(restaurant: restaurant, isArabic: isArabic),
+                      _VerticalDivider(),
+                      Expanded(
+                        child: _InfoMetric(
+                          assetName: AppAssets.restaurantDeliveryScooterIcon,
+                          label: isArabic
+                              ? '${restaurant.deliveryFee} ج.م'
+                              : 'EGP ${restaurant.deliveryFee}',
+                          iconOnRight: true,
+                        ),
                       ),
-                    ),
-                    _VerticalDivider(),
-                    Expanded(
-                      child: _InfoMetric(
-                        assetName: AppAssets.restaurantWallClockIcon,
-                        label: isArabic
-                            ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
-                            : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
-                        iconOnRight: true,
+                      _VerticalDivider(),
+                      Expanded(
+                        child: _InfoMetric(
+                          assetName: AppAssets.restaurantWallClockIcon,
+                          label: isArabic
+                              ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
+                              : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                          iconOnRight: true,
+                        ),
                       ),
-                    ),
-                  ]
-                : [
-                    Expanded(
-                      child: _InfoMetric(
-                        assetName: AppAssets.restaurantWallClockIcon,
-                        label: '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
-                        iconOnRight: false,
+                    ]
+                  : [
+                      Expanded(
+                        child: _InfoMetric(
+                          assetName: AppAssets.restaurantWallClockIcon,
+                          label:
+                              '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                          iconOnRight: false,
+                        ),
                       ),
-                    ),
-                    _VerticalDivider(),
-                    Expanded(
-                      child: _InfoMetric(
-                        assetName: AppAssets.restaurantDeliveryScooterIcon,
-                        label: isArabic ? '${restaurant.deliveryFee} ج.م' : 'EGP ${restaurant.deliveryFee}',
-                        iconOnRight: false,
+                      _VerticalDivider(),
+                      Expanded(
+                        child: _InfoMetric(
+                          assetName: AppAssets.restaurantDeliveryScooterIcon,
+                          label: isArabic
+                              ? '${restaurant.deliveryFee} ج.م'
+                              : 'EGP ${restaurant.deliveryFee}',
+                          iconOnRight: false,
+                        ),
                       ),
-                    ),
-                    _VerticalDivider(),
-                    _RatingMetric(restaurant: restaurant, isArabic: isArabic),
-                  ],
-          ),
-        ],
+                      _VerticalDivider(),
+                      _RatingMetric(restaurant: restaurant, isArabic: isArabic),
+                    ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -881,14 +906,11 @@ class _RatingMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: () => context.push(RouteNames.restaurantRateFor(restaurant.id)),
-        borderRadius: const BorderRadius.all(AppRadius.sm),
-        child: _InfoMetric(
-          assetName: AppAssets.favoriteStarIcon,
-          label: '${restaurant.rating.toStringAsFixed(1)} (${restaurant.ratingCount})',
-          iconOnRight: isArabic,
-        ),
+      child: _InfoMetric(
+        assetName: AppAssets.favoriteStarIcon,
+        label:
+            '${restaurant.rating.toStringAsFixed(1)} (${restaurant.ratingCount})',
+        iconOnRight: isArabic,
       ),
     );
   }
@@ -1204,10 +1226,9 @@ class _MenuSection extends StatelessWidget {
       children: [
         Text(
           section.name,
-          style: AppTextStyles.heading4(context).copyWith(
-            fontSize: 15,
-            height: 1.4,
-          ),
+          style: AppTextStyles.heading4(
+            context,
+          ).copyWith(fontSize: 15, height: 1.4),
         ),
         const SizedBox(height: 20),
         _SectionProductGrid(items: section.items),
@@ -1231,10 +1252,7 @@ class _SectionProductGrid extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: SizedBox(
-                height: 164,
-                child: MenuItemTile(item: items[i]),
-              ),
+              child: SizedBox(height: 164, child: MenuItemTile(item: items[i])),
             ),
             const SizedBox(width: 12),
             Expanded(

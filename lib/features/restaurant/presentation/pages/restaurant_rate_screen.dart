@@ -8,11 +8,7 @@ import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
-import 'package:food_user_app/core/di/injection_container.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_state.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
 
@@ -20,95 +16,72 @@ import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class RestaurantRateScreen extends StatelessWidget {
-  const RestaurantRateScreen({this.restaurantId = 'az-al-sham', super.key});
-
-  final String restaurantId;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          sl<RestaurantDetailCubit>()..getRestaurantDetail(restaurantId),
-      child: _RestaurantRateView(restaurantId: restaurantId),
-    );
-  }
-}
-
-class _RestaurantRateView extends StatelessWidget {
-  const _RestaurantRateView({required this.restaurantId});
-  final String restaurantId;
+  const RestaurantRateScreen({required this.restaurant, super.key});
+  final Restaurant restaurant;
 
   @override
   Widget build(BuildContext context) {
     final copy = _RateCopy.of(context);
     final locale = Localizations.localeOf(context);
 
-    return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
-        builder: (context, state) {
-          return state.maybeWhen(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (message) => Center(child: Text(message)),
-            loaded: (restaurant, menuCategories, branches, offers) {
-              return SafeArea(
-                bottom: false,
-                child: CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        AppSpacing.md,
-                        18,
-                        AppSpacing.md,
-                        28,
-                      ),
-                      sliver: SliverList.list(
-                        children: [
-                          _RateHeader(title: restaurant.name),
-                          const SizedBox(height: 24),
-                          _RatingSummary(
-                            rating: restaurant.rating,
-                            ratingCount: restaurant.ratingCount,
-                            ratingDistribution: restaurant.ratingDistribution,
-                            copy: copy,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.scaffoldBackground(context),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.md,
+                18,
+                AppSpacing.md,
+                28,
+              ),
+              sliver: SliverList.list(
+                children: [
+                  _RateHeader(title: restaurant.name),
+                  const SizedBox(height: 24),
+                  _RatingSummary(
+                    rating: restaurant.rating,
+                    ratingCount: restaurant.ratingCount,
+                    ratingDistribution: restaurant.ratingDistribution,
+                    copy: copy,
+                  ),
+                  const SizedBox(height: 18),
+                  _SectionHeader(title: copy.customerReviews),
+                  const SizedBox(height: 12),
+                  ...restaurant.reviews.map(
+                    (review) => _ReviewTile(review: review, locale: locale),
+                  ),
+                  if (restaurant.reviewsHasMore)
+                    Center(
+                      child: TextButton(
+                        onPressed: () {},
+                        child: Text(
+                          AppLocalizations.of(context)!.seeAll,
+                          style: AppTextStyles.body(context).copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          const SizedBox(height: 18),
-                          _SectionHeader(title: copy.customerReviews),
-                          const SizedBox(height: 12),
-                          ...restaurant.reviews.map(
-                            (review) => _ReviewTile(review: review, locale: locale),
-                          ),
-                          if (restaurant.reviewsHasMore)
-                            Center(
-                              child: TextButton(
-                                onPressed: () {},
-                                child: Text(
-                                  AppLocalizations.of(context)!.seeAll,
-                                  style: AppTextStyles.body(context).copyWith(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 18),
-                          _SectionHeader(title: copy.moreDetails),
-                          const SizedBox(height: 14),
-                          _RestaurantFacts(
-                            restaurant: restaurant,
-                            locale: locale,
-                            copy: copy,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-                  ],
-                ),
-              );
-            },
-            orElse: () => const SizedBox.shrink(),
-          );
-        },
+                  const SizedBox(height: 18),
+                  _SectionHeader(title: copy.moreDetails),
+                  const SizedBox(height: 14),
+                  _RestaurantFacts(
+                    restaurant: restaurant,
+                    locale: locale,
+                    copy: copy,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -420,7 +393,11 @@ class _ReviewTile extends StatelessWidget {
           const SizedBox(height: AppSpacing.sm),
           Align(
             alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
-            child: _Stars(size: 12, count: 5, selectedCount: review.rating.toInt()),
+            child: _Stars(
+              size: 12,
+              count: 5,
+              selectedCount: review.rating.toInt(),
+            ),
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
@@ -460,7 +437,10 @@ class _RestaurantFacts extends StatelessWidget {
             ? '${restaurant.deliveryFee.toFormattedPrice()} رس'
             : '${restaurant.deliveryFee.toFormattedPrice()} SAR',
       ),
-      (copy.minimumOrder, Localizations.localeOf(context).languageCode == 'ar' ? '0 رس' : '0 SAR'),
+      (
+        copy.minimumOrder,
+        Localizations.localeOf(context).languageCode == 'ar' ? '0 رس' : '0 SAR',
+      ),
       (
         copy.deliveryTime,
         isArabic

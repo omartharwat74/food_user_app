@@ -1,10 +1,7 @@
-import re
-
 with open('lib/core/router/route_names.dart', 'r') as f:
-    content = f.read()
+    lines = f.readlines()
 
-content = re.sub(r"\s*static const storeDetail = '/store/:id';", "", content)
-content = re.sub(r"\s*static String storeDetailFor\(String id\) => '/store/\$id';", "", content)
+new_lines = [line for line in lines if "restaurantRate" not in line]
 
 with open('lib/core/router/route_names.dart', 'w') as f:
-    f.write(content)
+    f.writelines(new_lines)

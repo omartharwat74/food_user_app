@@ -3,91 +3,126 @@ import re
 with open('lib/features/restaurant/presentation/pages/restaurant_rate_screen.dart', 'r') as f:
     content = f.read()
 
-# Add necessary imports
-imports = """
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/core/di/injection_container.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
-import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_state.dart';
-import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
-import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
-"""
-content = re.sub(r"import 'package:food_user_app/features/restaurant/data/mock/restaurant_mock_data.dart';", imports, content)
+# 1. Add import if missing
+if 'delivery_time_text.dart' not in content:
+    content = content.replace("import 'package:food_user_app/l10n/app_localizations.dart';", "import 'package:food_user_app/l10n/app_localizations.dart';\nimport 'package:food_user_app/core/widgets/delivery_time_text.dart';")
 
-# Modify RestaurantRateScreen to wrap in BlocProvider
-content = re.sub(
-    r"class RestaurantRateScreen extends StatelessWidget \{[\s\S]*?final String restaurantId;",
-    """class RestaurantRateScreen extends StatelessWidget {
-  const RestaurantRateScreen({this.restaurantId = 'az-al-sham', super.key});
+# 2. Fix the spacing from 14 to 12
+old_spacing = """                  _SectionHeader(title: copy.moreDetails),
+                  const SizedBox(height: 14),
+                  _RestaurantFacts("""
+new_spacing = """                  _SectionHeader(title: copy.moreDetails),
+                  const SizedBox(height: 12),
+                  _RestaurantFacts("""
+content = content.replace(old_spacing, new_spacing)
 
-  final String restaurantId;
+# 3. Replace _FactRow
+old_fact_row = """class _FactRow extends StatelessWidget {
+  const _FactRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => getIt<RestaurantDetailCubit>()..getRestaurantDetail(restaurantId),
-      child: _RestaurantRateView(restaurantId: restaurantId),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(fontSize: 14, fontWeight: FontWeight.w400, height: 1.4),
+          ),
+          Text(
+            value,
+            style: AppTextStyles.body(context).copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.4,
+              color: AppColors.primary,
+            ),
+          ),
+        ],
+      ),
     );
   }
-}
+}"""
+new_fact_row = """class _FactRow extends StatelessWidget {
+  const _FactRow({required this.label, this.value, this.valueWidget});
 
-class _RestaurantRateView extends StatelessWidget {
-  const _RestaurantRateView({required this.restaurantId});
-  final String restaurantId;
-""",
-    content
-)
+  final String label;
+  final String? value;
+  final Widget? valueWidget;
 
-# Modify the build method of _RestaurantRateView
-build_method_pattern = r"  @override\n  Widget build\(BuildContext context\) \{\n    final copy = _RateCopy\.of\(context\);\n    final locale = Localizations\.localeOf\(context\);\n    final restaurant = mockRestaurant;\n\n    return Scaffold\("
-new_build = """  @override
+  @override
   Widget build(BuildContext context) {
-    final copy = _RateCopy.of(context);
-    final locale = Localizations.localeOf(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(fontSize: 14, fontWeight: FontWeight.w400, height: 1.4),
+          ),
+          valueWidget ?? Text(
+            value ?? '',
+            style: AppTextStyles.body(context).copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.4,
+              color: AppColors.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}"""
+content = content.replace(old_fact_row, new_fact_row)
 
-    return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
-        builder: (context, state) {
-          if (state is RestaurantDetailLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is RestaurantDetailError) {
-            return Center(child: Text(state.message));
-          }
-          if (state is RestaurantDetailLoaded) {
-            final restaurant = state.restaurant;
-            return SafeArea(
-              bottom: false,
-              child: CustomScrollView(
-"""
-content = content.replace("  @override\n  Widget build(BuildContext context) {\n    final copy = _RateCopy.of(context);\n    final locale = Localizations.localeOf(context);\n    final restaurant = mockRestaurant;\n\n    return Scaffold(\n      backgroundColor: AppColors.scaffoldBackground(context),\n      body: SafeArea(\n        bottom: false,\n        child: CustomScrollView(", new_build)
+# 4. Replace _RestaurantFacts using regex because formatting can be tricky
+regex = re.compile(r"final facts = \[\s*\([\s\S]*?\];\s*return Column\(\s*children: \[\s*for \(final fact in facts\) _FactRow\(label: fact\.\$1, value: fact\.\$2\),\s*_PaymentRow\(label: copy\.paymentMethod\),\s*\],\s*\);")
 
-# Add closing bracket for the BlocBuilder
-content = content.replace("            ),\n          ],\n        ),\n      ),\n    );\n  }\n}\n\nclass _RateHeader extends StatelessWidget", "            ),\n          ],\n        ),\n      );\n          }\n          return const SizedBox.shrink();\n        },\n      ),\n    );\n  }\n}\n\nclass _RateHeader extends StatelessWidget")
+new_facts_build = """return Column(
+      children: [
+        _FactRow(
+          label: copy.deliveryPrice,
+          value: isArabic
+              ? '${restaurant.deliveryFee.toFormattedPrice()} ج.م'
+              : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
+        ),
+        _FactRow(
+          label: copy.minimumOrder,
+          value: isArabic ? '0 ج.م' : 'EGP 0',
+        ),
+        _FactRow(
+          label: copy.deliveryTime,
+          valueWidget: DeliveryTimeText(
+            minTime: restaurant.deliveryTimeMin,
+            maxTime: restaurant.deliveryTimeMax,
+            style: AppTextStyles.body(context).copyWith(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              height: 1.4,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        _FactRow(label: copy.address, value: restaurant.address),
+        _FactRow(label: copy.previousOrders, value: '-'),
+        _PaymentRow(label: copy.paymentMethod),
+      ],
+    );"""
 
-# Update MockReview to Review
-content = content.replace("MockReview", "Review")
-content = content.replace("MockRestaurant", "Restaurant")
-
-# Remove review.name(locale) and review.comment(locale) calls
-content = content.replace("review.name(locale)", "review.userName")
-content = content.replace("review.comment(locale)", "review.comment")
-
-# Fix date (MockReview has review.date, Review has review.createdAt)
-content = content.replace("review.date,", "review.createdAt,")
-
-# Update MockRestaurant methods:
-# restaurant.deliveryFee(locale) -> "\$${restaurant.deliveryFee.toFormattedPrice()} رس"
-# minimumOrder -> "\$${restaurant.deliveryFee.toFormattedPrice()} رس"
-# deliveryTime -> "${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} دقيقة"
-# address -> restaurant.address
-# previousOrders -> "-"
-content = content.replace("restaurant.deliveryFee(locale)", "isArabic ? '${restaurant.deliveryFee.toInt()} رس' : '${restaurant.deliveryFee.toInt()} SAR'")
-content = content.replace("restaurant.minimumOrder(locale)", "isArabic ? '0 رس' : '0 SAR'") # Assuming 0 for now as we don't have minimum order
-content = content.replace("restaurant.deliveryTime(locale)", "isArabic ? '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} دقيقة' : '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min'")
-content = content.replace("restaurant.address(locale)", "restaurant.address")
-content = content.replace("restaurant.previousOrders(locale)", "'-'")
+content = regex.sub(new_facts_build, content)
 
 with open('lib/features/restaurant/presentation/pages/restaurant_rate_screen.dart', 'w') as f:
     f.write(content)
+
+print("Done")

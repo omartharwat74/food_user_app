@@ -14,6 +14,7 @@ import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
 
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 
 class RestaurantRateScreen extends StatelessWidget {
   const RestaurantRateScreen({required this.restaurant, super.key});
@@ -87,7 +88,6 @@ class RestaurantRateScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
                   _SectionHeader(title: copy.moreDetails),
-                  const SizedBox(height: 14),
                   _RestaurantFacts(
                     restaurant: restaurant,
                     locale: locale,
@@ -456,27 +456,32 @@ class _RestaurantFacts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = locale.languageCode == 'ar';
-    final facts = [
-      (
-        copy.deliveryPrice,
-        isArabic
-            ? '${restaurant.deliveryFee.toFormattedPrice()} ج.م'
-            : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
-      ),
-      (copy.minimumOrder, isArabic ? '0 ج.م' : 'EGP 0'),
-      (
-        copy.deliveryTime,
-        isArabic
-            ? '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} دقيقة'
-            : '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min',
-      ),
-      (copy.address, restaurant.address),
-      (copy.previousOrders, '-'),
-    ];
-
     return Column(
       children: [
-        for (final fact in facts) _FactRow(label: fact.$1, value: fact.$2),
+        _FactRow(
+          label: copy.deliveryPrice,
+          value: isArabic
+              ? '${restaurant.deliveryFee.toFormattedPrice()} ج.م'
+              : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
+        ),
+        _FactRow(
+          label: copy.minimumOrder,
+          value: isArabic ? '0 ج.م' : 'EGP 0',
+        ),
+        _FactRow(
+          label: copy.deliveryTime,
+          valueWidget: DeliveryTimeText(
+            minTime: restaurant.deliveryTimeMin,
+            maxTime: restaurant.deliveryTimeMax,
+            style: AppTextStyles.caption(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 12,
+              height: 1.3,
+            ),
+          ),
+        ),
+        _FactRow(label: copy.address, value: restaurant.address),
+        _FactRow(label: copy.previousOrders, value: '-'),
         _PaymentRow(label: copy.paymentMethod),
       ],
     );
@@ -484,17 +489,18 @@ class _RestaurantFacts extends StatelessWidget {
 }
 
 class _FactRow extends StatelessWidget {
-  const _FactRow({required this.label, required this.value});
+  const _FactRow({required this.label, this.value, this.valueWidget});
 
   final String label;
-  final String value;
+  final String? value;
+  final Widget? valueWidget;
 
   @override
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     final valueText = Flexible(
-      child: Text(
-        value,
+      child: valueWidget ?? Text(
+        value ?? '',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         textAlign: isArabic ? TextAlign.start : TextAlign.end,

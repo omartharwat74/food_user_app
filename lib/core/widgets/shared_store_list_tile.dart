@@ -77,7 +77,7 @@ class SharedStoreListTile extends StatelessWidget {
                                         style: AppTextStyles.body(context).copyWith(
                                           fontSize: 12,
                                           height: 1.3,
-                                          fontWeight: FontWeight.w500, // Mobile/12 m
+                                           // Mobile/12 m
                                         ),
                                       ),
                                     ),
@@ -124,8 +124,8 @@ class SharedStoreListTile extends StatelessWidget {
                                             color: Colors.white,
                                             fontSize: 10,
                                             fontFamily: 'Expo Arabic',
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.25,
+                                            
+                                            height: 1.0,
                                           ),
                                         ),
                                       ],
@@ -261,7 +261,35 @@ class _TimeLabel extends StatelessWidget {
     // Clean up any existing "min", "mins", or "دقيقة"
     var cleanTime = time.replaceAll(RegExp(r'\s*(mins?|دقيقة)'), '').trim();
     if (cleanTime.isEmpty) cleanTime = time; 
-    final displayTime = '$cleanTime $minLabel';
+
+    final parts = cleanTime.split('-');
+    final textStyle = AppTextStyles.caption(context).copyWith(
+      color: color,
+      fontSize: 10,
+      height: 1.0,
+    );
+
+    Widget timeWidget;
+    if (isRtl && parts.length == 2) {
+      final minTime = parts[0].trim();
+      final maxTime = parts[1].trim();
+      timeWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        textDirection: TextDirection.ltr,
+        children: [
+          Text(maxTime, style: textStyle),
+          Text(' - ', style: textStyle),
+          Text(minTime, style: textStyle),
+        ],
+      );
+    } else {
+      timeWidget = Text(
+        cleanTime,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: textStyle,
+      );
+    }
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -274,16 +302,9 @@ class _TimeLabel extends StatelessWidget {
           color: color,
         ),
         const SizedBox(width: 4),
-        Flexible(
-          child: Text(
-            displayTime,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.caption(
-              context,
-            ).copyWith(color: color, fontSize: 10, height: 1.0),
-          ),
-        ),
+        Flexible(child: timeWidget),
+        const SizedBox(width: 4),
+        Text(minLabel, style: textStyle),
       ],
     );
   }

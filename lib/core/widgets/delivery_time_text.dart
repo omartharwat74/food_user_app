@@ -27,7 +27,24 @@ class DeliveryTimeText extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('$minTime - $maxTime', textDirection: TextDirection.ltr, style: textStyle),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            textDirection: TextDirection.ltr,
+            children: [
+              Text(
+                maxTime.toString(),
+                style: textStyle,
+              ),
+              Text(
+                ' - ',
+                style: textStyle,
+              ),
+              Text(
+                minTime.toString(),
+                style: textStyle,
+              ),
+            ],
+          ),
           const SizedBox(width: 4),
           Text('دقيقة', style: textStyle),
         ],

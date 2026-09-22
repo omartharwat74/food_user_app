@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class HypermarketMiniCard extends StatelessWidget {
@@ -81,11 +82,9 @@ class HypermarketMiniCard extends StatelessWidget {
                   const Icon(Icons.access_time, size: 12, color: Color(0xFF787878)),
                   const SizedBox(width: 4),
                   Flexible(
-                    child: Text(
-                      '${market.deliveryTimeMin}-${market.deliveryTimeMax} دقيقة',
-                      textAlign: TextAlign.right,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    child: DeliveryTimeText(
+                      minTime: market.deliveryTimeMin,
+                      maxTime: market.deliveryTimeMax,
                       style: const TextStyle(
                         color: Color(0xFF787878),
                         fontSize: 10,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -197,10 +198,9 @@ class RestaurantCard extends StatelessWidget {
                           size: 14,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          isArabic
-                              ? "${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة"
-                              : "${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min",
+                        DeliveryTimeText(
+                          minTime: restaurant.deliveryTimeMin,
+                          maxTime: restaurant.deliveryTimeMax,
                           style: AppTextStyles.caption(context).copyWith(
                             fontSize: 10,
                             height: 1.25,

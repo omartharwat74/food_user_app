@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class HypermarketMiniCard extends StatelessWidget {

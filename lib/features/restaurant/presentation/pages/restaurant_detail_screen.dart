@@ -16,6 +16,7 @@ import 'package:food_user_app/core/widgets/liquid_glass_button.dart';
 
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
@@ -749,9 +750,11 @@ class _RestaurantInfoCard extends StatelessWidget {
                       Expanded(
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantWallClockIcon,
-                          label: isArabic
-                              ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
-                              : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                          labelWidget: DeliveryTimeText(
+                            minTime: restaurant.deliveryTimeMin,
+                            maxTime: restaurant.deliveryTimeMax,
+                            style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
+                          ),
                           iconOnRight: true,
                         ),
                       ),
@@ -760,8 +763,11 @@ class _RestaurantInfoCard extends StatelessWidget {
                       Expanded(
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantWallClockIcon,
-                          label:
-                              '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
+                          labelWidget: DeliveryTimeText(
+                            minTime: restaurant.deliveryTimeMin,
+                            maxTime: restaurant.deliveryTimeMax,
+                            style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
+                          ),
                           iconOnRight: false,
                         ),
                       ),
@@ -800,19 +806,21 @@ class _StatusPill extends StatelessWidget {
 class _InfoMetric extends StatelessWidget {
   const _InfoMetric({
     required this.assetName,
-    required this.label,
+    this.label,
+    this.labelWidget,
     required this.iconOnRight,
   });
 
   final String assetName;
-  final String label;
+  final String? label;
+  final Widget? labelWidget;
   final bool iconOnRight;
 
   @override
   Widget build(BuildContext context) {
     final children = [
-      Text(
-        label,
+      labelWidget ?? Text(
+        label ?? '',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),

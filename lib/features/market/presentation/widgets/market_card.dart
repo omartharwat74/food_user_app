@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';

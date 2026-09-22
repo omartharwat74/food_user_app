@@ -14,6 +14,7 @@ import 'package:food_user_app/features/restaurant/domain/entities/review.dart';
 
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 
 class RestaurantRateScreen extends StatelessWidget {
   const RestaurantRateScreen({required this.restaurant, super.key});
@@ -62,26 +63,28 @@ class RestaurantRateScreen extends StatelessWidget {
                     ratingDistribution: restaurant.ratingDistribution,
                     copy: copy,
                   ),
-                  const SizedBox(height: 18),
-                  _SectionHeader(title: copy.customerReviews),
-                  const SizedBox(height: 12),
-                  ...restaurant.reviews.map(
-                    (review) => _ReviewTile(review: review, locale: locale),
-                  ),
-                  if (restaurant.reviewsHasMore)
-                    Center(
-                      child: TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          AppLocalizations.of(context)!.seeAll,
-                          style: AppTextStyles.body(context).copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
+                  if (restaurant.reviews.isNotEmpty) ...[
+                    const SizedBox(height: 18),
+                    _SectionHeader(title: copy.customerReviews),
+                    const SizedBox(height: 12),
+                    ...restaurant.reviews.map(
+                      (review) => _ReviewTile(review: review, locale: locale),
+                    ),
+                    if (restaurant.reviewsHasMore)
+                      Center(
+                        child: TextButton(
+                          onPressed: () {},
+                          child: Text(
+                            AppLocalizations.of(context)!.seeAll,
+                            style: AppTextStyles.body(context).copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  const SizedBox(height: 18),
+                    const SizedBox(height: 18),
+                  ],
                   _SectionHeader(title: copy.moreDetails),
                   const SizedBox(height: 14),
                   _RestaurantFacts(

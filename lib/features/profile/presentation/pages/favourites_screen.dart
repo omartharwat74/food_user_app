@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
@@ -208,8 +209,8 @@ class _FavoriteRestaurantCard extends StatelessWidget {
   void _openDetails(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final deliveryTimeStr = isRtl
-        ? '${item.deliveryTimeMin}-${item.deliveryTimeMax} دقيقة'
-        : '${item.deliveryTimeMin}-${item.deliveryTimeMax} min';
+        ? '\u200E${item.deliveryTimeMin} - ${item.deliveryTimeMax}\u200E دقيقة'
+        : '${item.deliveryTimeMin} - ${item.deliveryTimeMax} min';
 
     context.push(
       RouteNames.restaurantDetailFor(item.id),
@@ -346,10 +347,7 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final rating = _RatingBadge(rating: item.rating.toStringAsFixed(1));
-    final deliveryTimeStr = isRtl
-        ? '${item.deliveryTimeMin}-${item.deliveryTimeMax} دقيقة'
-        : '${item.deliveryTimeMin}-${item.deliveryTimeMax} min';
-    final time = _DeliveryTimeLabel(deliveryTime: deliveryTimeStr);
+    final time = _DeliveryTimeLabel(minTime: item.deliveryTimeMin, maxTime: item.deliveryTimeMax);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -383,13 +381,13 @@ class _StatusChip extends StatelessWidget {
 }
 
 class _DeliveryTimeLabel extends StatelessWidget {
-  const _DeliveryTimeLabel({required this.deliveryTime});
+  const _DeliveryTimeLabel({required this.minTime, required this.maxTime});
 
-  final String deliveryTime;
+  final int minTime;
+  final int maxTime;
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final icon = SvgPicture.asset(
       AppAssets.favoriteTimeIcon,
       width: FavouritesScreen._metaIconSize,
@@ -399,23 +397,23 @@ class _DeliveryTimeLabel extends StatelessWidget {
         BlendMode.srcIn,
       ),
     );
-    final label = Text(
-      deliveryTime,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: TextAlign.start,
-      style: AppTextStyles.caption(context).copyWith(
-        color: AppColors.onSurface(context),
-        fontSize: 10,
-        fontWeight: FontWeight.w400,
-        height: 1.25,
-      ),
-    );
 
     return Row(
-      textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
       mainAxisSize: MainAxisSize.min,
-      children: [icon, const SizedBox(width: 4), label],
+      children: [
+        icon, 
+        const SizedBox(width: 4), 
+        DeliveryTimeText(
+          minTime: minTime,
+          maxTime: maxTime,
+          style: AppTextStyles.caption(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            height: 1.25,
+          ),
+        ),
+      ],
     );
   }
 }

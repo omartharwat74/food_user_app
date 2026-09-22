@@ -83,6 +83,8 @@ class RestaurantRateScreen extends StatelessWidget {
                         ),
                       ),
                     const SizedBox(height: 18),
+                  ] else ...[
+                    const SizedBox(height: 16),
                   ],
                   _SectionHeader(title: copy.moreDetails),
                   const SizedBox(height: 14),

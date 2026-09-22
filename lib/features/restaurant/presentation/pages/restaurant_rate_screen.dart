@@ -192,7 +192,7 @@ class _RatingSummary extends StatelessWidget {
             ).copyWith(fontSize: 20, height: 1.4),
           ),
           const SizedBox(height: AppSpacing.sm),
-          const _Stars(size: 24),
+          _Stars(size: 24, selectedCount: rating.round()),
           const SizedBox(height: AppSpacing.sm),
           Text(
             '($ratingCount ${copy.ratingsLabel})',
@@ -208,7 +208,11 @@ class _RatingSummary extends StatelessWidget {
       height: 40,
       color: AppColors.border(context),
     );
-    final bars = _RatingBars(isArabic: isArabic);
+    final bars = _RatingBars(
+      isArabic: isArabic,
+      ratingCount: ratingCount,
+      ratingDistribution: ratingDistribution,
+    );
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -256,18 +260,24 @@ class _Stars extends StatelessWidget {
 }
 
 class _RatingBars extends StatelessWidget {
-  const _RatingBars({required this.isArabic});
+  const _RatingBars({
+    required this.isArabic,
+    required this.ratingCount,
+    required this.ratingDistribution,
+  });
 
   final bool isArabic;
-
-  static const _values = [0.94, 0.64, 0.54, 0.82, 0.19];
+  final int ratingCount;
+  final Map<String, dynamic> ratingDistribution;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: List.generate(5, (index) {
-        final value = _values[index];
         final score = 5 - index;
+        final count =
+            (ratingDistribution[score.toString()] as num?)?.toInt() ?? 0;
+        final value = ratingCount > 0 ? (count / ratingCount) : 0.0;
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 3),
           child: Row(
@@ -446,13 +456,10 @@ class _RestaurantFacts extends StatelessWidget {
       (
         copy.deliveryPrice,
         isArabic
-            ? '${restaurant.deliveryFee.toFormattedPrice()} رس'
-            : '${restaurant.deliveryFee.toFormattedPrice()} SAR',
+            ? '${restaurant.deliveryFee.toFormattedPrice()} ج.م'
+            : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
       ),
-      (
-        copy.minimumOrder,
-        Localizations.localeOf(context).languageCode == 'ar' ? '0 رس' : '0 SAR',
-      ),
+      (copy.minimumOrder, isArabic ? '0 ج.م' : 'EGP 0'),
       (
         copy.deliveryTime,
         isArabic

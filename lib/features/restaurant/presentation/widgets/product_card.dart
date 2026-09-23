@@ -166,7 +166,24 @@ class ProductCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          // Current price — Figma Mobile/12m w500 #1B1B1B
+                          Flexible(
+                            child: Text(
+                              '${item.price.toFormattedPrice()} ${l10n.currency}',
+                              textAlign: TextAlign.start,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontFamily: 'Expo Arabic',
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                height: 1.3,
+                                color: AppColors.onSurface(context),
+                              ),
+                            ),
+                          ),
                           if (hasOldPrice) ...[
+                            const SizedBox(width: 8),
                             // Strikethrough old price — Figma: #B9B9B9, lineThrough
                             Flexible(
                               child: Text(
@@ -185,24 +202,7 @@ class ProductCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
                           ],
-                          // Current price — Figma Mobile/12m w500 #1B1B1B
-                          Flexible(
-                            child: Text(
-                              '${item.price.toFormattedPrice()} ${l10n.currency}',
-                              textAlign: TextAlign.start,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                              style: TextStyle(
-                                fontFamily: 'Expo Arabic',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                height: 1.3,
-                                color: AppColors.onSurface(context),
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ],

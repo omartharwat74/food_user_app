@@ -15,6 +15,7 @@ import 'package:food_user_app/core/utils/error_localizer.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 
 class AuthEntryScreen extends StatelessWidget {
   const AuthEntryScreen({super.key});
@@ -58,7 +59,15 @@ class AuthEntryScreen extends StatelessWidget {
               ),
             );
           } else if (state is Authenticated) {
-            context.go(RouteNames.home);
+            final addressController = SavedAddressesScope.of(context);
+            addressController.loadAddressesIfNeeded().then((_) {
+              if (!context.mounted) return;
+              if (addressController.addresses.isEmpty) {
+                context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
+              } else {
+                context.go(RouteNames.home);
+              }
+            });
           } else if (state is SocialLoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(localizedErrorMessage(AppLocalizations.of(context)!, state.message))),

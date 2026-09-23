@@ -11,6 +11,7 @@ import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -40,12 +41,19 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  void _maybeNavigate() {
+  Future<void> _maybeNavigate() async {
     if (_navigated || !_minDelayElapsed) return;
     final state = _pendingAuthState;
     if (state is Authenticated) {
       _navigated = true;
-      context.go(RouteNames.home);
+      final addressController = SavedAddressesScope.of(context);
+      await addressController.loadAddressesIfNeeded();
+      if (!mounted) return;
+      if (addressController.addresses.isEmpty) {
+        context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
+      } else {
+        context.go(RouteNames.home);
+      }
     } else if (state is Unauthenticated) {
       _navigated = true;
       context.go(RouteNames.authEntry);

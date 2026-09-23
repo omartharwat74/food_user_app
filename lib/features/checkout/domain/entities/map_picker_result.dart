@@ -1,6 +1,6 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-enum MapPickerMode { add, edit, select }
+enum MapPickerMode { add, edit, select, onboarding }
 
 class MapPickerArgs {
   const MapPickerArgs({

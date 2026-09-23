@@ -13,6 +13,7 @@ import 'package:food_user_app/features/profile/presentation/pages/add_edit_addre
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/core/errors/failures.dart';
 
 class AddressBookScreen extends StatelessWidget {
   const AddressBookScreen({super.key});
@@ -125,8 +126,13 @@ class _AddressBookBody extends StatelessWidget {
                 context.pop();
               }
             } else {
+              final failure = controller.lastError;
+              final errorMessage = failure is Failure ? failure.message : l10n.authErrorRequestFailed;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+                SnackBar(
+                  content: Text(errorMessage),
+                  backgroundColor: AppColors.error,
+                ),
               );
             }
           },
@@ -138,8 +144,13 @@ class _AddressBookBody extends StatelessWidget {
                 SnackBar(content: Text(l10n.addressDeletedDesignOnly)),
               );
             } else {
+              final failure = controller.lastError;
+              final errorMessage = failure is Failure ? failure.message : l10n.authErrorRequestFailed;
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.authErrorRequestFailed)),
+                SnackBar(
+                  content: Text(errorMessage),
+                  backgroundColor: AppColors.error,
+                ),
               );
             }
           },

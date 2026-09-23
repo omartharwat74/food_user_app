@@ -925,6 +925,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLocation => 'Select Location';
 
   @override
+  String get chooseLocationOnboarding => 'Location';
+
+  @override
+  String get helpUsReachYouFaster => 'Help us reach you faster';
+
+  @override
   String get selectedLocation => 'Your current address';
 
   @override

@@ -15,13 +15,14 @@ import 'package:food_user_app/features/profile/presentation/controllers/saved_ad
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
-enum AddressFlowMode { add, edit }
+enum AddressFlowMode { add, edit, onboarding }
 
 class ProfileAddressDetailsArgs {
-  const ProfileAddressDetailsArgs({this.addressId, this.mapResult});
+  const ProfileAddressDetailsArgs({this.addressId, this.mapResult, this.isOnboarding = false});
 
   final String? addressId;
   final MapPickerResult? mapResult;
+  final bool isOnboarding;
 }
 
 class AddressMapSelectionScreen extends StatelessWidget {
@@ -115,6 +116,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
   // fullAddress is sourced from the map pick result or existing address;
   // it is sent silently in the API payload — no UI input field needed.
   String _fullAddress = '';
+  final _formKey = GlobalKey<FormState>();
   final _buildingController = TextEditingController();
   final _floorController = TextEditingController();
   final _apartmentController = TextEditingController();
@@ -183,36 +185,58 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: AddressDetailsScreen._screenPadding,
                 ),
-                child: Column(
-                  children: [
-                    _CurrentAddressPreview(
-                      address: previewAddress,
-                      latLng: previewLatLng,
-                    ),
-                    const SizedBox(height: 16),
-                    _AddressInputField(
-                      hint: l10n.building,
-                      controller: _buildingController,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _AddressInputField(
-                            hint: l10n.floor,
-                            controller: _floorController,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _CurrentAddressPreview(
+                        address: previewAddress,
+                        latLng: previewLatLng,
+                      ),
+                      const SizedBox(height: 16),
+                      _AddressInputField(
+                        hint: l10n.building,
+                        controller: _buildingController,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'هذا الحقل مطلوب';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: _AddressInputField(
+                              hint: l10n.floor,
+                              controller: _floorController,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _AddressInputField(
-                            hint: l10n.apartment,
-                            controller: _apartmentController,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _AddressInputField(
+                              hint: l10n.apartment,
+                              controller: _apartmentController,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'هذا الحقل مطلوب';
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -222,6 +246,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
               onTap: addressesController.isMutating
                   ? null
                   : () async {
+                      if (!_formKey.currentState!.validate()) return;
+                      
                       final ok = await _submitAddress(
                         context: context,
                         mode: widget.mode,
@@ -237,9 +263,15 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                         ),
                       );
                       if (!ok) return;
-                      context.pop();
-                      if (context.mounted && context.canPop()) {
+                      
+                      if (widget.mode == AddressFlowMode.onboarding) {
+                        context.go(RouteNames.home);
+                        return;
+                      } else {
                         context.pop();
+                        if (context.mounted && context.canPop()) {
+                          context.pop();
+                        }
                       }
                     },
             ),
@@ -281,7 +313,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final selectedLongitude =
         mapResult?.longitude ?? existingAddress?.longitude;
     final validationPassed =
-        !(mode == AddressFlowMode.add && mapResult == null) &&
+        !((mode == AddressFlowMode.add || mode == AddressFlowMode.onboarding) && mapResult == null) &&
         detailedAddress.trim().isNotEmpty;
 
     _logAddressDebug(
@@ -612,10 +644,11 @@ class _StaticMap extends StatelessWidget {
 }
 
 class _AddressInputField extends StatefulWidget {
-  const _AddressInputField({required this.hint, this.controller});
+  const _AddressInputField({required this.hint, this.controller, this.validator});
 
   final String hint;
   final TextEditingController? controller;
+  final String? Function(String?)? validator;
 
   @override
   State<_AddressInputField> createState() => _AddressInputFieldState();
@@ -648,12 +681,11 @@ class _AddressInputFieldState extends State<_AddressInputField> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 40,
-      child: TextFormField(
-        focusNode: _focusNode,
-        controller: widget.controller,
-        onTapOutside: (_) => FocusScope.of(context).unfocus(),
+    return TextFormField(
+      focusNode: _focusNode,
+      controller: widget.controller,
+      validator: widget.validator,
+      onTapOutside: (_) => FocusScope.of(context).unfocus(),
         textAlign: TextAlign.start,
         cursorColor: AppColors.cursor(context),
         style: AppTextStyles.inputText(
@@ -689,8 +721,7 @@ class _AddressInputFieldState extends State<_AddressInputField> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

@@ -13,6 +13,7 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/auth/presentation/pages/phone_auth_screen.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
@@ -120,7 +121,15 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
                 );
               }
             } else if (state is PhoneOtpLoginSuccess || state is CompleteRegistrationSuccess) {
-              context.go(RouteNames.home);
+              final addressController = SavedAddressesScope.of(context);
+              addressController.loadAddressesIfNeeded().then((_) {
+                if (!context.mounted) return;
+                if (addressController.addresses.isEmpty) {
+                  context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
+                } else {
+                  context.go(RouteNames.home);
+                }
+              });
             } else if (state is PhoneOtpVerifyFailure) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

@@ -913,6 +913,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chooseLocation => 'تحديد الموقع الجغرافي';
 
   @override
+  String get chooseLocationOnboarding => 'الموقع الجغرافي';
+
+  @override
+  String get helpUsReachYouFaster => 'ساعدنا نوصل لك أسرع ';
+
+  @override
   String get selectedLocation => 'عنوانك الحالي';
 
   @override

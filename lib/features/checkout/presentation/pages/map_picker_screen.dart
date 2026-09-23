@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
@@ -124,7 +125,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             children: [
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
-                child: _MapHeader(title: l10n.chooseLocation),
+                child: _MapHeader(
+                  title: widget.mode == MapPickerMode.onboarding ? l10n.chooseLocationOnboarding : l10n.chooseLocation,
+                  subtitle: widget.mode == MapPickerMode.onboarding ? l10n.helpUsReachYouFaster : null,
+                  showBackButton: widget.mode != MapPickerMode.onboarding && context.canPop(),
+                ),
               ),
               const SizedBox(height: 20),
               Expanded(
@@ -526,17 +531,25 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
   void _confirmLocation() {
     final l10n = AppLocalizations.of(context)!;
-    context.pop(
-      MapPickerResult(
-        latitude: _selectedLatLng.latitude,
-        longitude: _selectedLatLng.longitude,
-        address: _selectedAddress.isEmpty
-            ? l10n.mapPickerFallbackAddress
-            : _selectedAddress,
-        city: _selectedCity,
-        neighborhood: _selectedNeighborhood,
-      ),
+    final result = MapPickerResult(
+      latitude: _selectedLatLng.latitude,
+      longitude: _selectedLatLng.longitude,
+      address: _selectedAddress.isEmpty
+          ? l10n.mapPickerFallbackAddress
+          : _selectedAddress,
+      city: _selectedCity,
+      neighborhood: _selectedNeighborhood,
     );
+
+    if (widget.mode == MapPickerMode.add || widget.mode == MapPickerMode.onboarding) {
+      final query = widget.mode == MapPickerMode.onboarding ? '?isOnboarding=true' : '';
+      context.push(
+        '${RouteNames.addressBookAddDetails}$query',
+        extra: result,
+      );
+    } else {
+      context.pop(result);
+    }
   }
 }
 
@@ -555,47 +568,70 @@ class _PlacePrediction {
 }
 
 class _MapHeader extends StatelessWidget {
-  const _MapHeader({required this.title});
+  const _MapHeader({required this.title, this.subtitle, this.showBackButton = true});
 
   final String title;
+  final String? subtitle;
+  final bool showBackButton;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 28,
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => context.pop(),
-              child: SizedBox(
-                width: 28,
-                height: 28,
-                child: Icon(
-                  AppDirectionalIcons.backChevron(context),
-                  size: 28,
-                  color: AppColors.onSurface(context),
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showBackButton) ...[
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => context.pop(),
+                  child: SizedBox(
+                    width: 28,
+                    height: 28,
+                    child: Icon(
+                      AppDirectionalIcons.backChevron(context),
+                      size: 28,
+                      color: AppColors.onSurface(context),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+              ],
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.appBarTitle(context).copyWith(
+                    color: AppColors.onSurface(context),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    height: 1.4,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 4),
+            ],
+          ),
+          if (subtitle != null) ...[
+            const SizedBox(height: 8),
             Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              subtitle!,
               textAlign: TextAlign.start,
-              style: AppTextStyles.appBarTitle(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                height: 1.4,
+              style: TextStyle(
+                color: AppColors.paragraph(context),
+                fontSize: 12,
+                fontFamily: 'Expo Arabic',
+                fontWeight: FontWeight.w400,
+                height: 1.30,
               ),
             ),
           ],
-        ),
+        ],
       ),
     );
   }

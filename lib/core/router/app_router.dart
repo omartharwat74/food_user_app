@@ -337,7 +337,12 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.addressBookAddMap,
-        builder: (c, s) => const MapPickerScreen(mode: MapPickerMode.add),
+        builder: (c, s) {
+          final isOnboarding = s.uri.queryParameters['isOnboarding'] == 'true';
+          return MapPickerScreen(
+            mode: isOnboarding ? MapPickerMode.onboarding : MapPickerMode.add,
+          );
+        },
       ),
       GoRoute(
         path: RouteNames.addressBookAddDetails,
@@ -348,8 +353,14 @@ class AppRouter {
           final result =
               args?.mapResult ??
               (s.extra is MapPickerResult ? s.extra as MapPickerResult : null);
+          
+          final isOnboardingQuery = s.uri.queryParameters['isOnboarding'] == 'true';
+          final isOnboarding = args?.isOnboarding == true || isOnboardingQuery;
+
           return profile_address.AddressDetailsScreen(
-            mode: profile_address.AddressFlowMode.add,
+            mode: isOnboarding 
+                ? profile_address.AddressFlowMode.onboarding 
+                : profile_address.AddressFlowMode.add,
             mapResult: result,
           );
         },

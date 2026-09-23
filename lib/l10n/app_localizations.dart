@@ -1868,6 +1868,18 @@ abstract class AppLocalizations {
   /// **'Select Location'**
   String get chooseLocation;
 
+  /// No description provided for @chooseLocationOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get chooseLocationOnboarding;
+
+  /// No description provided for @helpUsReachYouFaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Help us reach you faster'**
+  String get helpUsReachYouFaster;
+
   /// No description provided for @selectedLocation.
   ///
   /// In en, this message translates to:

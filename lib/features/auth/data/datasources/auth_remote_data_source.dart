@@ -80,11 +80,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> sendPhoneOtp({required String phone}) async {
     try {
-      await _dio.post<dynamic>(
+      final response = await _dio.post<dynamic>(
         ApiEndpoints.sendOtp,
         data: await _withDeviceMeta(<String, dynamic>{'phone': phone}),
       );
+      print('=== SEND OTP RESPONSE ===');
+      print(response.data);
+      print('=========================');
     } on DioException catch (e) {
+      print('=== SEND OTP ERROR ===');
+      print(e.response?.data);
       throw DioErrorMapper.map(e);
     }
   }

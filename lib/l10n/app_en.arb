@@ -323,6 +323,8 @@
   "itemAddedToFavorites": "Item added to favorites successfully",
   "itemRemovedFromFavorites": "Item removed from favorites successfully",
   "chooseLocation": "Select Location",
+  "chooseLocationOnboarding": "Location",
+  "helpUsReachYouFaster": "Help us reach you faster",
   "selectedLocation": "Your current address",
   "selectDeliveryAddress": "Select delivery address",
   "searchForAddress": "Search for your location",

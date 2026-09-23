@@ -15,8 +15,7 @@ abstract class PageResponseRestaurantDto with _$PageResponseRestaurantDto {
     @Default(0) int size,
     @Default(0) int totalElements,
     @Default(0) int totalPages,
-    @IntBoolConverter()
-    @Default(true) bool last,
+    @IntBoolConverter() @Default(true) bool last,
   }) = _PageResponseRestaurantDto;
 
   factory PageResponseRestaurantDto.fromJson(Map<String, dynamic> json) =>

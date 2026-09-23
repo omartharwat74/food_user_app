@@ -1,6 +1,13 @@
 {
   "@@locale": "en",
+  "discount": "Discount",
+
   "appTitle": "Food User App",
+  "startSearching": "Start searching for what you love",
+  "search": "Search",
+  "statusOpen": "Available",
+  "statusBusy": "Busy",
+  "statusClosed": "Closed",
   "settingsUpdatedSuccess": "Settings updated successfully",
   "deleteAccountSuccess": "Account deleted successfully",
   "changeAppLanguageTitle": "Change App Language",
@@ -544,5 +551,11 @@
   "searchClearAll": "Clear All",
   "searchClearHistoryConfirm": "Are you sure you want to clear your search history?",
   "clear": "Clear",
-  "seeAll": "See All"
+  "seeAll": "See All",
+  "currency": "EGP",
+  "shopByCategories": "Shop by Categories",
+  "popularProducts": "Popular Products",
+  "searchPlaceholder": "Search for what you love",
+  "searchByProductName": "Search by product name",
+  "all": "All"
 }

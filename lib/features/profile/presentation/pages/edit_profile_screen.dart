@@ -83,8 +83,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<ProfileBloc, ProfileState>(
-        listenWhen: (prev, curr) => 
-            curr.updateProfileSuccess != prev.updateProfileSuccess || 
+        listenWhen: (prev, curr) =>
+            curr.updateProfileSuccess != prev.updateProfileSuccess ||
             curr.errorMessage != prev.errorMessage ||
             curr.sendCurrentOtpSuccess != prev.sendCurrentOtpSuccess ||
             curr.profile != prev.profile,
@@ -175,7 +175,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           trailing: _PhoneChangeAction(
                             label: l10n.changePhone,
                             onTap: () {
-                              context.read<ProfileBloc>().add(const SendCurrentPhoneOtpEvent());
+                              context.read<ProfileBloc>().add(
+                                const SendCurrentPhoneOtpEvent(),
+                              );
                             },
                           ),
                         ),
@@ -359,7 +361,10 @@ class _ProfileFieldState extends State<_ProfileField> {
                   ),
                 ),
               ),
-              if (widget.trailing != null) ...[const SizedBox(width: 12), widget.trailing!],
+              if (widget.trailing != null) ...[
+                const SizedBox(width: 12),
+                widget.trailing!,
+              ],
             ],
           ),
         ),

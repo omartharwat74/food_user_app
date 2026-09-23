@@ -27,9 +27,7 @@ class GetMarketProductsUseCase
   GetMarketProductsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, List<Product>>> call(
-    GetMarketProductsParams params,
-  ) {
+  Future<Either<Failure, List<Product>>> call(GetMarketProductsParams params) {
     return repository.getMarketProducts(
       marketId: params.marketId,
       categoryId: params.categoryId,

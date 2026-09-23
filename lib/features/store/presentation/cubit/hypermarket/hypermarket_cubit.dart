@@ -47,7 +47,12 @@ class HypermarketLoaded extends HypermarketState {
   }
 
   @override
-  List<Object?> get props => [categories, sections, selectedCategoryId, isLoadingSections];
+  List<Object?> get props => [
+    categories,
+    sections,
+    selectedCategoryId,
+    isLoadingSections,
+  ];
 }
 
 class HypermarketError extends HypermarketState {
@@ -64,8 +69,8 @@ class HypermarketCubit extends Cubit<HypermarketState> {
   String? _storeId;
 
   HypermarketCubit({required StoreRepository repository})
-      : _repository = repository,
-        super(const HypermarketInitial());
+    : _repository = repository,
+      super(const HypermarketInitial());
 
   Future<void> fetchCategories(String storeId) async {
     _storeId = storeId;
@@ -74,21 +79,17 @@ class HypermarketCubit extends Cubit<HypermarketState> {
     final result = await _repository.getStoreCategories(storeId);
     if (isClosed) return;
 
-    result.fold(
-      (failure) => emit(HypermarketError(failure.message)),
-      (response) {
-        final categories = response.data.categories;
-        emit(HypermarketLoaded(
-          categories: categories,
-          sections: const [],
-        ));
+    result.fold((failure) => emit(HypermarketError(failure.message)), (
+      response,
+    ) {
+      final categories = response.data.categories;
+      emit(HypermarketLoaded(categories: categories, sections: const []));
 
-        // Optionally auto-fetch the first category
-        if (categories.isNotEmpty) {
-          fetchSections(categories.first.id.toString());
-        }
-      },
-    );
+      // Optionally auto-fetch the first category
+      if (categories.isNotEmpty) {
+        fetchSections(categories.first.id.toString());
+      }
+    });
   }
 
   Future<void> fetchSections(String categoryId) async {
@@ -96,10 +97,12 @@ class HypermarketCubit extends Cubit<HypermarketState> {
 
     final currentState = state;
     if (currentState is HypermarketLoaded) {
-      emit(currentState.copyWith(
-        selectedCategoryId: categoryId,
-        isLoadingSections: true,
-      ));
+      emit(
+        currentState.copyWith(
+          selectedCategoryId: categoryId,
+          isLoadingSections: true,
+        ),
+      );
     } else {
       emit(const HypermarketLoading());
     }
@@ -121,16 +124,20 @@ class HypermarketCubit extends Cubit<HypermarketState> {
       },
       (response) {
         if (state is HypermarketLoaded) {
-          emit((state as HypermarketLoaded).copyWith(
-            sections: response.data.sections,
-            isLoadingSections: false,
-          ));
+          emit(
+            (state as HypermarketLoaded).copyWith(
+              sections: response.data.sections,
+              isLoadingSections: false,
+            ),
+          );
         } else {
-          emit(HypermarketLoaded(
-            categories: const [], // if somehow state was lost
-            sections: response.data.sections,
-            selectedCategoryId: categoryId,
-          ));
+          emit(
+            HypermarketLoaded(
+              categories: const [], // if somehow state was lost
+              sections: response.data.sections,
+              selectedCategoryId: categoryId,
+            ),
+          );
         }
       },
     );

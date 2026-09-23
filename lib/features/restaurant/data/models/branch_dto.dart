@@ -13,13 +13,13 @@ String? _nullableIdFromJson(dynamic value) => value?.toString();
 abstract class BranchDto with _$BranchDto {
   const factory BranchDto({
     @JsonKey(fromJson: _idFromJson) @Default('') String id,
-    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId,
+    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)
+    String? restaurantId,
     String? address,
     double? lat,
     double? lng,
     Map<String, dynamic>? operatingHours,
-    @IntBoolConverter()
-    bool? active,
+    @IntBoolConverter() bool? active,
   }) = _BranchDto;
 
   factory BranchDto.fromJson(Map<String, dynamic> json) =>

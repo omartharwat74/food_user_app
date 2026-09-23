@@ -162,7 +162,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                     SliverToBoxAdapter(child: _PromoBanners(store: store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
                     
-                    _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
+                    _buildSectionTitle(context, AppLocalizations.of(context)!.shopByCategories),
                     BlocBuilder<HypermarketCubit, HypermarketState>(
                       builder: (context, hyperState) {
                         if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
@@ -182,7 +182,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
                     
-                    _buildSectionTitle(context, 'المنتجات الاكثر طلباً'),
+                    _buildSectionTitle(context, AppLocalizations.of(context)!.popularProducts),
                     BlocBuilder<HypermarketCubit, HypermarketState>(
                       builder: (context, hyperState) {
                         if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
@@ -261,10 +261,11 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                                 color: AppColors.surfaceCard(context).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.arrow_back_ios_new,
                                 size: 16,
                                 color: Colors.white,
+                                textDirection: Directionality.of(context),
                               ),
                             ),
                           ),
@@ -272,7 +273,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           Text(
                             store.name,
                             style: AppTextStyles.heading4(context).copyWith(
-                              color: AppColors.surfaceCard(context),
+                              color: AppColors.onSurface(context),
                               fontSize: 18,
                             ),
                           ),
@@ -308,12 +309,15 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                       children: [
                         Icon(Icons.search, color: AppColors.hint(context), size: 20),
                         const SizedBox(width: 10),
-                        Text(
-                          'ابحث عن ما تحب',
-                          style: AppTextStyles.body(context).copyWith(
-                            color: AppColors.hint(context),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)!.searchPlaceholder,
+                            textAlign: TextAlign.start,
+                            style: AppTextStyles.body(context).copyWith(
+                              color: AppColors.hint(context),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                         ),
                       ],
@@ -343,19 +347,20 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return SliverPadding(
-      // Figma: horizontal 16px margin, 12px vertical spacing
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       sliver: SliverToBoxAdapter(
-        child: Text(
-          title,
-          textAlign: TextAlign.right,
-          // Figma: Mobile/H4 → fontFamily: Expo Arabic, fontWeight: 600, fontSize: 15, color: #1B1B1B
-          style: const TextStyle(
-            fontFamily: 'Expo Arabic',
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-            height: 1.4,
-            color: Color(0xFF1B1B1B),
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Text(
+            title,
+            textAlign: TextAlign.start,
+            style: TextStyle(
+              fontFamily: 'Expo Arabic',
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+              color: AppColors.onSurface(context),
+            ),
           ),
         ),
       ),

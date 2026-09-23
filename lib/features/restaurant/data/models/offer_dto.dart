@@ -13,14 +13,14 @@ String? _nullableIdFromJson(dynamic value) => value?.toString();
 abstract class OfferDto with _$OfferDto {
   const factory OfferDto({
     @JsonKey(fromJson: _idFromJson) @Default('') String id,
-    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson) String? restaurantId,
+    @JsonKey(name: 'restaurantId', fromJson: _nullableIdFromJson)
+    String? restaurantId,
     String? title,
     int? discountPercent,
     double? minOrderAmount,
     String? description,
     String? expiresAt,
-    @IntBoolConverter()
-    bool? active,
+    @IntBoolConverter() bool? active,
   }) = _OfferDto;
 
   factory OfferDto.fromJson(Map<String, dynamic> json) =>

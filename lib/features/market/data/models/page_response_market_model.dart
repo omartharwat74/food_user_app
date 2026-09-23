@@ -28,18 +28,23 @@ class PageResponseMarketModel {
           .toList();
     }
 
-    final pageNum = (json['page'] as num?)?.toInt() ??
+    final pageNum =
+        (json['page'] as num?)?.toInt() ??
         (json['pageNumber'] as num?)?.toInt() ??
         0;
-    final sizeNum = (json['size'] as num?)?.toInt() ??
+    final sizeNum =
+        (json['size'] as num?)?.toInt() ??
         (json['pageSize'] as num?)?.toInt() ??
         markets.length;
-    final totalElems = (json['totalElements'] as num?)?.toInt() ??
+    final totalElems =
+        (json['totalElements'] as num?)?.toInt() ??
         (json['total'] as num?)?.toInt() ??
         markets.length;
-    final totalPg = (json['totalPages'] as num?)?.toInt() ??
+    final totalPg =
+        (json['totalPages'] as num?)?.toInt() ??
         (sizeNum > 0 ? (totalElems / sizeNum).ceil() : 1);
-    final isLast = json['last'] == true ||
+    final isLast =
+        json['last'] == true ||
         json['isLast'] == true ||
         (pageNum + 1 >= totalPg);
 

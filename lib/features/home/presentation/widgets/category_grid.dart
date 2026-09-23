@@ -26,13 +26,12 @@ class CategoryGrid extends StatelessWidget {
             children: [
               for (var index = 0; index < sections.length; index++) ...[
                 Expanded(child: _CategoryTile(section: sections[index])),
-                if (index != sections.length - 1)
-                  const SizedBox(width: 14),
+                if (index != sections.length - 1) const SizedBox(width: 14),
               ],
             ],
           );
         }
-        
+
         return const SizedBox(
           height: 104,
           child: Center(child: CircularProgressIndicator()),
@@ -55,7 +54,9 @@ class _CategoryTile extends StatelessWidget {
         // or just navigate to generic store listing
         // Assuming ID 1 = restaurants, ID 2 = grocery etc. based on old logic
         final type = _getLegacyType(section);
-        context.push(RouteNames.serviceListingFor(type.pathSegment, section.id));
+        context.push(
+          RouteNames.serviceListingFor(type.pathSegment, section.id),
+        );
       },
       borderRadius: const BorderRadius.all(Radius.circular(12)),
       child: Column(
@@ -101,11 +102,7 @@ class _CategoryTile extends StatelessWidget {
                   ),
                 ),
                 if (section.image != null)
-                  AppNetworkImage(
-                    section.image!,
-                    width: 56,
-                    height: 56,
-                  )
+                  AppNetworkImage(section.image!, width: 56, height: 56)
                 else
                   const Icon(Icons.storefront, size: 30, color: Colors.grey),
               ],
@@ -128,10 +125,22 @@ class _CategoryTile extends StatelessWidget {
   }
 
   ServiceListingType _getLegacyType(Section section) {
-    if (section.id == 1 || section.name.contains('مطاعم') || section.name.toLowerCase().contains('restaurant')) return ServiceListingType.restaurants;
-    if (section.id == 2 || section.name.contains('بقالة') || section.name.toLowerCase().contains('grocery')) return ServiceListingType.grocery;
-    if (section.id == 3 || section.name.contains('متاجر') || section.name.toLowerCase().contains('store')) return ServiceListingType.stores;
-    if (section.id == 4 || section.name.contains('توصيل') || section.name.toLowerCase().contains('pickup')) return ServiceListingType.pickup;
+    if (section.id == 1 ||
+        section.name.contains('مطاعم') ||
+        section.name.toLowerCase().contains('restaurant'))
+      return ServiceListingType.restaurants;
+    if (section.id == 2 ||
+        section.name.contains('بقالة') ||
+        section.name.toLowerCase().contains('grocery'))
+      return ServiceListingType.grocery;
+    if (section.id == 3 ||
+        section.name.contains('متاجر') ||
+        section.name.toLowerCase().contains('store'))
+      return ServiceListingType.stores;
+    if (section.id == 4 ||
+        section.name.contains('توصيل') ||
+        section.name.toLowerCase().contains('pickup'))
+      return ServiceListingType.pickup;
     return ServiceListingType.restaurants;
   }
 }

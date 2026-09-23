@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -78,7 +77,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
     // TODO: Remove after verifying new API key is loaded correctly
     assert(() {
       final key = _googleWebServicesApiKey;
-      debugPrint('🗺️ [MapPicker] USING MAPS KEY: ${key.isEmpty ? "⚠️ EMPTY — dotenv not loaded!" : "✅ ${key.substring(0, 10)}..."}');
+      debugPrint(
+        '🗺️ [MapPicker] USING MAPS KEY: ${key.isEmpty ? "⚠️ EMPTY — dotenv not loaded!" : "✅ ${key.substring(0, 10)}..."}',
+      );
       return true;
     }());
   }
@@ -126,9 +127,15 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
                 child: _MapHeader(
-                  title: widget.mode == MapPickerMode.onboarding ? l10n.chooseLocationOnboarding : l10n.chooseLocation,
-                  subtitle: widget.mode == MapPickerMode.onboarding ? l10n.helpUsReachYouFaster : null,
-                  showBackButton: widget.mode != MapPickerMode.onboarding && context.canPop(),
+                  title: widget.mode == MapPickerMode.onboarding
+                      ? l10n.chooseLocationOnboarding
+                      : l10n.chooseLocation,
+                  subtitle: widget.mode == MapPickerMode.onboarding
+                      ? l10n.helpUsReachYouFaster
+                      : null,
+                  showBackButton:
+                      widget.mode != MapPickerMode.onboarding &&
+                      context.canPop(),
                 ),
               ),
               const SizedBox(height: 20),
@@ -487,10 +494,13 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
             for (final component in addressComponents) {
               if (component is Map<String, dynamic>) {
                 final types = component['types'] as List<dynamic>? ?? [];
-                if (types.contains('locality') || types.contains('administrative_area_level_2')) {
+                if (types.contains('locality') ||
+                    types.contains('administrative_area_level_2')) {
                   city ??= component['long_name'] as String?;
                 }
-                if (types.contains('sublocality') || types.contains('neighborhood') || types.contains('administrative_area_level_3')) {
+                if (types.contains('sublocality') ||
+                    types.contains('neighborhood') ||
+                    types.contains('administrative_area_level_3')) {
                   neighborhood ??= component['long_name'] as String?;
                 }
               }
@@ -541,12 +551,12 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       neighborhood: _selectedNeighborhood,
     );
 
-    if (widget.mode == MapPickerMode.add || widget.mode == MapPickerMode.onboarding) {
-      final query = widget.mode == MapPickerMode.onboarding ? '?isOnboarding=true' : '';
-      context.push(
-        '${RouteNames.addressBookAddDetails}$query',
-        extra: result,
-      );
+    if (widget.mode == MapPickerMode.add ||
+        widget.mode == MapPickerMode.onboarding) {
+      final query = widget.mode == MapPickerMode.onboarding
+          ? '?isOnboarding=true'
+          : '';
+      context.push('${RouteNames.addressBookAddDetails}$query', extra: result);
     } else {
       context.pop(result);
     }
@@ -568,7 +578,11 @@ class _PlacePrediction {
 }
 
 class _MapHeader extends StatelessWidget {
-  const _MapHeader({required this.title, this.subtitle, this.showBackButton = true});
+  const _MapHeader({
+    required this.title,
+    this.subtitle,
+    this.showBackButton = true,
+  });
 
   final String title;
   final String? subtitle;

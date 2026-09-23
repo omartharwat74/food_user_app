@@ -33,7 +33,9 @@ class OrderTrackingScreen extends StatelessWidget {
               error: (message) => Center(
                 child: Text(
                   message,
-                  style: AppTextStyles.body(context).copyWith(color: AppColors.error),
+                  style: AppTextStyles.body(
+                    context,
+                  ).copyWith(color: AppColors.error),
                 ),
               ),
               loaded: (tracking) {
@@ -44,7 +46,9 @@ class OrderTrackingScreen extends StatelessWidget {
                     children: [
                       Text(
                         'Order #${tracking.orderId}',
-                        style: AppTextStyles.heading4(context).copyWith(color: AppColors.onSurface(context)),
+                        style: AppTextStyles.heading4(
+                          context,
+                        ).copyWith(color: AppColors.onSurface(context)),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -57,7 +61,9 @@ class OrderTrackingScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       Text(
                         'Timeline',
-                        style: AppTextStyles.heading4(context).copyWith(color: AppColors.onSurface(context)),
+                        style: AppTextStyles.heading4(
+                          context,
+                        ).copyWith(color: AppColors.onSurface(context)),
                       ),
                       const SizedBox(height: 16),
                       Expanded(
@@ -65,7 +71,8 @@ class OrderTrackingScreen extends StatelessWidget {
                           itemCount: tracking.timeline.length,
                           itemBuilder: (context, index) {
                             final entry = tracking.timeline[index];
-                            final isLast = index == tracking.timeline.length - 1;
+                            final isLast =
+                                index == tracking.timeline.length - 1;
                             return Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -90,30 +97,39 @@ class OrderTrackingScreen extends StatelessWidget {
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         entry.status,
-                                        style: AppTextStyles.body(context).copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                        style: AppTextStyles.body(
+                                          context,
+                                        ).copyWith(fontWeight: FontWeight.w600),
                                       ),
                                       if (entry.description != null) ...[
                                         const SizedBox(height: 4),
                                         Text(
                                           entry.description!,
-                                          style: AppTextStyles.caption(context).copyWith(
-                                            color: AppColors.paragraph(context),
-                                          ),
+                                          style: AppTextStyles.caption(context)
+                                              .copyWith(
+                                                color: AppColors.paragraph(
+                                                  context,
+                                                ),
+                                              ),
                                         ),
                                       ],
                                       const SizedBox(height: 4),
                                       Text(
-                                        DateFormat.yMMMd().add_jm().format(entry.timestamp),
-                                        style: AppTextStyles.caption(context).copyWith(
-                                          color: AppColors.paragraph(context),
-                                          fontSize: 12,
+                                        DateFormat.yMMMd().add_jm().format(
+                                          entry.timestamp,
                                         ),
+                                        style: AppTextStyles.caption(context)
+                                            .copyWith(
+                                              color: AppColors.paragraph(
+                                                context,
+                                              ),
+                                              fontSize: 12,
+                                            ),
                                       ),
                                       const SizedBox(height: 24),
                                     ],
@@ -135,4 +151,3 @@ class OrderTrackingScreen extends StatelessWidget {
     );
   }
 }
-

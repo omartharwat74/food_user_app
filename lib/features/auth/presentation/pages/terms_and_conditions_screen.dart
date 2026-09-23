@@ -13,7 +13,8 @@ class TermsAndConditionsScreen extends StatefulWidget {
   const TermsAndConditionsScreen({super.key});
 
   @override
-  State<TermsAndConditionsScreen> createState() => _TermsAndConditionsScreenState();
+  State<TermsAndConditionsScreen> createState() =>
+      _TermsAndConditionsScreenState();
 }
 
 class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
@@ -22,7 +23,8 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
   @override
   void initState() {
     super.initState();
-    _settingsCubit = SettingsCubit(repository: sl<AuthRepository>())..fetchSettings();
+    _settingsCubit = SettingsCubit(repository: sl<AuthRepository>())
+      ..fetchSettings();
   }
 
   @override
@@ -36,7 +38,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final bg = AppColors.scaffoldBackground(context);
     final fg = AppColors.onSurface(context);
-    
+
     return BlocProvider.value(
       value: _settingsCubit,
       child: Scaffold(
@@ -46,7 +48,10 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
           foregroundColor: fg,
           elevation: 0,
           leading: BackButton(color: fg, onPressed: () => context.pop()),
-          title: Text(l10n.termsTitle, style: AppTextStyles.appBarTitle(context)),
+          title: Text(
+            l10n.termsTitle,
+            style: AppTextStyles.appBarTitle(context),
+          ),
           centerTitle: true,
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(

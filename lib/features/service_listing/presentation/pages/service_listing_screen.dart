@@ -15,13 +15,11 @@ import 'package:food_user_app/features/service_listing/presentation/models/servi
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
-import 'package:food_user_app/features/home/domain/entities/tag.dart' as entity_tag;
+import 'package:food_user_app/features/home/domain/entities/tag.dart'
+    as entity_tag;
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
 import 'package:food_user_app/core/router/route_names.dart';
-
-
-
 
 class ServiceListingScreen extends StatefulWidget {
   const ServiceListingScreen({
@@ -51,10 +49,16 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
   }
 
   void _fetchFilteredStores() {
-    final hasOffers = _selectedFilters.contains(ServiceFilterId.offers) ? 1 : null;
-    final fastPrep = _selectedFilters.contains(ServiceFilterId.fastDelivery) ? 1 : null;
-    final topRated = _selectedFilters.contains(ServiceFilterId.topRated) ? 1 : null;
-    
+    final hasOffers = _selectedFilters.contains(ServiceFilterId.offers)
+        ? 1
+        : null;
+    final fastPrep = _selectedFilters.contains(ServiceFilterId.fastDelivery)
+        ? 1
+        : null;
+    final topRated = _selectedFilters.contains(ServiceFilterId.topRated)
+        ? 1
+        : null;
+
     context.read<StoresCubit>().fetchStores(
       sectionId: widget.sectionId,
       search: _searchController.text.isNotEmpty ? _searchController.text : null,
@@ -119,7 +123,8 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                             ),
                           );
                         }
-                        if (tagsState is TagsLoaded && tagsState.tags.isNotEmpty) {
+                        if (tagsState is TagsLoaded &&
+                            tagsState.tags.isNotEmpty) {
                           return _ServiceCategoryStrip(
                             categories: tagsState.tags,
                             selectedCategory: _selectedTag,
@@ -167,7 +172,12 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                   physics: const ClampingScrollPhysics(),
                   slivers: [
                     SliverPadding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 40),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        0,
+                        16,
+                        40,
+                      ),
                       sliver: SliverToBoxAdapter(
                         child: BlocBuilder<StoresCubit, StoresState>(
                           builder: (context, storesState) {
@@ -191,15 +201,21 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                 );
                               }
 
-                              final majorStores = stores.where((s) => s.isMajor).toList();
-                              final normalStores = stores.where((s) => !s.isMajor).toList();
+                              final majorStores = stores
+                                  .where((s) => s.isMajor)
+                                  .toList();
+                              final normalStores = stores
+                                  .where((s) => !s.isMajor)
+                                  .toList();
 
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // ── Major Stores (المتاجر الكبرى) ─────────────
                                   if (majorStores.isNotEmpty) ...[
-                                    _SectionTitle(title: l10n.serviceLargeStores),
+                                    _SectionTitle(
+                                      title: l10n.serviceLargeStores,
+                                    ),
                                     const SizedBox(height: 12),
                                     SizedBox(
                                       height: 106,
@@ -207,29 +223,40 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                         scrollDirection: Axis.horizontal,
                                         padding: EdgeInsets.zero,
                                         itemCount: majorStores.length,
-                                        separatorBuilder: (_, _) => const SizedBox(width: 12),
+                                        separatorBuilder: (_, _) =>
+                                            const SizedBox(width: 12),
                                         itemBuilder: (context, index) {
                                           final s = majorStores[index];
                                           final mappedRestaurant = Restaurant(
                                             id: s.id.toString(),
                                             name: s.name,
-                                            cuisineType: s.tags.isNotEmpty ? s.tags.first.name : '',
-                                            coverImageUrl: s.cover ?? s.logo ?? '',
+                                            cuisineType: s.tags.isNotEmpty
+                                                ? s.tags.first.name
+                                                : '',
+                                            coverImageUrl:
+                                                s.cover ?? s.logo ?? '',
                                             logoUrl: s.logo ?? '',
                                             rating: s.ratingAvg ?? 0.0,
                                             ratingCount: s.ratingCount ?? 0,
-                                            deliveryTimeMin: s.prepTimeFrom ?? 0,
+                                            deliveryTimeMin:
+                                                s.prepTimeFrom ?? 0,
                                             deliveryTimeMax: s.prepTimeTo ?? 0,
                                             deliveryFee: 0.0,
                                             isFavorited: false,
                                             isMajor: true,
                                             availability: s.availability,
-                                            tags: s.tags.map((t) => t.name).toList(),
+                                            tags: s.tags
+                                                .map((t) => t.name)
+                                                .toList(),
                                           );
                                           return HypermarketMiniCard(
                                             market: mappedRestaurant,
                                             onTap: () {
-                                              context.push(RouteNames.marketDetailsFor(mappedRestaurant.id));
+                                              context.push(
+                                                RouteNames.marketDetailsFor(
+                                                  mappedRestaurant.id,
+                                                ),
+                                              );
                                             },
                                           );
                                         },
@@ -243,21 +270,32 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                     _SectionTitle(title: l10n.serviceAllPlaces),
                                     const SizedBox(height: 12),
                                     _ServicePlaceCollection(
-                                      items: normalStores.map((s) => ServicePlaceData.store(
-                                        id: s.id.toString(),
-                                        name: s.name,
-                                        time: '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0}',
-                                        imageAsset: s.cover ?? s.logo ?? '',
-                                        rating: s.ratingAvg?.toStringAsFixed(1) ?? '0.0',
-                                        hasOffer: s.hasOffer,
-                                        topRated: false,
-                                        isMajor: false,
-                                      )).toList(),
+                                      items: normalStores
+                                          .map(
+                                            (s) => ServicePlaceData.store(
+                                              id: s.id.toString(),
+                                              name: s.name,
+                                              time:
+                                                  '${s.prepTimeFrom ?? 0}-${s.prepTimeTo ?? 0}',
+                                              imageAsset:
+                                                  s.cover ?? s.logo ?? '',
+                                              rating:
+                                                  s.ratingAvg?.toStringAsFixed(
+                                                    1,
+                                                  ) ??
+                                                  '0.0',
+                                              hasOffer: s.hasOffer,
+                                              topRated: false,
+                                              isMajor: false,
+                                            ),
+                                          )
+                                          .toList(),
                                     ),
                                   ],
 
                                   // ── Nothing to show at all ───────────────────
-                                  if (majorStores.isEmpty && normalStores.isEmpty)
+                                  if (majorStores.isEmpty &&
+                                      normalStores.isEmpty)
                                     Column(
                                       children: [
                                         const SizedBox(height: 88),
@@ -269,15 +307,12 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                             }
 
                             if (storesState is StoresError) {
-                              return Center(
-                                child: Text(storesState.message),
-                              );
+                              return Center(child: Text(storesState.message));
                             }
 
                             return const SizedBox.shrink();
                           },
                         ),
-
                       ),
                     ),
                   ],
@@ -567,7 +602,6 @@ class _ServicePlaceCollection extends StatelessWidget {
   }
 }
 
-
 class _PlaceList extends StatelessWidget {
   const _PlaceList({required this.items});
 
@@ -591,13 +625,6 @@ class _PlaceList extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
 class _EmptyListingState extends StatelessWidget {
   const _EmptyListingState({required this.l10n});
 
@@ -608,4 +635,3 @@ class _EmptyListingState extends StatelessWidget {
     return const EmptyStateWidget(imageWidth: 100, imageHeight: 100);
   }
 }
-

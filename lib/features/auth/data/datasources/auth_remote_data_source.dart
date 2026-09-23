@@ -32,14 +32,10 @@ abstract class AuthRemoteDataSource {
   Future<void> logout();
 
   /// `PATCH /api/v1/auth/update-fcm` — registers/updates FCM token.
-  Future<void> updateFcm({
-    required String fcmToken,
-  });
+  Future<void> updateFcm({required String fcmToken});
 
   /// `POST /api/v1/auth/social/login` — social login via Firebase ID token.
-  Future<AuthFlowResponseModel> loginWithFirebase({
-    required String idToken,
-  });
+  Future<AuthFlowResponseModel> loginWithFirebase({required String idToken});
 
   /// `GET /api/v1/general-settings`
   Future<GeneralSettings> getGeneralSettings();
@@ -66,7 +62,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     return inner;
   }
 
-  Future<Map<String, dynamic>> _withDeviceMeta(Map<String, dynamic> data) async {
+  Future<Map<String, dynamic>> _withDeviceMeta(
+    Map<String, dynamic> data,
+  ) async {
     final meta = {
       ...data,
       'device_id': await DeviceMetaHelper.getDeviceId(),
@@ -130,8 +128,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         ApiEndpoints.completeProfile,
         data: await _withDeviceMeta(<String, dynamic>{
           'registration_token': registrationToken,
-          if (firstName != null && firstName.trim().isNotEmpty) 'first_name': firstName.trim(),
-          if (lastName != null && lastName.trim().isNotEmpty) 'last_name': lastName.trim(),
+          if (firstName != null && firstName.trim().isNotEmpty)
+            'first_name': firstName.trim(),
+          if (lastName != null && lastName.trim().isNotEmpty)
+            'last_name': lastName.trim(),
           if (email != null && email.trim().isNotEmpty) 'email': email.trim(),
           if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
         }),
@@ -156,15 +156,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> updateFcm({
-    required String fcmToken,
-  }) async {
+  Future<void> updateFcm({required String fcmToken}) async {
     try {
       await _dio.patch<dynamic>(
         ApiEndpoints.updateFcm,
-        data: await _withDeviceMeta(<String, dynamic>{
-          'fcm_token': fcmToken,
-        }),
+        data: await _withDeviceMeta(<String, dynamic>{'fcm_token': fcmToken}),
       );
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);

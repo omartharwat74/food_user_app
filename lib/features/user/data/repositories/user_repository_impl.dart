@@ -113,6 +113,7 @@ class UserRepositoryImpl implements UserRepository {
       return Left(_mapExceptionToFailure(e));
     }
   }
+
   @override
   Future<Either<Failure, void>> sendCurrentPhoneOtp() async {
     try {
@@ -134,7 +135,10 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, void>> sendNewPhoneOtp(String token, String newPhone) async {
+  Future<Either<Failure, void>> sendNewPhoneOtp(
+    String token,
+    String newPhone,
+  ) async {
     try {
       await remoteDataSource.sendNewPhoneOtp(token, newPhone);
       return const Right(null);
@@ -144,9 +148,17 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, UserProfile>> verifyNewPhoneOtp(String token, String newPhone, String otp) async {
+  Future<Either<Failure, UserProfile>> verifyNewPhoneOtp(
+    String token,
+    String newPhone,
+    String otp,
+  ) async {
     try {
-      final dto = await remoteDataSource.verifyNewPhoneOtp(token, newPhone, otp);
+      final dto = await remoteDataSource.verifyNewPhoneOtp(
+        token,
+        newPhone,
+        otp,
+      );
       await localDataSource.cacheProfile(dto);
       return Right(dto.toEntity());
     } catch (e) {

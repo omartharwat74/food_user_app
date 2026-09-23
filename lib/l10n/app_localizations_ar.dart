@@ -9,7 +9,25 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get discount => 'خصم';
+
+  @override
   String get appTitle => 'تطبيق توصيل الطعام';
+
+  @override
+  String get startSearching => 'ابدأ البحث';
+
+  @override
+  String get search => 'البحث';
+
+  @override
+  String get statusOpen => 'متاح';
+
+  @override
+  String get statusBusy => 'مشغول';
+
+  @override
+  String get statusClosed => 'مغلق';
 
   @override
   String get settingsUpdatedSuccess => 'تم تحديث الإعدادات بنجاح';
@@ -1428,9 +1446,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchMostSearchedCheese => 'جبنة';
 
   @override
-  String get startSearching => 'ابدأ البحث';
-
-  @override
   String get itemsTitle => 'العناصر';
 
   @override
@@ -1509,4 +1524,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get seeAll => 'عرض الكل';
+
+  @override
+  String get currency => 'ج.م';
+
+  @override
+  String get shopByCategories => 'تسوق حسب التصنيفات';
+
+  @override
+  String get popularProducts => 'المنتجات الأكثر طلباً';
+
+  @override
+  String get searchPlaceholder => 'ابحث عن ما تحب';
+
+  @override
+  String get searchByProductName => 'ابحث باسم المنتج';
+
+  @override
+  String get all => 'الكل';
 }

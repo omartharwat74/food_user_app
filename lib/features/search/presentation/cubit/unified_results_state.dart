@@ -14,8 +14,7 @@ abstract class UnifiedResultsState with _$UnifiedResultsState {
   const factory UnifiedResultsState.loaded({
     required List<MenuCategory> categories,
     required List<MenuItem> searchResults,
-    @IntBoolConverter()
-    required bool isSearchMode,
+    @IntBoolConverter() required bool isSearchMode,
     @Default(0) int selectedTabIndex,
     @Default('') String activeQuery,
   }) = _Loaded;

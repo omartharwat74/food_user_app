@@ -131,14 +131,15 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
     try {
       final response = await _dio.get<dynamic>(ApiEndpoints.favoritesList);
       final raw = response.data;
-      
+
       List<dynamic> items = [];
       if (raw is List) {
         items = raw;
       } else if (raw is Map<String, dynamic>) {
         if (raw['data'] is List) {
           items = raw['data'] as List<dynamic>;
-        } else if (raw['data'] is Map<String, dynamic> && raw['data']['items'] is List) {
+        } else if (raw['data'] is Map<String, dynamic> &&
+            raw['data']['items'] is List) {
           items = raw['data']['items'] as List<dynamic>;
         } else if (raw['items'] is List) {
           items = raw['items'] as List<dynamic>;

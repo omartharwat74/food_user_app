@@ -31,9 +31,7 @@ class GetMarketsUseCase
   GetMarketsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, PageResponseMarket>> call(
-    GetMarketsParams params,
-  ) {
+  Future<Either<Failure, PageResponseMarket>> call(GetMarketsParams params) {
     return repository.getMarkets(
       search: params.search,
       pickupAvailable: params.pickupAvailable,

@@ -47,7 +47,9 @@ class DioErrorMapper {
       return UnauthorizedException(message);
     }
     if (status == 422) {
-      try { debugPrint('[422 ValidationError] ${response?.data}'); } catch (_) {}
+      try {
+        debugPrint('[422 ValidationError] ${response?.data}');
+      } catch (_) {}
       return ValidationException(
         message,
         errors: _extractValidationErrors(data),

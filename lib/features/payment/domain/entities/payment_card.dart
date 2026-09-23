@@ -23,13 +23,13 @@ class PaymentCard extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        gateway,
-        brand,
-        last4,
-        cardNumber,
-        expMonth,
-        expYear,
-        isDefault,
-      ];
+    id,
+    gateway,
+    brand,
+    last4,
+    cardNumber,
+    expMonth,
+    expYear,
+    isDefault,
+  ];
 }

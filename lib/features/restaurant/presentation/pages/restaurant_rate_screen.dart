@@ -464,10 +464,7 @@ class _RestaurantFacts extends StatelessWidget {
               ? '${restaurant.deliveryFee.toFormattedPrice()} ج.م'
               : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
         ),
-        _FactRow(
-          label: copy.minimumOrder,
-          value: isArabic ? '0 ج.م' : 'EGP 0',
-        ),
+        _FactRow(label: copy.minimumOrder, value: isArabic ? '0 ج.م' : 'EGP 0'),
         _FactRow(
           label: copy.deliveryTime,
           valueWidget: DeliveryTimeText(
@@ -499,17 +496,19 @@ class _FactRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     final valueText = Flexible(
-      child: valueWidget ?? Text(
-        value ?? '',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        textAlign: isArabic ? TextAlign.start : TextAlign.end,
-        style: AppTextStyles.caption(context).copyWith(
-          color: AppColors.onSurface(context),
-          fontSize: 12,
-          height: 1.3,
-        ),
-      ),
+      child:
+          valueWidget ??
+          Text(
+            value ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: isArabic ? TextAlign.start : TextAlign.end,
+            style: AppTextStyles.caption(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 12,
+              height: 1.3,
+            ),
+          ),
     );
     final labelText = Text(
       label,

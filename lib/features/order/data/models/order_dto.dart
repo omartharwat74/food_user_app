@@ -29,7 +29,8 @@ abstract class OrderDto with _$OrderDto {
     double? driverLng,
   }) = _OrderDto;
 
-  factory OrderDto.fromJson(Map<String, dynamic> json) => _$OrderDtoFromJson(json);
+  factory OrderDto.fromJson(Map<String, dynamic> json) =>
+      _$OrderDtoFromJson(json);
 }
 
 @freezed
@@ -44,7 +45,8 @@ abstract class OrderItemDto with _$OrderItemDto {
     String? notes,
   }) = _OrderItemDto;
 
-  factory OrderItemDto.fromJson(Map<String, dynamic> json) => _$OrderItemDtoFromJson(json);
+  factory OrderItemDto.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemDtoFromJson(json);
 }
 
 extension OrderDtoMapper on OrderDto {

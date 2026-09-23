@@ -20,11 +20,7 @@ class SearchLog extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'term': term,
-      'searched_at': searchedAt,
-    };
+    return {'id': id, 'term': term, 'searched_at': searchedAt};
   }
 
   @override

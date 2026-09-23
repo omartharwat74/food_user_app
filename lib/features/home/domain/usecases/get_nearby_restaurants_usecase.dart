@@ -10,23 +10,22 @@ class GetRestaurantsParams extends Equatable {
   final int size;
   final String? categoryId;
 
-  const GetRestaurantsParams({
-    this.page = 0,
-    this.size = 20,
-    this.categoryId,
-  });
+  const GetRestaurantsParams({this.page = 0, this.size = 20, this.categoryId});
 
   @override
   List<Object?> get props => [page, size, categoryId];
 }
 
-class GetNearbyRestaurantsUseCase extends UseCase<PageResponseRestaurant, GetRestaurantsParams> {
+class GetNearbyRestaurantsUseCase
+    extends UseCase<PageResponseRestaurant, GetRestaurantsParams> {
   final RestaurantRepository repository;
 
   GetNearbyRestaurantsUseCase(this.repository);
 
   @override
-  Future<Either<Failure, PageResponseRestaurant>> call(GetRestaurantsParams params) async {
+  Future<Either<Failure, PageResponseRestaurant>> call(
+    GetRestaurantsParams params,
+  ) async {
     return await repository.getRestaurants(
       page: params.page,
       size: params.size,

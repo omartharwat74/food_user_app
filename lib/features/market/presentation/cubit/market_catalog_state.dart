@@ -51,12 +51,12 @@ class MarketCatalogLoaded extends MarketCatalogState {
 
   @override
   List<Object?> get props => [
-        selectedCategoryId,
-        subCategories,
-        selectedSubCategoryId,
-        products,
-        isLoadingProducts,
-      ];
+    selectedCategoryId,
+    subCategories,
+    selectedSubCategoryId,
+    products,
+    isLoadingProducts,
+  ];
 }
 
 class MarketCatalogError extends MarketCatalogState {

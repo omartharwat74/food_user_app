@@ -101,30 +101,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         idToken: result.idToken,
       );
       if (isClosed || emit.isDone) return;
-      response.fold(
-        (failure) => emit(SocialLoginFailure(failure.message)),
-        (authFlow) {
-          if (authFlow.registrationToken != null && authFlow.registrationToken!.isNotEmpty) {
-            _registrationToken = authFlow.registrationToken;
-          }
-          if (authFlow.isAuthenticated && authFlow.user != null) {
-            _registrationToken = null;
-            emit(Authenticated(authFlow.user!));
-          } else if (authFlow.needsPhoneVerification) {
-            // Social login required phone verification
-            emit(PhoneOtpVerificationRequired(
-              phone: '', // Can't know phone yet unless it was returned, but usually they enter it
-              registrationToken: authFlow.registrationToken ?? _registrationToken ?? '',
-            ));
-          } else {
-            // complete_profile
-            emit(PhoneOtpCompleteProfile(
-              registrationToken: authFlow.registrationToken ?? _registrationToken ?? '',
+      response.fold((failure) => emit(SocialLoginFailure(failure.message)), (
+        authFlow,
+      ) {
+        if (authFlow.registrationToken != null &&
+            authFlow.registrationToken!.isNotEmpty) {
+          _registrationToken = authFlow.registrationToken;
+        }
+        if (authFlow.isAuthenticated && authFlow.user != null) {
+          _registrationToken = null;
+          emit(Authenticated(authFlow.user!));
+        } else if (authFlow.needsPhoneVerification) {
+          // Social login required phone verification
+          emit(
+            PhoneOtpVerificationRequired(
+              phone:
+                  '', // Can't know phone yet unless it was returned, but usually they enter it
+              registrationToken:
+                  authFlow.registrationToken ?? _registrationToken ?? '',
+            ),
+          );
+        } else {
+          // complete_profile
+          emit(
+            PhoneOtpCompleteProfile(
+              registrationToken:
+                  authFlow.registrationToken ?? _registrationToken ?? '',
               requiredFields: authFlow.requiredFields ?? [],
-            ));
-          }
-        },
-      );
+            ),
+          );
+        }
+      });
     } on FirebaseAuthException catch (e) {
       if (isClosed || emit.isDone) return;
       if (e.code == 'account-exists-with-different-credential') {
@@ -132,20 +139,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (email != null) {
           try {
             // ignore: deprecated_member_use
-            final methods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-            final providerList = methods.isNotEmpty ? methods.join(', ') : 'another method';
-            emit(SocialLoginFailure(
-              'An account already exists with the same email ($email) but signed in using $providerList. Please sign in using your original method.',
-            ));
+            final methods = await FirebaseAuth.instance
+                .fetchSignInMethodsForEmail(email);
+            final providerList = methods.isNotEmpty
+                ? methods.join(', ')
+                : 'another method';
+            emit(
+              SocialLoginFailure(
+                'An account already exists with the same email ($email) but signed in using $providerList. Please sign in using your original method.',
+              ),
+            );
           } catch (_) {
-            emit(SocialLoginFailure(
-              'An account already exists with the same email ($email). Please sign in using your original method.',
-            ));
+            emit(
+              SocialLoginFailure(
+                'An account already exists with the same email ($email). Please sign in using your original method.',
+              ),
+            );
           }
         } else {
-          emit(const SocialLoginFailure(
-            'An account already exists with different credentials. Please sign in using your original method.',
-          ));
+          emit(
+            const SocialLoginFailure(
+              'An account already exists with different credentials. Please sign in using your original method.',
+            ),
+          );
         }
       } else {
         emit(SocialLoginFailure(e.message ?? e.toString()));
@@ -177,7 +193,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     emit(const PhoneOtpVerifyInProgress());
-    final regToken = (event.registrationToken != null && event.registrationToken!.trim().isNotEmpty)
+    final regToken =
+        (event.registrationToken != null &&
+            event.registrationToken!.trim().isNotEmpty)
         ? event.registrationToken!.trim()
         : _registrationToken;
     final result = await verifyPhoneOtpUseCase(
@@ -188,23 +206,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ),
     );
     if (isClosed || emit.isDone) return;
-    result.fold(
-      (failure) => emit(PhoneOtpVerifyFailure(failure.message)),
-      (verify) {
-        if (verify.isAuthenticated && verify.user != null) {
-          _registrationToken = null;
-          emit(PhoneOtpLoginSuccess(verify.user!));
-        } else {
-          if (verify.registrationToken != null && verify.registrationToken!.isNotEmpty) {
-            _registrationToken = verify.registrationToken;
-          }
-          emit(PhoneOtpCompleteProfile(
-            registrationToken: verify.registrationToken ?? _registrationToken ?? '',
-            requiredFields: verify.requiredFields ?? [],
-          ));
+    result.fold((failure) => emit(PhoneOtpVerifyFailure(failure.message)), (
+      verify,
+    ) {
+      if (verify.isAuthenticated && verify.user != null) {
+        _registrationToken = null;
+        emit(PhoneOtpLoginSuccess(verify.user!));
+      } else {
+        if (verify.registrationToken != null &&
+            verify.registrationToken!.isNotEmpty) {
+          _registrationToken = verify.registrationToken;
         }
-      },
-    );
+        emit(
+          PhoneOtpCompleteProfile(
+            registrationToken:
+                verify.registrationToken ?? _registrationToken ?? '',
+            requiredFields: verify.requiredFields ?? [],
+          ),
+        );
+      }
+    });
   }
 
   Future<void> _onCompleteRegistrationSubmitted(
@@ -226,20 +247,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) => emit(CompleteRegistrationFailure(failure.message)),
       (authFlow) {
-        if (authFlow.registrationToken != null && authFlow.registrationToken!.isNotEmpty) {
+        if (authFlow.registrationToken != null &&
+            authFlow.registrationToken!.isNotEmpty) {
           _registrationToken = authFlow.registrationToken;
         }
         if (authFlow.needsPhoneVerification) {
-          emit(PhoneOtpVerificationRequired(
-            phone: event.phone ?? '', // pass the phone they just entered
-            registrationToken: authFlow.registrationToken ?? event.registrationToken,
-          ));
+          emit(
+            PhoneOtpVerificationRequired(
+              phone: event.phone ?? '', // pass the phone they just entered
+              registrationToken:
+                  authFlow.registrationToken ?? event.registrationToken,
+            ),
+          );
         } else if (authFlow.isAuthenticated && authFlow.user != null) {
           _registrationToken = null;
           emit(CompleteRegistrationSuccess(authFlow.user!));
         } else {
-           // fallback / unexpected
-          emit(const CompleteRegistrationFailure('Unexpected response after completing profile'));
+          // fallback / unexpected
+          emit(
+            const CompleteRegistrationFailure(
+              'Unexpected response after completing profile',
+            ),
+          );
         }
       },
     );

@@ -13,9 +13,7 @@ class LocationServiceImpl implements LocationService {
       throw Exception('Location permission denied');
     }
     return await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-      ),
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
   }
 

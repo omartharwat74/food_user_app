@@ -20,10 +20,7 @@ class StoreSearchLoaded extends StoreSearchState {
   final List<HyperProduct> products;
   final bool isRandom;
 
-  const StoreSearchLoaded({
-    required this.products,
-    this.isRandom = false,
-  });
+  const StoreSearchLoaded({required this.products, this.isRandom = false});
 
   @override
   List<Object?> get props => [products, isRandom];

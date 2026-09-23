@@ -98,11 +98,47 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
+  /// No description provided for @discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get discount;
+
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
   /// **'Food User App'**
   String get appTitle;
+
+  /// No description provided for @startSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Start searching'**
+  String get startSearching;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @statusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get statusOpen;
+
+  /// No description provided for @statusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get statusBusy;
+
+  /// No description provided for @statusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get statusClosed;
 
   /// No description provided for @settingsUpdatedSuccess.
   ///
@@ -2882,12 +2918,6 @@ abstract class AppLocalizations {
   /// **'Cheese'**
   String get searchMostSearchedCheese;
 
-  /// No description provided for @startSearching.
-  ///
-  /// In en, this message translates to:
-  /// **'Start searching'**
-  String get startSearching;
-
   /// No description provided for @itemsTitle.
   ///
   /// In en, this message translates to:
@@ -3037,6 +3067,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See All'**
   String get seeAll;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'EGP'**
+  String get currency;
+
+  /// No description provided for @shopByCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop by Categories'**
+  String get shopByCategories;
+
+  /// No description provided for @popularProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Products'**
+  String get popularProducts;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for what you love'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searchByProductName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by product name'**
+  String get searchByProductName;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
 }
 
 class _AppLocalizationsDelegate

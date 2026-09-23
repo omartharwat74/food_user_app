@@ -29,7 +29,9 @@ class RestaurantCard extends StatelessWidget {
       child: InkWell(
         borderRadius: const BorderRadius.all(AppRadius.md),
         onTap: () {
-          debugPrint('🛠️ Tapped Store: ${restaurant.name} | isMajor: ${restaurant.isMajor}');
+          debugPrint(
+            '🛠️ Tapped Store: ${restaurant.name} | isMajor: ${restaurant.isMajor}',
+          );
           if (restaurant.isMajor == true) {
             context.push(RouteNames.marketDetailsFor(restaurant.id));
           } else {
@@ -71,13 +73,20 @@ class RestaurantCard extends StatelessWidget {
                             ? Image.network(
                                 restaurant.coverImageUrl,
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => (restaurant.logoUrl.isNotEmpty)
-                                    ? Image.network(restaurant.logoUrl, fit: BoxFit.cover)
+                                errorBuilder: (_, _, _) =>
+                                    (restaurant.logoUrl.isNotEmpty)
+                                    ? Image.network(
+                                        restaurant.logoUrl,
+                                        fit: BoxFit.cover,
+                                      )
                                     : const ColoredBox(color: Colors.grey),
                               )
                             : (restaurant.logoUrl.isNotEmpty)
-                                ? Image.network(restaurant.logoUrl, fit: BoxFit.cover)
-                                : const ColoredBox(color: Colors.grey),
+                            ? Image.network(
+                                restaurant.logoUrl,
+                                fit: BoxFit.cover,
+                              )
+                            : const ColoredBox(color: Colors.grey),
                       ),
                     ),
                     Positioned(
@@ -104,8 +113,12 @@ class RestaurantCard extends StatelessWidget {
                                 SnackBar(
                                   content: Text(
                                     isFav
-                                        ? AppLocalizations.of(context)!.itemRemovedFromFavorites
-                                        : AppLocalizations.of(context)!.itemAddedToFavorites,
+                                        ? AppLocalizations.of(
+                                            context,
+                                          )!.itemRemovedFromFavorites
+                                        : AppLocalizations.of(
+                                            context,
+                                          )!.itemAddedToFavorites,
                                   ),
                                 ),
                               );
@@ -160,7 +173,9 @@ class RestaurantCard extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              _AvailabilityBadge(availability: restaurant.availability),
+                              _AvailabilityBadge(
+                                availability: restaurant.availability,
+                              ),
                             ],
                           ),
                         ),
@@ -180,10 +195,9 @@ class RestaurantCard extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.start,
-                              style: AppTextStyles.caption(context).copyWith(
-                                fontSize: 10,
-                                height: 1.25,
-                              ),
+                              style: AppTextStyles.caption(
+                                context,
+                              ).copyWith(fontSize: 10, height: 1.25),
                             ),
                           ),
                         ],
@@ -254,28 +268,28 @@ class _RatingBadge extends StatelessWidget {
   }
 }
 
-
 class _AvailabilityBadge extends StatelessWidget {
   const _AvailabilityBadge({required this.availability});
   final String availability;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     Color color;
     String text;
     switch (availability.toLowerCase()) {
       case 'busy':
         color = const Color(0xFFEFBE1C);
-        text = 'مشغول';
+        text = l10n.statusBusy;
         break;
       case 'closed':
         color = const Color(0xFFEC2D30);
-        text = 'مغلق';
+        text = l10n.statusClosed;
         break;
       case 'open':
       default:
         color = const Color(0xFF0C9D61);
-        text = 'متاح';
+        text = l10n.statusOpen;
         break;
     }
     return Row(
@@ -284,19 +298,14 @@ class _AvailabilityBadge extends StatelessWidget {
         Container(
           width: 6,
           height: 6,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 2),
         Text(
           text,
-          style: AppTextStyles.caption(context).copyWith(
-            fontSize: 10,
-            color: color,
-            fontWeight: FontWeight.w500,
-          ),
+          style: AppTextStyles.caption(
+            context,
+          ).copyWith(fontSize: 10, color: color, fontWeight: FontWeight.w500),
         ),
       ],
     );

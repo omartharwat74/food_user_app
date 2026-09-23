@@ -52,18 +52,22 @@ class StoreProductsDto {
       final rawProducts = section['products'] as List<dynamic>? ?? [];
       final products = rawProducts.map((rawProduct) {
         final p = rawProduct as Map<String, dynamic>;
-        
+
         final offer = p['offer'] as Map<String, dynamic>?;
-        final discountValue = (offer?['discount_value'] as num?)?.toDouble() ?? 0.0;
+        final discountValue =
+            (offer?['discount_value'] as num?)?.toDouble() ?? 0.0;
         final discountType = offer?['discount_type'] as String? ?? '';
 
         return MenuItem(
           id: p['id']?.toString() ?? '',
           name: p['name'] as String? ?? '',
           description: p['description'] as String? ?? '',
-          price: (p['price_after_discount'] as num?)?.toDouble() ?? 
-                 (p['price'] as num?)?.toDouble() ?? 0.0,
-          originalPrice: (p['base_price'] as num?)?.toDouble() ??
+          price:
+              (p['price_after_discount'] as num?)?.toDouble() ??
+              (p['price'] as num?)?.toDouble() ??
+              0.0,
+          originalPrice:
+              (p['base_price'] as num?)?.toDouble() ??
               (p['original_price'] as num?)?.toDouble() ??
               (p['price'] as num?)?.toDouble() ??
               0.0,

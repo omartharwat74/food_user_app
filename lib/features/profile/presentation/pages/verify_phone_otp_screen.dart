@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:food_user_app/core/utils/phone_formatter.dart';
 
-
 import 'package:food_user_app/core/router/route_names.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -109,7 +108,9 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
     if (widget.args.isCurrentPhone) {
       context.read<ProfileBloc>().add(const SendCurrentPhoneOtpEvent());
     } else {
-      context.read<ProfileBloc>().add(SendNewPhoneOtpEvent(widget.args.newPhoneNumber!));
+      context.read<ProfileBloc>().add(
+        SendNewPhoneOtpEvent(widget.args.newPhoneNumber!),
+      );
     }
 
     _otpController.clear();
@@ -124,13 +125,16 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
     if (value.length < 6) return;
 
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     if (widget.args.isCurrentPhone) {
       context.read<ProfileBloc>().add(VerifyCurrentPhoneOtpEvent(value));
     } else {
-      context.read<ProfileBloc>().add(VerifyNewPhoneOtpEvent(
+      context.read<ProfileBloc>().add(
+        VerifyNewPhoneOtpEvent(
           phone: widget.args.newPhoneNumber!.formatAsEgyptianPhone(),
-          otp: value));
+          otp: value,
+        ),
+      );
     }
   }
 
@@ -165,7 +169,7 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<ProfileBloc, ProfileState>(
-        listenWhen: (prev, curr) => 
+        listenWhen: (prev, curr) =>
             curr.verifyCurrentOtpSuccess != prev.verifyCurrentOtpSuccess ||
             curr.changePhoneSuccess != prev.changePhoneSuccess ||
             curr.errorMessage != prev.errorMessage,
@@ -182,7 +186,8 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
                 ),
               ),
             );
-          } else if (widget.args.isCurrentPhone && state.verifyCurrentOtpSuccess) {
+          } else if (widget.args.isCurrentPhone &&
+              state.verifyCurrentOtpSuccess) {
             context.pushReplacement(RouteNames.changePhone);
           } else if (!widget.args.isCurrentPhone && state.changePhoneSuccess) {
             _showSuccessDialogAndReturn();
@@ -193,62 +198,63 @@ class _VerifyPhoneOtpScreenState extends State<VerifyPhoneOtpScreen> {
           onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
           child: SafeArea(
             bottom: false,
-          child: Column(
-            children: [
-              const _OtpBackHeader(),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        0,
-                        16,
-                        MediaQuery.viewInsetsOf(context).bottom + 24,
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
+            child: Column(
+              children: [
+                const _OtpBackHeader(),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          0,
+                          16,
+                          MediaQuery.viewInsetsOf(context).bottom + 24,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _OtpIntro(
-                              title: l10n.verifyPhoneTitle,
-                              subtitle: l10n.verifyPhoneMessage,
-                            ),
-                            const SizedBox(height: 24),
-                            _OtpInput(
-                              controller: _otpController,
-                              focusNode: _otpFocusNode,
-                              activeBoxIndex: _activeBoxIndex,
-                              charAt: _charAt,
-                              onChanged: _onOtpChanged,
-                            ),
-                            const SizedBox(height: 24),
-                            _ResendCodeRow(
-                              resendLabel: l10n.resendCode,
-                              timerLabel: _secondsRemaining > 0
-                                  ? l10n.resendCodeTimer(_secondsRemaining)
-                                  : null,
-                              enabled: _secondsRemaining == 0 && !_isCompleting,
-                              onTap: _onResendCode,
-                            ),
-                          ],
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _OtpIntro(
+                                title: l10n.verifyPhoneTitle,
+                                subtitle: l10n.verifyPhoneMessage,
+                              ),
+                              const SizedBox(height: 24),
+                              _OtpInput(
+                                controller: _otpController,
+                                focusNode: _otpFocusNode,
+                                activeBoxIndex: _activeBoxIndex,
+                                charAt: _charAt,
+                                onChanged: _onOtpChanged,
+                              ),
+                              const SizedBox(height: 24),
+                              _ResendCodeRow(
+                                resendLabel: l10n.resendCode,
+                                timerLabel: _secondsRemaining > 0
+                                    ? l10n.resendCodeTimer(_secondsRemaining)
+                                    : null,
+                                enabled:
+                                    _secondsRemaining == 0 && !_isCompleting,
+                                onTap: _onResendCode,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

@@ -59,13 +59,14 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
 
   void _submit() {
     FocusManager.instance.primaryFocus?.unfocus();
-    
+
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim().formatAsEgyptianPhone();
 
-    if (widget.requiredFields.contains('first_name') && firstName.isEmpty) return;
+    if (widget.requiredFields.contains('first_name') && firstName.isEmpty)
+      return;
     if (widget.requiredFields.contains('last_name') && lastName.isEmpty) return;
     if (widget.requiredFields.contains('email') && email.isEmpty) return;
     if (widget.requiredFields.contains('phone') && phone.isEmpty) return;
@@ -73,7 +74,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     context.read<AuthBloc>().add(
       CompleteRegistrationSubmitted(
         registrationToken: widget.registrationToken,
-        firstName: widget.requiredFields.contains('first_name') ? firstName : null,
+        firstName: widget.requiredFields.contains('first_name')
+            ? firstName
+            : null,
         lastName: widget.requiredFields.contains('last_name') ? lastName : null,
         email: widget.requiredFields.contains('email') ? email : null,
         phone: widget.requiredFields.contains('phone') ? phone : null,
@@ -99,7 +102,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               addressController.loadAddressesIfNeeded().then((_) {
                 if (!context.mounted) return;
                 if (addressController.addresses.isEmpty) {
-                  context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
+                  context.go(
+                    '${RouteNames.addressBookAddMap}?isOnboarding=true',
+                  );
                 } else {
                   context.go(RouteNames.home);
                 }

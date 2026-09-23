@@ -127,7 +127,9 @@ class _AddressBookBody extends StatelessWidget {
               }
             } else {
               final failure = controller.lastError;
-              final errorMessage = failure is Failure ? failure.message : l10n.authErrorRequestFailed;
+              final errorMessage = failure is Failure
+                  ? failure.message
+                  : l10n.authErrorRequestFailed;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(errorMessage),
@@ -145,7 +147,9 @@ class _AddressBookBody extends StatelessWidget {
               );
             } else {
               final failure = controller.lastError;
-              final errorMessage = failure is Failure ? failure.message : l10n.authErrorRequestFailed;
+              final errorMessage = failure is Failure
+                  ? failure.message
+                  : l10n.authErrorRequestFailed;
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(errorMessage),
@@ -325,7 +329,8 @@ class _SavedAddressCard extends StatelessWidget {
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      (address.fullAddress != null && address.fullAddress!.trim().isNotEmpty)
+                      (address.fullAddress != null &&
+                              address.fullAddress!.trim().isNotEmpty)
                           ? address.fullAddress!.trim()
                           : address.location(locale),
                       maxLines: 2,

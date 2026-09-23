@@ -27,9 +27,7 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.item.name),
-      ),
+      appBar: AppBar(title: Text(widget.item.name)),
       backgroundColor: AppColors.scaffoldBackground(context),
       body: CustomScrollView(
         slivers: [
@@ -45,7 +43,11 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
                     height: 250,
                     color: AppColors.primary,
                     child: const Center(
-                      child: Icon(Icons.fastfood, size: 80, color: Colors.white),
+                      child: Icon(
+                        Icons.fastfood,
+                        size: 80,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
           ),
@@ -57,7 +59,9 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
                 children: [
                   Text(
                     widget.item.name,
-                    style: AppTextStyles.heading1(context).copyWith(fontSize: 24),
+                    style: AppTextStyles.heading1(
+                      context,
+                    ).copyWith(fontSize: 24),
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
@@ -67,10 +71,9 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
                   const SizedBox(height: AppSpacing.md),
                   Text(
                     'EGP ${widget.item.price.toStringAsFixed(2)}',
-                    style: AppTextStyles.heading4(context).copyWith(
-                      color: AppColors.primary,
-                      fontSize: 18,
-                    ),
+                    style: AppTextStyles.heading4(
+                      context,
+                    ).copyWith(color: AppColors.primary, fontSize: 18),
                   ),
                 ],
               ),
@@ -88,42 +91,42 @@ class _MenuItemDetailScreenState extends State<MenuItemDetailScreen> {
                     return const SliverToBoxAdapter(child: SizedBox.shrink());
                   }
                   return SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        final modifier = modifiers[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                modifier.name,
-                                style: AppTextStyles.heading4(context),
-                              ),
-                              ...modifier.options.map((opt) {
-                                final optName = opt['name'] as String? ?? '';
-                                final optPrice = opt['price'] as double? ?? 0.0;
-                                return CheckboxListTile(
-                                  title: Text(optName),
-                                  subtitle: optPrice > 0
-                                      ? Text('+${AppLocalizations.of(context)!.currencyEgp} $optPrice')
-                                      : null,
-                                  value: false, // UI Mock
-                                  onChanged: (val) {},
-                                );
-                              }),
-                            ],
-                          ),
-                        );
-                      },
-                      childCount: modifiers.length,
-                    ),
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final modifier = modifiers[index];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              modifier.name,
+                              style: AppTextStyles.heading4(context),
+                            ),
+                            ...modifier.options.map((opt) {
+                              final optName = opt['name'] as String? ?? '';
+                              final optPrice = opt['price'] as double? ?? 0.0;
+                              return CheckboxListTile(
+                                title: Text(optName),
+                                subtitle: optPrice > 0
+                                    ? Text(
+                                        '+${AppLocalizations.of(context)!.currencyEgp} $optPrice',
+                                      )
+                                    : null,
+                                value: false, // UI Mock
+                                onChanged: (val) {},
+                              );
+                            }),
+                          ],
+                        ),
+                      );
+                    }, childCount: modifiers.length),
                   );
                 },
-                orElse: () => const SliverToBoxAdapter(child: SizedBox.shrink()),
+                orElse: () =>
+                    const SliverToBoxAdapter(child: SizedBox.shrink()),
               );
             },
           ),

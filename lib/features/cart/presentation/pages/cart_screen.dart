@@ -26,8 +26,6 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-
-
   @override
   void initState() {
     super.initState();
@@ -98,8 +96,12 @@ class _CartScreenState extends State<CartScreen> {
                       ScrollViewKeyboardDismissBehavior.onDrag,
                   slivers: [
                     SliverPadding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        20,
+                        16,
+                        0,
+                      ),
                       sliver: SliverToBoxAdapter(
                         child: _CartHeader(
                           l10n: l10n,
@@ -108,8 +110,12 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                     ),
                     SliverPadding(
-                      padding:
-                          const EdgeInsetsDirectional.fromSTEB(16, 28, 16, 0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        28,
+                        16,
+                        0,
+                      ),
                       sliver: cart.items.isEmpty
                           ? SliverFillRemaining(
                               hasScrollBody: false,
@@ -200,8 +206,6 @@ class _CartEmptyPlaceholder extends StatelessWidget {
 
   final AppLocalizations l10n;
 
-
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -210,11 +214,7 @@ class _CartEmptyPlaceholder extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(
-              AppAssets.paymentEmptyIcon,
-              width: 80,
-              height: 80,
-            ),
+            SvgPicture.asset(AppAssets.paymentEmptyIcon, width: 80, height: 80),
             const SizedBox(height: 20),
             Text(
               l10n.cartEmptyTitle,
@@ -238,8 +238,6 @@ class _CartHeader extends StatelessWidget {
 
   final AppLocalizations l10n;
   final String? restaurantName;
-
-
 
   @override
   Widget build(BuildContext context) {

@@ -14,4 +14,3 @@ class GetOrderHistoryUseCase extends UseCase<List<Order>, NoParams> {
     return await repository.getOrderHistory();
   }
 }
-

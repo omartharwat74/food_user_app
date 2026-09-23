@@ -31,13 +31,17 @@ class OrderConfirmationScreen extends StatelessWidget {
               const SizedBox(height: 24),
               Text(
                 'Thank You!',
-                style: AppTextStyles.heading1(context).copyWith(color: AppColors.onSurface(context)),
+                style: AppTextStyles.heading1(
+                  context,
+                ).copyWith(color: AppColors.onSurface(context)),
               ),
               const SizedBox(height: 12),
               Text(
                 'Your order has been placed successfully.\nOrder ID: $orderId',
                 textAlign: TextAlign.center,
-                style: AppTextStyles.body(context).copyWith(color: AppColors.paragraph(context)),
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(color: AppColors.paragraph(context)),
               ),
               const SizedBox(height: 48),
               SizedBox(
@@ -75,7 +79,9 @@ class OrderConfirmationScreen extends StatelessWidget {
                   ),
                   child: Text(
                     'Back to Home',
-                    style: AppTextStyles.primaryButtonLabel.copyWith(color: AppColors.primary),
+                    style: AppTextStyles.primaryButtonLabel.copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
               ),
@@ -86,4 +92,3 @@ class OrderConfirmationScreen extends StatelessWidget {
     );
   }
 }
-

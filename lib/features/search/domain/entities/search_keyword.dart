@@ -20,11 +20,7 @@ class SearchKeyword extends Equatable {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'term': term,
-      'sort_order': sortOrder,
-    };
+    return {'id': id, 'term': term, 'sort_order': sortOrder};
   }
 
   @override

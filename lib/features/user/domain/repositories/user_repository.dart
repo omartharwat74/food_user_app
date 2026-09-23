@@ -21,11 +21,15 @@ abstract class UserRepository {
   Future<Either<Failure, Unit>> deleteAccount();
 
   Future<Either<Failure, UserProfile?>> getCachedProfile();
-  
+
   Future<Either<Failure, UserSettings?>> getCachedSettings();
 
   Future<Either<Failure, void>> sendCurrentPhoneOtp();
   Future<Either<Failure, String>> verifyCurrentPhoneOtp(String otp);
   Future<Either<Failure, void>> sendNewPhoneOtp(String token, String newPhone);
-  Future<Either<Failure, UserProfile>> verifyNewPhoneOtp(String token, String newPhone, String otp);
+  Future<Either<Failure, UserProfile>> verifyNewPhoneOtp(
+    String token,
+    String newPhone,
+    String otp,
+  );
 }

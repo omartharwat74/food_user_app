@@ -9,6 +9,7 @@ import 'package:food_user_app/features/restaurant/presentation/widgets/product_c
 import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_search/store_search_cubit.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_search/store_search_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 /// Search screen for a hypermarket/major store.
 ///
@@ -34,27 +35,25 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
 
   /// Maps a [HyperProduct] from the search response → [MenuItem] for [ProductCard].
   MenuItem _toMenuItem(HyperProduct hp) => MenuItem(
-        id: hp.id.toString(),
-        name: hp.name,
-        description: hp.description ?? '',
-        price: hp.priceAfterDiscount ?? hp.price,
-        originalPrice: hp.price,
-        imageUrl: hp.mainImage ?? '',
-        available: hp.isAvailable,
-        discountValue: 0,
-        discountType: 'none',
-        options: const [],
-        includes: const [],
-      );
+    id: hp.id.toString(),
+    name: hp.name,
+    description: hp.description ?? '',
+    price: hp.priceAfterDiscount ?? hp.price,
+    originalPrice: hp.price,
+    imageUrl: hp.mainImage ?? '',
+    available: hp.isAvailable,
+    discountValue: 0,
+    discountType: 'none',
+    options: const [],
+    includes: const [],
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Figma: #7162:4093 fills=[#FAFAFA]
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: Directionality(
-        textDirection: TextDirection.rtl,
-        child: SafeArea(
+      body: SafeArea(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -96,8 +95,7 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 
   Widget _buildInitialState(BuildContext context) {
@@ -108,11 +106,11 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
           Icon(Icons.search, size: 64, color: AppColors.hint(context)),
           const SizedBox(height: 16),
           Text(
-            'ابدأ البحث عن ما تحب',
-            style: AppTextStyles.body(context).copyWith(
-              color: AppColors.hint(context),
-              fontSize: 16,
-            ),
+            AppLocalizations.of(context)!.startSearching,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(color: AppColors.hint(context), fontSize: 16),
           ),
         ],
       ),
@@ -143,9 +141,8 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
             ),
           ),
           const SizedBox(width: 4),
-          // Title — Figma: font = Expo Arabic, #1C1C1C
           Text(
-            'البحث',
+            AppLocalizations.of(context)!.search,
             style: AppTextStyles.heading4(context).copyWith(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -167,10 +164,7 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
         decoration: BoxDecoration(
           color: AppColors.surfaceCard(context),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: AppColors.border(context),
-            width: 0.5,
-          ),
+          border: Border.all(color: AppColors.border(context), width: 0.5),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(
@@ -182,27 +176,28 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
                 controller: _searchController,
                 // No autofocus — keyboard must NOT open automatically
                 autofocus: false,
-                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.start,
                 textAlignVertical: TextAlignVertical.center,
-                style: AppTextStyles.body(context).copyWith(
-                  fontSize: 14,
-                  color: AppColors.onSurface(context),
-                ),
+                style: AppTextStyles.body(
+                  context,
+                ).copyWith(fontSize: 14, color: AppColors.onSurface(context)),
                 decoration: InputDecoration(
-                  hintText: 'ابحث عن ما تحب',
-                  hintTextDirection: TextDirection.rtl,
-                  hintStyle: AppTextStyles.body(context).copyWith(
-                    fontSize: 14,
-                    color: AppColors.paragraph(context),
-                  ),
+                  hintText: AppLocalizations.of(context)!.searchPlaceholder,
+                  hintStyle: AppTextStyles.body(
+                    context,
+                  ).copyWith(fontSize: 14, color: AppColors.paragraph(context)),
                   border: InputBorder.none,
                   isDense: true,
                   contentPadding: EdgeInsets.zero,
                 ),
-                onChanged: (value) =>
-                    context.read<StoreSearchCubit>().search(widget.storeId, value),
-                onSubmitted: (value) =>
-                    context.read<StoreSearchCubit>().search(widget.storeId, value),
+                onChanged: (value) => context.read<StoreSearchCubit>().search(
+                  widget.storeId,
+                  value,
+                ),
+                onSubmitted: (value) => context.read<StoreSearchCubit>().search(
+                  widget.storeId,
+                  value,
+                ),
               ),
             ),
             // Clear button
@@ -213,9 +208,7 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
                 return GestureDetector(
                   onTap: () {
                     _searchController.clear();
-                    context
-                        .read<StoreSearchCubit>()
-                        .search(widget.storeId, '');
+                    context.read<StoreSearchCubit>().search(widget.storeId, '');
                   },
                   child: Icon(
                     Icons.close,
@@ -257,10 +250,9 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
                   Expanded(
                     child: Text(
                       'لا توجد نتائج دقيقة — عرض اقتراحات',
-                      style: AppTextStyles.body(context).copyWith(
-                        color: AppColors.primary,
-                        fontSize: 12,
-                      ),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(color: AppColors.primary, fontSize: 12),
                     ),
                   ),
                 ],

@@ -29,7 +29,9 @@ class ModifierSelectionSheet extends StatelessWidget {
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 color: AppColors.surfaceCard(context),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(24),
+                ),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -37,7 +39,10 @@ class ModifierSelectionSheet extends StatelessWidget {
                 children: [
                   Text(
                     'Customize ${item.name}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   ...modifiers.map((modifier) {
@@ -53,7 +58,11 @@ class ModifierSelectionSheet extends StatelessWidget {
                           final optPrice = opt['price'] as double? ?? 0.0;
                           return CheckboxListTile(
                             title: Text(optName),
-                            subtitle: optPrice > 0 ? Text('+${AppLocalizations.of(context)!.currencyEgp} $optPrice') : null,
+                            subtitle: optPrice > 0
+                                ? Text(
+                                    '+${AppLocalizations.of(context)!.currencyEgp} $optPrice',
+                                  )
+                                : null,
                             value: false,
                             onChanged: (val) {},
                           );

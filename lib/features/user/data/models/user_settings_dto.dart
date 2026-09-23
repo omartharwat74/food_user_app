@@ -21,7 +21,8 @@ class UserSettingsDto {
     return UserSettingsDto(
       id: json['id']?.toString() ?? '',
       locale: json['locale'] as String?,
-      pushNotifications: json['is_notify'] as bool? ?? json['pushNotifications'] as bool?,
+      pushNotifications:
+          json['is_notify'] as bool? ?? json['pushNotifications'] as bool?,
       smsNotifications: json['smsNotifications'] as bool?,
       emailNotifications: json['emailNotifications'] as bool?,
       theme: json['theme'] as String?,

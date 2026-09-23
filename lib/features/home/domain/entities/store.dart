@@ -39,7 +39,21 @@ class Store extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, sectionId, name, logo, cover, isMajor, prepTimeFrom, prepTimeTo, tags, hasOffer, ratingAvg, ratingCount, availability];
+  List<Object?> get props => [
+    id,
+    sectionId,
+    name,
+    logo,
+    cover,
+    isMajor,
+    prepTimeFrom,
+    prepTimeTo,
+    tags,
+    hasOffer,
+    ratingAvg,
+    ratingCount,
+    availability,
+  ];
 }
 
 /// The paginated result for stores including the `is_random` flag.

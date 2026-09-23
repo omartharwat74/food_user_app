@@ -17,7 +17,8 @@ abstract class PlaceOrderRequest with _$PlaceOrderRequest {
     String? specialInstructions,
   }) = _PlaceOrderRequest;
 
-  factory PlaceOrderRequest.fromJson(Map<String, dynamic> json) => _$PlaceOrderRequestFromJson(json);
+  factory PlaceOrderRequest.fromJson(Map<String, dynamic> json) =>
+      _$PlaceOrderRequestFromJson(json);
 }
 
 @freezed
@@ -29,5 +30,6 @@ abstract class OrderItemRequest with _$OrderItemRequest {
     String? notes,
   }) = _OrderItemRequest;
 
-  factory OrderItemRequest.fromJson(Map<String, dynamic> json) => _$OrderItemRequestFromJson(json);
+  factory OrderItemRequest.fromJson(Map<String, dynamic> json) =>
+      _$OrderItemRequestFromJson(json);
 }

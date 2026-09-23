@@ -11,8 +11,7 @@ abstract class RestaurantListState with _$RestaurantListState {
   const factory RestaurantListState.loading() = _Loading;
   const factory RestaurantListState.loaded({
     @Default([]) List<Restaurant> restaurants,
-    @IntBoolConverter()
-    @Default(false) bool hasMore,
+    @IntBoolConverter() @Default(false) bool hasMore,
     @Default(0) int currentPage,
   }) = _Loaded;
   const factory RestaurantListState.error(String message) = _Error;

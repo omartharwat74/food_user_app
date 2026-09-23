@@ -14,8 +14,6 @@ class UpdateUserSettingsRequest {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      if (pushNotifications != null) 'is_notify': pushNotifications,
-    };
+    return {if (pushNotifications != null) 'is_notify': pushNotifications};
   }
 }

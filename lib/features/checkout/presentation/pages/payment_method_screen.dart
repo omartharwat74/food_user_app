@@ -67,8 +67,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               child: BlocBuilder<PaymentMethodCubit, PaymentMethodState>(
                 builder: (context, state) {
                   return state.when(
-                    initial: () => const Center(child: CircularProgressIndicator()),
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    initial: () =>
+                        const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (msg) => _EmptyCardsState(message: msg),
                     loaded: (cards) {
                       if (cards.isEmpty) {
@@ -76,13 +78,16 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       }
                       // Map Domain Entities to UI Data
                       final uiCards = cards.map((c) {
-                        final month = c.expMonth?.toString().padLeft(2, '0') ?? '--';
+                        final month =
+                            c.expMonth?.toString().padLeft(2, '0') ?? '--';
                         final yearRaw = c.expYear?.toString() ?? '--';
-                        final year = yearRaw.length >= 4 ? yearRaw.substring(2) : yearRaw;
+                        final year = yearRaw.length >= 4
+                            ? yearRaw.substring(2)
+                            : yearRaw;
 
                         return _PaymentCardData(
                           id: c.id,
-                          holder: l10n.sampleCardHolder, 
+                          holder: l10n.sampleCardHolder,
                           maskedNumber: '**** **** **** ${c.last4 ?? "****"}',
                           fullNumber: c.cardNumber,
 
@@ -90,7 +95,10 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         );
                       }).toList();
 
-                      return _CardsList(cards: uiCards, onMoreTap: _showCardActionsMenu);
+                      return _CardsList(
+                        cards: uiCards,
+                        onMoreTap: _showCardActionsMenu,
+                      );
                     },
                   );
                 },
@@ -112,7 +120,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     if (!mounted || result == null) return;
 
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Call Cubit to save card
     context.read<PaymentMethodCubit>().saveCard(
       SaveCardParams(
@@ -120,13 +128,11 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           cardNumber: result.cardNumber.replaceAll(' ', ''),
           expiryDate: result.expiry,
           cvv: result.cvv,
-
         ),
       ),
     );
     _showDesignSnackBar(l10n.cardAddedDesignOnly);
   }
-
 
   Future<_CardFormResult?> _showCardFormSheet({
     required bool isEdit,
@@ -235,7 +241,6 @@ class _PaymentCardData {
 
     required this.expiry,
 
-
     this.usesLocalizedSample = false,
   });
 
@@ -245,7 +250,6 @@ class _PaymentCardData {
   final String? fullNumber;
 
   final String expiry;
-
 
   final bool usesLocalizedSample;
 
@@ -274,13 +278,11 @@ class _CardFormResult {
     required this.cardNumber,
     required this.expiry,
     required this.cvv,
-
   });
 
   final String cardNumber;
   final String expiry;
   final String cvv;
-
 }
 
 class _PaymentHeader extends StatelessWidget {
@@ -575,7 +577,6 @@ class _CardActionsMenu extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            
             _CardMenuAction(
               label: l10n.deleteCard,
               iconAsset: AppAssets.paymentDeleteIcon,
@@ -782,8 +783,10 @@ class _CardFormSheetState extends State<_CardFormSheet> {
     super.initState();
 
     final card = widget.card;
-    final displayCardNumber = widget.isEdit ? (card?.fullNumber ?? card?.maskedNumber ?? '') : '';
-    
+    final displayCardNumber = widget.isEdit
+        ? (card?.fullNumber ?? card?.maskedNumber ?? '')
+        : '';
+
     _numberController = TextEditingController(text: displayCardNumber);
     _expiryController = TextEditingController(text: card?.expiry ?? '');
     _cvvController = TextEditingController();
@@ -889,9 +892,7 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                               controller: _expiryController,
                               keyboardType: TextInputType.datetime,
                               textInputAction: TextInputAction.next,
-                              inputFormatters: [
-                                _ExpiryDateFormatter(),
-                              ],
+                              inputFormatters: [_ExpiryDateFormatter()],
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -915,7 +916,9 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                 ),
                 if (_errorText != null) ...[
                   Padding(
-                    padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+                    padding: const EdgeInsetsDirectional.symmetric(
+                      horizontal: 16,
+                    ),
                     child: Text(
                       _errorText!,
                       style: AppTextStyles.inputText(context).copyWith(
@@ -938,7 +941,9 @@ class _CardFormSheetState extends State<_CardFormSheet> {
 
                     final rawNum = num.replaceAll(' ', '');
 
-                    if (rawNum.length < 15 || rawNum.length > 19 || !_passesLuhn(rawNum)) {
+                    if (rawNum.length < 15 ||
+                        rawNum.length > 19 ||
+                        !_passesLuhn(rawNum)) {
                       setState(() => _errorText = 'Invalid card number');
                       return;
                     }
@@ -954,7 +959,7 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                     }
 
                     setState(() => _errorText = null);
-                    
+
                     if (!mounted) return;
 
                     Navigator.of(context).pop(
@@ -1038,7 +1043,6 @@ class _SheetTextField extends StatelessWidget {
     this.keyboardType,
     this.textInputAction,
     this.inputFormatters,
-
   });
 
   final String label;
@@ -1047,7 +1051,6 @@ class _SheetTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
-
 
   @override
   Widget build(BuildContext context) {
@@ -1245,13 +1248,13 @@ class _CardNumberFormatter extends TextInputFormatter {
     TextEditingValue newValue,
   ) {
     String text = newValue.text;
-    
+
     if (oldValue.text.length > newValue.text.length) {
       if (oldValue.text.endsWith(' ') && !newValue.text.endsWith(' ')) {
         text = text.substring(0, text.length - 1);
       }
     }
-    
+
     final newText = text.replaceAll(' ', '');
     if (newText.length > 19) return oldValue;
 
@@ -1269,9 +1272,11 @@ class _CardNumberFormatter extends TextInputFormatter {
     if (cursorPosition > text.length) {
       cursorPosition = text.length;
     }
-    
-    String rawBeforeCursor = text.substring(0, cursorPosition).replaceAll(' ', '');
-    
+
+    String rawBeforeCursor = text
+        .substring(0, cursorPosition)
+        .replaceAll(' ', '');
+
     int newCursorPosition = rawBeforeCursor.length;
     for (int i = 0; i < rawBeforeCursor.length; i++) {
       if (i > 0 && i % 4 == 0) {

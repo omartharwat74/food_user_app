@@ -26,14 +26,15 @@ class SocialAuthService {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     if (googleUser == null) return null;
 
-    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
     final OAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
     final User? user = userCredential.user;
     if (user == null) return null;
     final idToken = await user.getIdToken();
@@ -54,11 +55,11 @@ class SocialAuthService {
   static Future<SocialAuthResult?> signInWithApple() async {
     final AuthorizationCredentialAppleID appleCredential =
         await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-    );
+          scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+        );
 
     final OAuthProvider oAuthProvider = OAuthProvider('apple.com');
     final OAuthCredential credential = oAuthProvider.credential(
@@ -66,8 +67,8 @@ class SocialAuthService {
       accessToken: appleCredential.authorizationCode,
     );
 
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
     final User? user = userCredential.user;
     if (user == null) return null;
     final idToken = await user.getIdToken();
@@ -75,7 +76,7 @@ class SocialAuthService {
 
     String firstName = appleCredential.givenName ?? '';
     String lastName = appleCredential.familyName ?? '';
-    
+
     // Apple only provides the name on the very first sign-in.
     // If we don't get it, we try to fallback to Firebase User info.
     if (firstName.isEmpty && lastName.isEmpty) {
@@ -93,9 +94,13 @@ class SocialAuthService {
   }
 
   static String _generateNonce([int length = 32]) {
-    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)]).join();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   static Future<SocialAuthResult?> signInWithFacebook() async {
@@ -125,9 +130,9 @@ class SocialAuthService {
         rawNonce: rawNonce,
       );
     }
-    
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+
+    final UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(credential);
     final User? user = userCredential.user;
     if (user == null) return null;
     final idToken = await user.getIdToken();

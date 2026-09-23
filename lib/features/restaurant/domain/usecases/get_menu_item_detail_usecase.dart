@@ -14,6 +14,8 @@ class GetMenuItemDetailUseCase extends UseCase<MenuItem, String> {
     // There is no dedicated endpoint for menu item details. Items are passed from the list.
     // So this is just returning a stub or we can implement it by fetching modifiers if that's what's meant.
     // For now we'll return a Failure or we'll map to get modifiers instead.
-    return Left(ServerFailure('Item details are fetched with the restaurant menu.'));
+    return Left(
+      ServerFailure('Item details are fetched with the restaurant menu.'),
+    );
   }
 }

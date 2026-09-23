@@ -5,7 +5,10 @@ extension PriceFormatter on num {
     }
     String formatted = toStringAsFixed(2);
     if (formatted.endsWith('0')) {
-      formatted = formatted.substring(0, formatted.length - 1); // e.g., 63.50 -> "63.5"
+      formatted = formatted.substring(
+        0,
+        formatted.length - 1,
+      ); // e.g., 63.50 -> "63.5"
     }
     return formatted;
   }

@@ -116,7 +116,10 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
                     style: AppTextStyles.fieldLabel(context),
                   ),
                   const SizedBox(height: 8),
-                  PhoneNumberField(controller: _phoneController, hintText: l10n.registerPhoneHint),
+                  PhoneNumberField(
+                    controller: _phoneController,
+                    hintText: l10n.registerPhoneHint,
+                  ),
                   const SizedBox(height: 20),
                   BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (prev, curr) =>

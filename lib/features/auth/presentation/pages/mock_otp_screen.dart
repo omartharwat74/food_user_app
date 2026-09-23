@@ -104,13 +104,17 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
               curr is PhoneOtpVerifyFailure,
           listener: (context, state) {
             if (state is PhoneOtpCompleteProfile) {
-              if (widget.args.isSocial && widget.args.firstName != null && widget.args.lastName != null) {
-                context.read<AuthBloc>().add(CompleteRegistrationSubmitted(
-                  registrationToken: state.registrationToken,
-                  firstName: widget.args.firstName!,
-                  lastName: widget.args.lastName!,
-                  email: widget.args.email,
-                ));
+              if (widget.args.isSocial &&
+                  widget.args.firstName != null &&
+                  widget.args.lastName != null) {
+                context.read<AuthBloc>().add(
+                  CompleteRegistrationSubmitted(
+                    registrationToken: state.registrationToken,
+                    firstName: widget.args.firstName!,
+                    lastName: widget.args.lastName!,
+                    email: widget.args.email,
+                  ),
+                );
               } else {
                 context.push(
                   RouteNames.completeProfile,
@@ -120,12 +124,15 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
                   ),
                 );
               }
-            } else if (state is PhoneOtpLoginSuccess || state is CompleteRegistrationSuccess) {
+            } else if (state is PhoneOtpLoginSuccess ||
+                state is CompleteRegistrationSuccess) {
               final addressController = SavedAddressesScope.of(context);
               addressController.loadAddressesIfNeeded().then((_) {
                 if (!context.mounted) return;
                 if (addressController.addresses.isEmpty) {
-                  context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
+                  context.go(
+                    '${RouteNames.addressBookAddMap}?isOnboarding=true',
+                  );
                 } else {
                   context.go(RouteNames.home);
                 }
@@ -328,9 +335,7 @@ class _ResendRow extends StatelessWidget {
           ),
           child: Text(
             l10n.otpResend,
-            style: AppTextStyles.textLink(
-              context,
-            ).copyWith(
+            style: AppTextStyles.textLink(context).copyWith(
               color: seconds == 0 ? AppColors.primary : Colors.grey,
               fontSize: 14,
             ),

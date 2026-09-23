@@ -39,7 +39,8 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     try {
       final queryParams = <String, dynamic>{
         'search': query,
-        'section_id': 1, // Defaulting to 1 to satisfy required param since search maps to Restaurant domain
+        'section_id':
+            1, // Defaulting to 1 to satisfy required param since search maps to Restaurant domain
       };
       if (tagIds != null && tagIds.isNotEmpty) {
         queryParams['tag_ids[]'] = tagIds;
@@ -53,7 +54,9 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       );
       final raw = response.data;
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
-        throw const FormatException('Expected unified envelope with data object');
+        throw const FormatException(
+          'Expected unified envelope with data object',
+        );
       }
       final data = raw['data'] as Map<String, dynamic>;
       return SearchResultDto.fromJson(data);
@@ -71,7 +74,9 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
         throw const FormatException('Expected unified envelope');
       }
       final data = raw['data'] as List<dynamic>? ?? [];
-      return data.map((e) => SearchLog.fromJson(e as Map<String, dynamic>)).toList();
+      return data
+          .map((e) => SearchLog.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -124,7 +129,9 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
         throw const FormatException('Expected unified envelope');
       }
       final data = raw['data'] as List<dynamic>? ?? [];
-      return data.map((e) => SearchKeyword.fromJson(e as Map<String, dynamic>)).toList();
+      return data
+          .map((e) => SearchKeyword.fromJson(e as Map<String, dynamic>))
+          .toList();
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -141,7 +148,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
-      
+
       final data = raw['data'];
       // The API returns paginated data inside 'data' or a list of items
       final List<dynamic> itemsList;
@@ -152,7 +159,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
       } else {
         itemsList = [];
       }
-      
+
       return itemsList.map((e) {
         final store = e as Map<String, dynamic>;
         return RestaurantDto(

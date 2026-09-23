@@ -13,9 +13,9 @@ class MarketFavoriteCubit extends Cubit<MarketFavoriteState> {
   MarketFavoriteCubit({
     required GetFavoriteMarketsUseCase getFavoriteMarketsUseCase,
     required ToggleFavoriteMarketUseCase toggleFavoriteMarketUseCase,
-  })  : _getFavoriteMarketsUseCase = getFavoriteMarketsUseCase,
-        _toggleFavoriteMarketUseCase = toggleFavoriteMarketUseCase,
-        super(const MarketFavoriteInitial());
+  }) : _getFavoriteMarketsUseCase = getFavoriteMarketsUseCase,
+       _toggleFavoriteMarketUseCase = toggleFavoriteMarketUseCase,
+       super(const MarketFavoriteInitial());
 
   // In-memory cache of market favorite statuses
   final Map<String, bool> _favoriteMap = {};
@@ -120,5 +120,4 @@ class MarketFavoriteCubit extends Cubit<MarketFavoriteState> {
       },
     );
   }
-
 }

@@ -73,20 +73,20 @@ class Market extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        ownerId,
-        name,
-        coverImage,
-        logoImage,
-        rating,
-        ratingCount,
-        deliveryTimeMin,
-        deliveryTimeMax,
-        deliveryFee,
-        minimumOrder,
-        isAvailable,
-        isFavorite,
-        pickupAvailable,
-        isVisible,
-      ];
+    id,
+    ownerId,
+    name,
+    coverImage,
+    logoImage,
+    rating,
+    ratingCount,
+    deliveryTimeMin,
+    deliveryTimeMax,
+    deliveryFee,
+    minimumOrder,
+    isAvailable,
+    isFavorite,
+    pickupAvailable,
+    isVisible,
+  ];
 }

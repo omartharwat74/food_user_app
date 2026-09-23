@@ -43,14 +43,16 @@ class RouteNames {
   static const settings = '/settings';
   static const marketsList = '/markets';
   static const marketDetail = '/market/:id';
-  static const marketDetails = '/market-details/:id'; // alias used by isMajor tap
+  static const marketDetails =
+      '/market-details/:id'; // alias used by isMajor tap
   static const storeSearch = '/market-details/:id/search';
 
   static const helpSupport = '/help';
 
   static const about = '/about';
 
-  static String serviceListingFor(String type, int sectionId) => '/service-listing/$type?sectionId=$sectionId';
+  static String serviceListingFor(String type, int sectionId) =>
+      '/service-listing/$type?sectionId=$sectionId';
   static String restaurantDetailFor(String id) => '/restaurant/$id';
   static String restaurantSearchFor(String id) => '/restaurant/$id/search';
   static String marketDetailFor(String id) => '/market/$id';
@@ -60,4 +62,3 @@ class RouteNames {
   static String orderConfirmationFor(String id) => '/checkout/confirmation/$id';
   static String orderTrackingFor(String id) => '/order/$id/tracking';
 }
-

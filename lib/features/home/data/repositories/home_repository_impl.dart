@@ -95,9 +95,13 @@ class HomeRepositoryImpl implements HomeRepository {
   }
 
   @override
-  Future<Either<Failure, List<Spotlight>>> getSpotlights({int? sectionId}) async {
+  Future<Either<Failure, List<Spotlight>>> getSpotlights({
+    int? sectionId,
+  }) async {
     try {
-      final spotlightsDto = await remoteDataSource.getSpotlights(sectionId: sectionId);
+      final spotlightsDto = await remoteDataSource.getSpotlights(
+        sectionId: sectionId,
+      );
       final spotlights = spotlightsDto.map((dto) => dto.toEntity()).toList();
       return Right(spotlights);
     } catch (e) {
@@ -112,7 +116,8 @@ class HomeRepositoryImpl implements HomeRepository {
     if (error is ServerException) return ServerFailure(error.message);
     if (error is NetworkException) return NetworkFailure(error.message);
     if (error is TimeoutException) return TimeoutFailure(error.message);
-    if (error is UnauthorizedException) return UnauthorizedFailure(error.message);
+    if (error is UnauthorizedException)
+      return UnauthorizedFailure(error.message);
     if (error is ValidationException) {
       return ValidationFailure(error.message, errors: error.errors);
     }

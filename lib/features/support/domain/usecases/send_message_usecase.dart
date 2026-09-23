@@ -9,25 +9,19 @@ class SendMessageParams extends Equatable {
   final String ticketId;
   final String content;
 
-  const SendMessageParams({
-    required this.ticketId,
-    required this.content,
-  });
+  const SendMessageParams({required this.ticketId, required this.content});
 
   @override
   List<Object?> get props => [ticketId, content];
 }
 
-class SendMessageUseCase
-    implements UseCase<SupportMessage, SendMessageParams> {
+class SendMessageUseCase implements UseCase<SupportMessage, SendMessageParams> {
   final SupportRepository repository;
 
   SendMessageUseCase(this.repository);
 
   @override
-  Future<Either<Failure, SupportMessage>> call(
-    SendMessageParams params,
-  ) async {
+  Future<Either<Failure, SupportMessage>> call(SendMessageParams params) async {
     return await repository.sendMessage(
       ticketId: params.ticketId,
       content: params.content,

@@ -22,10 +22,7 @@ typedef _PendingRequest = ({
 /// - On success: all queued requests are retried with the new token.
 /// - On failure: all queued requests are rejected and the user is logged out.
 class AuthInterceptor extends Interceptor {
-  AuthInterceptor(
-    this._tokenStorage, {
-    required this.getDio,
-  });
+  AuthInterceptor(this._tokenStorage, {required this.getDio});
 
   final TokenStorage _tokenStorage;
 
@@ -82,7 +79,9 @@ class AuthInterceptor extends Interceptor {
     ErrorInterceptorHandler handler,
   ) async {
     final status = err.response?.statusCode;
-    final bodyStatus = err.response?.data is Map ? err.response?.data['status'] : null;
+    final bodyStatus = err.response?.data is Map
+        ? err.response?.data['status']
+        : null;
     final isUnauthorized = status == 401 || bodyStatus == 401;
 
     // Only handle 401s
@@ -200,9 +199,7 @@ class AuthInterceptor extends Interceptor {
       } on DioException catch (e) {
         req.handler.next(e);
       } catch (e) {
-        req.handler.next(
-          DioException(requestOptions: req.options, error: e),
-        );
+        req.handler.next(DioException(requestOptions: req.options, error: e));
       }
     }
   }

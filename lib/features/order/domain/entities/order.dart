@@ -47,27 +47,27 @@ class Order extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        customerId,
-        branchId,
-        status,
-        subtotal,
-        deliveryFee,
-        total,
-        discount,
-        items,
-        createdAt,
-        restaurantName,
-        deliveryAddress,
-        deliveryLat,
-        deliveryLng,
-        paymentMethod,
-        estimatedMinutes,
-        driverName,
-        driverPhone,
-        driverLat,
-        driverLng,
-      ];
+    id,
+    customerId,
+    branchId,
+    status,
+    subtotal,
+    deliveryFee,
+    total,
+    discount,
+    items,
+    createdAt,
+    restaurantName,
+    deliveryAddress,
+    deliveryLat,
+    deliveryLng,
+    paymentMethod,
+    estimatedMinutes,
+    driverName,
+    driverPhone,
+    driverLat,
+    driverLng,
+  ];
 }
 
 class OrderItem extends Equatable {
@@ -91,12 +91,12 @@ class OrderItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        menuItemId,
-        itemName,
-        quantity,
-        unitPrice,
-        totalPrice,
-        selectedModifiers,
-        notes,
-      ];
+    menuItemId,
+    itemName,
+    quantity,
+    unitPrice,
+    totalPrice,
+    selectedModifiers,
+    notes,
+  ];
 }

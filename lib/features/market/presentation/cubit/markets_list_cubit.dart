@@ -5,10 +5,9 @@ import 'markets_list_state.dart';
 class MarketsListCubit extends Cubit<MarketsListState> {
   final GetMarketsUseCase _getMarketsUseCase;
 
-  MarketsListCubit({
-    required GetMarketsUseCase getMarketsUseCase,
-  })  : _getMarketsUseCase = getMarketsUseCase,
-        super(const MarketsListInitial());
+  MarketsListCubit({required GetMarketsUseCase getMarketsUseCase})
+    : _getMarketsUseCase = getMarketsUseCase,
+      super(const MarketsListInitial());
 
   String? _currentSearch;
   bool? _pickupFilter;
@@ -91,7 +90,6 @@ class MarketsListCubit extends Cubit<MarketsListState> {
       },
     );
   }
-
 
   void updateSearch(String? search) {
     fetchMarkets(

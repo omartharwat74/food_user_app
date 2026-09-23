@@ -18,7 +18,11 @@ import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 enum AddressFlowMode { add, edit, onboarding }
 
 class ProfileAddressDetailsArgs {
-  const ProfileAddressDetailsArgs({this.addressId, this.mapResult, this.isOnboarding = false});
+  const ProfileAddressDetailsArgs({
+    this.addressId,
+    this.mapResult,
+    this.isOnboarding = false,
+  });
 
   final String? addressId;
   final MapPickerResult? mapResult;
@@ -151,8 +155,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final addressesController = SavedAddressesScope.of(context);
     final editedAddress = isEdit
         ? (widget.addressId == null
-            ? addressesController.selectedAddress
-            : addressesController.addressById(widget.addressId!))
+              ? addressesController.selectedAddress
+              : addressesController.addressById(widget.addressId!))
         : null;
     _hydrateFields(editedAddress);
     final previewAddress =
@@ -247,7 +251,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                   ? null
                   : () async {
                       if (!_formKey.currentState!.validate()) return;
-                      
+
                       final ok = await _submitAddress(
                         context: context,
                         mode: widget.mode,
@@ -263,7 +267,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                         ),
                       );
                       if (!ok) return;
-                      
+
                       if (widget.mode == AddressFlowMode.onboarding) {
                         context.go(RouteNames.home);
                         return;
@@ -313,7 +317,8 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final selectedLongitude =
         mapResult?.longitude ?? existingAddress?.longitude;
     final validationPassed =
-        !((mode == AddressFlowMode.add || mode == AddressFlowMode.onboarding) && mapResult == null) &&
+        !((mode == AddressFlowMode.add || mode == AddressFlowMode.onboarding) &&
+            mapResult == null) &&
         detailedAddress.trim().isNotEmpty;
 
     _logAddressDebug(
@@ -644,7 +649,11 @@ class _StaticMap extends StatelessWidget {
 }
 
 class _AddressInputField extends StatefulWidget {
-  const _AddressInputField({required this.hint, this.controller, this.validator});
+  const _AddressInputField({
+    required this.hint,
+    this.controller,
+    this.validator,
+  });
 
   final String hint;
   final TextEditingController? controller;
@@ -665,7 +674,9 @@ class _AddressInputFieldState extends State<_AddressInputField> {
   }
 
   void _onFocusChange() {
-    if (_focusNode.hasFocus && widget.controller != null && widget.controller!.text.isNotEmpty) {
+    if (_focusNode.hasFocus &&
+        widget.controller != null &&
+        widget.controller!.text.isNotEmpty) {
       widget.controller!.selection = TextSelection.collapsed(
         offset: widget.controller!.text.length,
       );
@@ -686,42 +697,36 @@ class _AddressInputFieldState extends State<_AddressInputField> {
       controller: widget.controller,
       validator: widget.validator,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),
-        textAlign: TextAlign.start,
-        cursorColor: AppColors.cursor(context),
-        style: AppTextStyles.inputText(
+      textAlign: TextAlign.start,
+      cursorColor: AppColors.cursor(context),
+      style: AppTextStyles.inputText(
+        context,
+      ).copyWith(fontSize: 12, height: 1.3),
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        hintStyle: AppTextStyles.inputHint(
           context,
-        ).copyWith(fontSize: 12, height: 1.3),
-        decoration: InputDecoration(
-          hintText: widget.hint,
-          hintStyle: AppTextStyles.inputHint(
-            context,
-          ).copyWith(color: AppColors.hint(context), fontSize: 12, height: 1.3),
-          filled: true,
-          fillColor: AppColors.surfaceCard(context),
-          contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: AppColors.border(context),
-              width: 0.5,
-            ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: AppColors.border(context),
-              width: 0.5,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(
-              color: AppColors.fieldFocusBorder(context),
-              width: 0.5,
-            ),
+        ).copyWith(color: AppColors.hint(context), fontSize: 12, height: 1.3),
+        filled: true,
+        fillColor: AppColors.surfaceCard(context),
+        contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.border(context), width: 0.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: AppColors.border(context), width: 0.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(
+            color: AppColors.fieldFocusBorder(context),
+            width: 0.5,
           ),
         ),
-      );
+      ),
+    );
   }
 }
 

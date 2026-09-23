@@ -12,7 +12,8 @@ class HyperSectionsResponse {
 
   HyperSectionsResponse({required this.data});
 
-  factory HyperSectionsResponse.fromJson(Map<String, dynamic> json) => _$HyperSectionsResponseFromJson(json);
+  factory HyperSectionsResponse.fromJson(Map<String, dynamic> json) =>
+      _$HyperSectionsResponseFromJson(json);
 }
 
 @JsonSerializable()
@@ -22,7 +23,8 @@ class HyperSectionsData {
 
   HyperSectionsData({required this.sections});
 
-  factory HyperSectionsData.fromJson(Map<String, dynamic> json) => _$HyperSectionsDataFromJson(json);
+  factory HyperSectionsData.fromJson(Map<String, dynamic> json) =>
+      _$HyperSectionsDataFromJson(json);
 }
 
 @JsonSerializable()
@@ -33,7 +35,8 @@ class HyperSection {
 
   HyperSection({required this.category, required this.products});
 
-  factory HyperSection.fromJson(Map<String, dynamic> json) => _$HyperSectionFromJson(json);
+  factory HyperSection.fromJson(Map<String, dynamic> json) =>
+      _$HyperSectionFromJson(json);
 }
 
 @JsonSerializable()
@@ -62,5 +65,6 @@ class HyperProduct {
     this.isAvailable = true,
   });
 
-  factory HyperProduct.fromJson(Map<String, dynamic> json) => _$HyperProductFromJson(json);
+  factory HyperProduct.fromJson(Map<String, dynamic> json) =>
+      _$HyperProductFromJson(json);
 }

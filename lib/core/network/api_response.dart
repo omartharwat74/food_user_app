@@ -5,11 +5,7 @@ class ApiResponse<T> {
   final String? msg;
   final T? data;
 
-  const ApiResponse({
-    required this.status,
-    this.msg,
-    this.data,
-  });
+  const ApiResponse({required this.status, this.msg, this.data});
 
   /// Success check based on HTTP status / response status
   bool get success => status >= 200 && status < 300;

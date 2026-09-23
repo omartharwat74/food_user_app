@@ -12,6 +12,7 @@ class GeneralSettings {
 
   GeneralSettings({this.terms, this.privacyPolicy, this.aboutUs});
 
-  factory GeneralSettings.fromJson(Map<String, dynamic> json) => _$GeneralSettingsFromJson(json);
+  factory GeneralSettings.fromJson(Map<String, dynamic> json) =>
+      _$GeneralSettingsFromJson(json);
   Map<String, dynamic> toJson() => _$GeneralSettingsToJson(this);
 }

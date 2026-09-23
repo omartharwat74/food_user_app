@@ -66,7 +66,16 @@ class GetStoresParams extends Equatable {
   });
 
   @override
-  List<Object?> get props => [sectionId, search, tagIds, page, perPage, fastPrep, topRated, hasOffers];
+  List<Object?> get props => [
+    sectionId,
+    search,
+    tagIds,
+    page,
+    perPage,
+    fastPrep,
+    topRated,
+    hasOffers,
+  ];
 }
 
 /// `GET /api/v1/stores`
@@ -107,7 +116,8 @@ class GetMajorStoresParams extends Equatable {
 }
 
 /// `GET /api/v1/stores/major`
-class GetMajorStoresUseCase extends UseCase<StoreListResult, GetMajorStoresParams> {
+class GetMajorStoresUseCase
+    extends UseCase<StoreListResult, GetMajorStoresParams> {
   GetMajorStoresUseCase(this._repository);
   final HomeRepository _repository;
 
@@ -132,7 +142,8 @@ class GetSpotlightsParams extends Equatable {
 }
 
 /// `GET /api/v1/spotlights`
-class GetSpotlightsUseCase extends UseCase<List<Spotlight>, GetSpotlightsParams> {
+class GetSpotlightsUseCase
+    extends UseCase<List<Spotlight>, GetSpotlightsParams> {
   GetSpotlightsUseCase(this._repository);
   final HomeRepository _repository;
 

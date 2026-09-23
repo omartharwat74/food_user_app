@@ -13,47 +13,50 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  runZonedGuarded(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load(fileName: '.env');
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await dotenv.load(fileName: '.env');
 
-    try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      try {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
 
-      final prefs = await SharedPreferences.getInstance();
-      await di.init(prefs: prefs);
+        final prefs = await SharedPreferences.getInstance();
+        await di.init(prefs: prefs);
 
-      final localeController = LocaleController(prefs);
-      localeController.hydrate();
+        final localeController = LocaleController(prefs);
+        localeController.hydrate();
 
-      final themeController = ThemeController(prefs);
-      themeController.hydrate();
+        final themeController = ThemeController(prefs);
+        themeController.hydrate();
 
-      // final pushNotificationService = di.sl<PushNotificationService>();
-      // await pushNotificationService.initialize();
+        // final pushNotificationService = di.sl<PushNotificationService>();
+        // await pushNotificationService.initialize();
 
-      final savedAddressesController = SavedAddressesController(
-        getSavedAddressesUseCase: di.sl(),
-        saveAddressUseCase: di.sl(),
-        updateAddressUseCase: di.sl(),
-        deleteAddressUseCase: di.sl(),
-        setDefaultAddressUseCase: di.sl(),
-      );
+        final savedAddressesController = SavedAddressesController(
+          getSavedAddressesUseCase: di.sl(),
+          saveAddressUseCase: di.sl(),
+          updateAddressUseCase: di.sl(),
+          deleteAddressUseCase: di.sl(),
+          setDefaultAddressUseCase: di.sl(),
+        );
 
-      runApp(
-        App(
-          localeController: localeController,
-          themeController: themeController,
-          savedAddressesController: savedAddressesController,
-        ),
-      );
-    } catch (e, stackTrace) {
-      debugPrint('🔥 CRITICAL INIT ERROR: $e');
-      debugPrint('🔥 STACKTRACE: $stackTrace');
-    }
-  }, (error, stackTrace) {
-    debugPrint('🔥 UNHANDLED ERROR: $error');
-  });
+        runApp(
+          App(
+            localeController: localeController,
+            themeController: themeController,
+            savedAddressesController: savedAddressesController,
+          ),
+        );
+      } catch (e, stackTrace) {
+        debugPrint('🔥 CRITICAL INIT ERROR: $e');
+        debugPrint('🔥 STACKTRACE: $stackTrace');
+      }
+    },
+    (error, stackTrace) {
+      debugPrint('🔥 UNHANDLED ERROR: $error');
+    },
+  );
 }

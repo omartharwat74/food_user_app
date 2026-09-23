@@ -32,7 +32,9 @@ class AddressDto {
       floor: json['floor'] as String?,
       apartment: json['apartment'] as String?,
       lat: (json['lat'] as num?)?.toDouble(),
-      lng: (json['long'] as num?)?.toDouble() ?? (json['lng'] as num?)?.toDouble(),
+      lng:
+          (json['long'] as num?)?.toDouble() ??
+          (json['lng'] as num?)?.toDouble(),
       type: json['type'] as String?,
     );
   }
@@ -41,7 +43,9 @@ class AddressDto {
     return Address(
       id: id,
       label: name ?? '',
-      fullAddress: fullAddress ?? '${buildingNumber ?? ''} ${floor ?? ''} ${apartment ?? ''}'.trim(),
+      fullAddress:
+          fullAddress ??
+          '${buildingNumber ?? ''} ${floor ?? ''} ${apartment ?? ''}'.trim(),
       lat: lat ?? 0.0,
       lng: lng ?? 0.0,
       city: '',

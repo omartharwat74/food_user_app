@@ -11,8 +11,8 @@ class StoreSearchCubit extends Cubit<StoreSearchState> {
   String? _lastQuery;
 
   StoreSearchCubit({required StoreRepository repository})
-      : _repository = repository,
-        super(const StoreSearchInitial());
+    : _repository = repository,
+      super(const StoreSearchInitial());
 
   /// Triggers a debounced product search (300 ms window).
   /// If the query is empty, it resets to the initial state.

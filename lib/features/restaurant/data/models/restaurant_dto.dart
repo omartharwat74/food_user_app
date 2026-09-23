@@ -10,7 +10,6 @@ part 'restaurant_dto.g.dart';
 // Top-level helper: safely converts any JSON value to String.
 String _idFromJson(dynamic value) => value?.toString() ?? '';
 
-
 @freezed
 abstract class RestaurantDto with _$RestaurantDto {
   const factory RestaurantDto({
@@ -25,25 +24,20 @@ abstract class RestaurantDto with _$RestaurantDto {
     @JsonKey(name: 'prep_time_from') int? deliveryTimeMin,
     @JsonKey(name: 'prep_time_to') int? deliveryTimeMax,
     @JsonKey(name: 'delivery_fee') double? deliveryFee,
-    @IntBoolConverter()
-    @JsonKey(name: 'is_favorited') bool? isFavorited,
+    @IntBoolConverter() @JsonKey(name: 'is_favorited') bool? isFavorited,
     // Store-detail fields (new API snake_case)
     @JsonKey(name: 'logo') String? logoUrl,
     @JsonKey(name: 'cover') String? coverUrl,
     String? description,
-    @IntBoolConverter()
-    @JsonKey(name: 'is_available') bool? isAvailable,
-    @IntBoolConverter()
-    @JsonKey(name: 'is_open') bool? isOpen,
-    @IntBoolConverter()
-    @JsonKey(name: 'is_major') bool? isMajor,
+    @IntBoolConverter() @JsonKey(name: 'is_available') bool? isAvailable,
+    @IntBoolConverter() @JsonKey(name: 'is_open') bool? isOpen,
+    @IntBoolConverter() @JsonKey(name: 'is_major') bool? isMajor,
     String? address,
-    @JsonKey(name: 'rating_distribution') Map<String, dynamic>? ratingDistribution,
+    @JsonKey(name: 'rating_distribution')
+    Map<String, dynamic>? ratingDistribution,
     @Default([]) List<ReviewDto> reviews,
-    @IntBoolConverter()
-    @JsonKey(name: 'reviews_has_more') bool? reviewsHasMore,
+    @IntBoolConverter() @JsonKey(name: 'reviews_has_more') bool? reviewsHasMore,
   }) = _RestaurantDto;
-
 
   factory RestaurantDto.fromJson(Map<String, dynamic> json) =>
       _$RestaurantDtoFromJson(json);
@@ -59,8 +53,8 @@ extension RestaurantDtoMapper on RestaurantDto {
       coverImageUrl: coverUrl ?? coverImageUrl ?? '',
       logoUrl: logoUrl ?? '',
       description: description ?? '',
-      rating: (ratingAvg is num) 
-          ? ratingAvg.toDouble() 
+      rating: (ratingAvg is num)
+          ? ratingAvg.toDouble()
           : (double.tryParse(ratingAvg?.toString() ?? '') ?? rating ?? 0.0),
       ratingCount: ratingCount ?? 0,
       deliveryTimeMin: deliveryTimeMin ?? 0,
@@ -68,13 +62,12 @@ extension RestaurantDtoMapper on RestaurantDto {
       deliveryFee: deliveryFee ?? 0.0,
       isFavorited: isFavorited ?? false,
       isAvailable: isAvailable ?? isOpen ?? true,
-      
+
       isMajor: isMajor ?? false,
       address: address ?? '',
       ratingDistribution: ratingDistribution ?? const {},
       reviews: reviews.map((r) => r.toEntity()).toList(),
       reviewsHasMore: reviewsHasMore ?? false,
     );
-
   }
 }

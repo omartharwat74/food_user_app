@@ -19,7 +19,9 @@ class ProfileScreen extends StatelessWidget {
 
           final profile = state.profile;
           if (profile == null) {
-            return Center(child: Text(AppLocalizations.of(context)!.profileNoData));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.profileNoData),
+            );
           }
 
           return Padding(
@@ -27,11 +29,20 @@ class ProfileScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('${AppLocalizations.of(context)!.profileNameLabel}${profile.fullName.isNotEmpty ? profile.fullName : '${profile.firstName} ${profile.lastName}'}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  '${AppLocalizations.of(context)!.profileNameLabel}${profile.fullName.isNotEmpty ? profile.fullName : '${profile.firstName} ${profile.lastName}'}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 8),
-                Text('${AppLocalizations.of(context)!.profileEmailLabel}${profile.email}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  '${AppLocalizations.of(context)!.profileEmailLabel}${profile.email}',
+                  style: const TextStyle(fontSize: 18),
+                ),
                 const SizedBox(height: 8),
-                Text('${AppLocalizations.of(context)!.profilePhoneLabel}${profile.phone}', style: const TextStyle(fontSize: 18)),
+                Text(
+                  '${AppLocalizations.of(context)!.profilePhoneLabel}${profile.phone}',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ],
             ),
           );

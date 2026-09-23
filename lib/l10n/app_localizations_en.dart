@@ -9,7 +9,25 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get discount => 'Discount';
+
+  @override
   String get appTitle => 'Food User App';
+
+  @override
+  String get startSearching => 'Start searching';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get statusOpen => 'Available';
+
+  @override
+  String get statusBusy => 'Busy';
+
+  @override
+  String get statusClosed => 'Closed';
 
   @override
   String get settingsUpdatedSuccess => 'Settings updated successfully';
@@ -1446,9 +1464,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchMostSearchedCheese => 'Cheese';
 
   @override
-  String get startSearching => 'Start searching';
-
-  @override
   String get itemsTitle => 'Items';
 
   @override
@@ -1528,4 +1543,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get seeAll => 'See All';
+
+  @override
+  String get currency => 'EGP';
+
+  @override
+  String get shopByCategories => 'Shop by Categories';
+
+  @override
+  String get popularProducts => 'Popular Products';
+
+  @override
+  String get searchPlaceholder => 'Search for what you love';
+
+  @override
+  String get searchByProductName => 'Search by product name';
+
+  @override
+  String get all => 'All';
 }

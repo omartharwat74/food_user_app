@@ -57,14 +57,14 @@ class MarketsListLoaded extends MarketsListState {
 
   @override
   List<Object?> get props => [
-        markets,
-        currentPage,
-        hasMore,
-        isLoadingMore,
-        searchQuery,
-        pickupFilter,
-        availableFilter,
-      ];
+    markets,
+    currentPage,
+    hasMore,
+    isLoadingMore,
+    searchQuery,
+    pickupFilter,
+    availableFilter,
+  ];
 }
 
 class MarketsListError extends MarketsListState {

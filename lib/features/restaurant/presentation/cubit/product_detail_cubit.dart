@@ -6,8 +6,8 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
   final MenuRepository _menuRepository;
 
   ProductDetailCubit({required MenuRepository menuRepository})
-      : _menuRepository = menuRepository,
-        super(const ProductDetailState.initial());
+    : _menuRepository = menuRepository,
+      super(const ProductDetailState.initial());
 
   Future<void> fetchProductDetails(String productId) async {
     emit(const ProductDetailState.loading());

@@ -49,10 +49,7 @@ class StoreRemoteDataSourceImpl implements StoreRemoteDataSource {
     try {
       final response = await _dio.get<dynamic>(
         ApiEndpoints.storeProductCategorySections,
-        queryParameters: {
-          'store_id': storeId,
-          'menu_category_id': categoryId,
-        },
+        queryParameters: {'store_id': storeId, 'menu_category_id': categoryId},
       );
       final raw = response.data;
       if (raw is! Map<String, dynamic>) {

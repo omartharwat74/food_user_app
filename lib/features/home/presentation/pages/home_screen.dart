@@ -25,7 +25,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -50,31 +51,30 @@ class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMi
         ),
       ],
       child: Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _HomeHeader(copy: copy)),
-          SliverPadding(
-            padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
-            sliver: SliverList.list(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppSpacing.md,
+        backgroundColor: AppColors.scaffoldBackground(context),
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(child: _HomeHeader(copy: copy)),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
+              sliver: SliverList.list(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    child: CategoryGrid(),
                   ),
-                  child: CategoryGrid(),
-                ),
-                const SizedBox(height: 20),
-                const BannerSlider(),
-                const SizedBox(height: 18),
-                const SizedBox(height: 10),
-                const _SpotlightsSections(),
-              ],
+                  const SizedBox(height: 20),
+                  const BannerSlider(),
+                  const SizedBox(height: 18),
+                  const SizedBox(height: 10),
+                  const _SpotlightsSections(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ));
+    );
   }
 }
 
@@ -93,9 +93,7 @@ class _HomeHeader extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.primary),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.primary)),
           const Positioned.fill(
             child: AppRasterImage.asset(
               AppAssets.headerPattern,
@@ -148,8 +146,9 @@ class _LocationRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isAddressArabic = _containsArabic(copy.address);
-    final addressTextDirection =
-        isAddressArabic ? TextDirection.rtl : TextDirection.ltr;
+    final addressTextDirection = isAddressArabic
+        ? TextDirection.rtl
+        : TextDirection.ltr;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -299,7 +298,9 @@ class _SpotlightsSections extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -322,7 +323,9 @@ class _SpotlightsSections extends StatelessWidget {
                   SizedBox(
                     height: 207,
                     child: ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.md,
+                      ),
                       scrollDirection: Axis.horizontal,
                       itemCount: spotlight.stores.length,
                       separatorBuilder: (_, _) => const SizedBox(width: 12),
@@ -331,7 +334,9 @@ class _SpotlightsSections extends StatelessWidget {
                         final restaurant = Restaurant(
                           id: store.id.toString(),
                           name: store.name,
-                          cuisineType: store.tags.isNotEmpty ? store.tags.first.name : '',
+                          cuisineType: store.tags.isNotEmpty
+                              ? store.tags.first.name
+                              : '',
                           coverImageUrl: store.cover ?? '',
                           logoUrl: store.logo ?? '',
                           rating: store.ratingAvg ?? 0.0,
@@ -389,7 +394,9 @@ class _HomeCopy {
     final locale = Localizations.localeOf(context);
     final l10n = AppLocalizations.of(context)!;
     final selectedAddressObj = SavedAddressesScope.of(context).selectedAddress;
-    final selectedAddress = (selectedAddressObj?.fullAddress != null && selectedAddressObj!.fullAddress!.trim().isNotEmpty)
+    final selectedAddress =
+        (selectedAddressObj?.fullAddress != null &&
+            selectedAddressObj!.fullAddress!.trim().isNotEmpty)
         ? selectedAddressObj.fullAddress!.trim()
         : selectedAddressObj?.shortLocation(locale);
 

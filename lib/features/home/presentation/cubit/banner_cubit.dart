@@ -17,5 +17,4 @@ class BannerCubit extends Cubit<BannerState> {
       (banners) => emit(BannerState.loaded(banners)),
     );
   }
-
 }

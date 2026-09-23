@@ -37,8 +37,9 @@ class ProductDetailDto {
 
   static MenuItem fromJson(Map<String, dynamic> json) {
     // Unwrap envelope: top-level may already be the product or wrapped in "data"
-    final Map<String, dynamic> p =
-        (json['data'] is Map<String, dynamic>) ? json['data'] as Map<String, dynamic> : json;
+    final Map<String, dynamic> p = (json['data'] is Map<String, dynamic>)
+        ? json['data'] as Map<String, dynamic>
+        : json;
 
     final offer = p['offer'] as Map<String, dynamic>?;
     final discountValue = (offer?['discount_value'] as num?)?.toDouble() ?? 0.0;
@@ -48,12 +49,16 @@ class ProductDetailDto {
     final rawOptions = p['options'] as List<dynamic>? ?? [];
     final options = rawOptions.map((rawGroup) {
       final g = rawGroup as Map<String, dynamic>;
-      final rawItems = (g['values'] ?? g['items'] ?? g['options']) as List<dynamic>? ?? [];
+      final rawItems =
+          (g['values'] ?? g['items'] ?? g['options']) as List<dynamic>? ?? [];
       return ProductModifier(
         id: g['id']?.toString() ?? '',
         name: g['name'] as String? ?? '',
         required: g['is_required'] == true || g['required'] == true,
-        maxSelect: (g['max_select'] as num?)?.toInt() ?? (g['maxSelect'] as num?)?.toInt() ?? 1,
+        maxSelect:
+            (g['max_select'] as num?)?.toInt() ??
+            (g['maxSelect'] as num?)?.toInt() ??
+            1,
         priceType: g['price_type'] as String? ?? 'addon',
         values: rawItems.map((rawItem) {
           final i = rawItem as Map<String, dynamic>;
@@ -82,10 +87,12 @@ class ProductDetailDto {
       id: p['id']?.toString() ?? '',
       name: p['name'] as String? ?? '',
       description: p['description'] as String? ?? '',
-      price: (p['price_after_discount'] as num?)?.toDouble() ??
+      price:
+          (p['price_after_discount'] as num?)?.toDouble() ??
           (p['price'] as num?)?.toDouble() ??
           0.0,
-      originalPrice: (p['base_price'] as num?)?.toDouble() ??
+      originalPrice:
+          (p['base_price'] as num?)?.toDouble() ??
           (p['price'] as num?)?.toDouble() ??
           0.0,
       imageUrl: p['main_image'] as String? ?? '',

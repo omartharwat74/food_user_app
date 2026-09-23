@@ -88,7 +88,7 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
       resizeToAvoidBottomInset: true,
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<ProfileBloc, ProfileState>(
-        listenWhen: (prev, curr) => 
+        listenWhen: (prev, curr) =>
             curr.sendNewOtpSuccess != prev.sendNewOtpSuccess ||
             curr.errorMessage != prev.errorMessage,
         listener: (context, state) {
@@ -120,54 +120,54 @@ class _ChangePhoneScreenState extends State<ChangePhoneScreen> {
             child: Column(
               children: [
                 const _PhoneFlowBackHeader(),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      keyboardDismissBehavior:
-                          ScrollViewKeyboardDismissBehavior.onDrag,
-                      padding: EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        0,
-                        16,
-                        MediaQuery.viewInsetsOf(context).bottom + 24,
-                      ),
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
+                Expanded(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        padding: EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          0,
+                          16,
+                          MediaQuery.viewInsetsOf(context).bottom + 24,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _PhoneFlowIntro(
-                              title: l10n.changePhoneTitle,
-                              subtitle: l10n.changePhoneSubtitle,
-                            ),
-                            const SizedBox(height: 24),
-                            _PhoneNumberField(
-                              label: l10n.mobileNumber,
-                              hint: l10n.mobileNumber,
-                              controller: _phoneController,
-                              focusNode: _phoneFocusNode,
-                            ),
-                            const SizedBox(height: 16),
-                            _ConfirmButton(
-                              label: l10n.confirm,
-                              onTap: _confirmPhone,
-                            ),
-                          ],
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: constraints.maxHeight,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _PhoneFlowIntro(
+                                title: l10n.changePhoneTitle,
+                                subtitle: l10n.changePhoneSubtitle,
+                              ),
+                              const SizedBox(height: 24),
+                              _PhoneNumberField(
+                                label: l10n.mobileNumber,
+                                hint: l10n.mobileNumber,
+                                controller: _phoneController,
+                                focusNode: _phoneFocusNode,
+                              ),
+                              const SizedBox(height: 16),
+                              _ConfirmButton(
+                                label: l10n.confirm,
+                                onTap: _confirmPhone,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

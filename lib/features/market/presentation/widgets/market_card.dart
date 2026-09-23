@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/storage/token_storage.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/market.dart';
 import '../cubit/market_favorite_cubit.dart';
 import '../cubit/market_favorite_state.dart';
@@ -16,11 +17,7 @@ class MarketCard extends StatelessWidget {
   final Market market;
   final VoidCallback? onTap;
 
-  const MarketCard({
-    super.key,
-    required this.market,
-    this.onTap,
-  });
+  const MarketCard({super.key, required this.market, this.onTap});
 
   Future<void> _handleFavoriteTap(BuildContext context) async {
     final tokenStorage = GetIt.I<TokenStorage>();
@@ -36,10 +33,7 @@ class MarketCard extends StatelessWidget {
     final cubit = context.read<MarketFavoriteCubit>();
     final isFav = cubit.isFavorite(market.id, fallback: market.isFavorite);
 
-    cubit.toggleFavorite(
-      marketId: market.id,
-      currentFavoriteStatus: isFav,
-    );
+    cubit.toggleFavorite(marketId: market.id, currentFavoriteStatus: isFav);
   }
 
   void _showAuthGateDialog(BuildContext context) {
@@ -107,7 +101,8 @@ class MarketCard extends StatelessWidget {
           ),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: onTap ??
+            onTap:
+                onTap ??
                 () {
                   context.push(RouteNames.marketDetailsFor(market.id));
                 },
@@ -121,17 +116,25 @@ class MarketCard extends StatelessWidget {
                       height: 140,
                       width: double.infinity,
                       color: Colors.grey.shade200,
-                      child: (market.coverImage != null && market.coverImage!.isNotEmpty)
+                      child:
+                          (market.coverImage != null &&
+                              market.coverImage!.isNotEmpty)
                           ? Image.network(
                               market.coverImage!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => (market.logoImage != null && market.logoImage!.isNotEmpty)
-                                  ? Image.network(market.logoImage!, fit: BoxFit.cover)
+                              errorBuilder: (_, _, _) =>
+                                  (market.logoImage != null &&
+                                      market.logoImage!.isNotEmpty)
+                                  ? Image.network(
+                                      market.logoImage!,
+                                      fit: BoxFit.cover,
+                                    )
                                   : const ColoredBox(color: Colors.grey),
                             )
-                          : (market.logoImage != null && market.logoImage!.isNotEmpty)
-                              ? Image.network(market.logoImage!, fit: BoxFit.cover)
-                              : const ColoredBox(color: Colors.grey),
+                          : (market.logoImage != null &&
+                                market.logoImage!.isNotEmpty)
+                          ? Image.network(market.logoImage!, fit: BoxFit.cover)
+                          : const ColoredBox(color: Colors.grey),
                     ),
 
                     // Pickup Badge
@@ -173,10 +176,7 @@ class MarketCard extends StatelessWidget {
                             color: Colors.white,
                             shape: BoxShape.circle,
                             boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 4,
-                              ),
+                              BoxShadow(color: Colors.black12, blurRadius: 4),
                             ],
                           ),
                           child: Icon(
@@ -205,7 +205,9 @@ class MarketCard extends StatelessWidget {
                           ],
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: (market.logoImage != null && market.logoImage!.isNotEmpty)
+                        child:
+                            (market.logoImage != null &&
+                                market.logoImage!.isNotEmpty)
                             ? Image.network(
                                 market.logoImage!,
                                 fit: BoxFit.cover,
@@ -308,7 +310,7 @@ class MarketCard extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
-                                isArabic ? 'مغلق' : 'Closed',
+                                AppLocalizations.of(context)!.statusClosed,
                                 style: const TextStyle(
                                   color: AppColors.error,
                                   fontSize: 10,

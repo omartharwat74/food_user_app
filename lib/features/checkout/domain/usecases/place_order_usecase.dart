@@ -37,7 +37,9 @@ class PlaceOrderUseCase extends UseCase<Order, NoParams> {
           (addresses) async {
             final defaultAddress = addresses.firstWhere(
               (a) => a.isDefault,
-              orElse: () => addresses.isNotEmpty ? addresses.first : throw Exception('No address found'),
+              orElse: () => addresses.isNotEmpty
+                  ? addresses.first
+                  : throw Exception('No address found'),
             ); // In a real app we might pass selected address ID
 
             final paymentResult = await paymentRepository.getSavedCards();
@@ -46,17 +48,23 @@ class PlaceOrderUseCase extends UseCase<Order, NoParams> {
               (payments) async {
                 final defaultPayment = payments.firstWhere(
                   (p) => p.isDefault,
-                  orElse: () => payments.isNotEmpty ? payments.first : throw Exception('No payment found'),
+                  orElse: () => payments.isNotEmpty
+                      ? payments.first
+                      : throw Exception('No payment found'),
                 );
 
                 final request = PlaceOrderRequest(
                   branchId: cart.restaurantId ?? '',
-                  items: cart.items.map((e) => OrderItemRequest(
-                    menuItemId: e.menuItemId,
-                    quantity: e.quantity,
-                    selectedModifiers: e.selectedModifiers,
-                    notes: e.notes,
-                  )).toList(),
+                  items: cart.items
+                      .map(
+                        (e) => OrderItemRequest(
+                          menuItemId: e.menuItemId,
+                          quantity: e.quantity,
+                          selectedModifiers: e.selectedModifiers,
+                          notes: e.notes,
+                        ),
+                      )
+                      .toList(),
                   addressId: defaultAddress.id,
                   paymentMethod: defaultPayment.gateway ?? 'CASH',
                   promoCode: null,

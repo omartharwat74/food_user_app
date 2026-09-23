@@ -29,7 +29,9 @@ class StoreRepositoryImpl implements StoreRepository {
   }
 
   @override
-  Future<Either<Failure, HyperCategoriesResponse>> getStoreCategories(String storeId) async {
+  Future<Either<Failure, HyperCategoriesResponse>> getStoreCategories(
+    String storeId,
+  ) async {
     try {
       final response = await remoteDataSource.getStoreCategories(storeId);
       return Right(response);

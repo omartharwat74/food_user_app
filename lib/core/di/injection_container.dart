@@ -39,7 +39,6 @@ import 'package:food_user_app/features/market/presentation/cubit/market_details_
 import 'package:food_user_app/features/market/presentation/cubit/market_catalog_cubit.dart';
 import 'package:food_user_app/features/market/presentation/cubit/market_favorite_cubit.dart';
 
-
 import 'package:food_user_app/core/network/dio_client.dart';
 import 'package:food_user_app/core/network/interceptors/auth_interceptor.dart';
 import 'package:food_user_app/core/network/interceptors/global_error_interceptor.dart';
@@ -167,10 +166,8 @@ Future<void> init({SharedPreferences? prefs}) async {
   );
 
   sl.registerLazySingleton<AuthInterceptor>(
-    () => AuthInterceptor(
-      sl<TokenStorage>(),
-      getDio: () => sl<DioClient>().dio,
-    ),
+    () =>
+        AuthInterceptor(sl<TokenStorage>(), getDio: () => sl<DioClient>().dio),
   );
   sl.registerLazySingleton<LoggingInterceptor>(() => LoggingInterceptor());
 
@@ -202,7 +199,9 @@ Future<void> init({SharedPreferences? prefs}) async {
   // ── UI Services ─────────────────────────────────────────────────────────  // Services
   sl.registerLazySingleton<SnackbarService>(() => SnackbarService());
   sl.registerLazySingleton<LocationService>(() => LocationServiceImpl());
-  sl.registerLazySingleton<PushNotificationService>(() => PushNotificationService());
+  sl.registerLazySingleton<PushNotificationService>(
+    () => PushNotificationService(),
+  );
 
   // ── Auth local cache ─────────────────────────────────────────────────────
   sl.registerLazySingleton<AuthLocalDataSource>(
@@ -251,7 +250,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => GetSettingsUseCase(sl()));
   sl.registerLazySingleton(() => UpdateSettingsUseCase(sl()));
   sl.registerLazySingleton(() => DeleteAccountUseCase(sl()));
-  
+
   sl.registerLazySingleton(() => GetCachedProfileUseCase(sl()));
   sl.registerLazySingleton(() => GetCachedSettingsUseCase(sl()));
 
@@ -285,11 +284,15 @@ Future<void> init({SharedPreferences? prefs}) async {
     () =>
         AddressRepositoryImpl(remoteDataSource: sl<AddressRemoteDataSource>()),
   );
-  sl.registerLazySingleton(() => GetSavedAddressesUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(
+    () => GetSavedAddressesUseCase(sl<AddressRepository>()),
+  );
   sl.registerLazySingleton(() => SaveAddressUseCase(sl<AddressRepository>()));
   sl.registerLazySingleton(() => UpdateAddressUseCase(sl<AddressRepository>()));
   sl.registerLazySingleton(() => DeleteAddressUseCase(sl<AddressRepository>()));
-  sl.registerLazySingleton(() => SetDefaultAddressUseCase(sl<AddressRepository>()));
+  sl.registerLazySingleton(
+    () => SetDefaultAddressUseCase(sl<AddressRepository>()),
+  );
 
   // ── User Profile & Settings ────────────────────────────────────────────────
   sl.registerLazySingleton<UserRemoteDataSource>(
@@ -299,10 +302,7 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => UserLocalDataSourceImpl(prefs: sl()),
   );
   sl.registerLazySingleton<UserRepository>(
-    () => UserRepositoryImpl(
-      remoteDataSource: sl(),
-      localDataSource: sl(),
-    ),
+    () => UserRepositoryImpl(remoteDataSource: sl(), localDataSource: sl()),
   );
 
   // ── Banners & Search ───────────────────────────────────────────────────────
@@ -336,9 +336,11 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepositoryImpl(remoteDataSource: sl<HomeRemoteDataSource>()),
   );
-  
+
   // Use cases
-  sl.registerLazySingleton(() => GetGeneralSettingsUseCase(sl<HomeRepository>()));
+  sl.registerLazySingleton(
+    () => GetGeneralSettingsUseCase(sl<HomeRepository>()),
+  );
   sl.registerLazySingleton(() => GetSectionsUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton(() => GetTagsUseCase(sl<HomeRepository>()));
   sl.registerLazySingleton(() => GetStoresUseCase(sl<HomeRepository>()));
@@ -347,7 +349,9 @@ Future<void> init({SharedPreferences? prefs}) async {
 
   // Cubits
   sl.registerFactory<SettingsCubit>(
-    () => SettingsCubit(getGeneralSettingsUseCase: sl<GetGeneralSettingsUseCase>()),
+    () => SettingsCubit(
+      getGeneralSettingsUseCase: sl<GetGeneralSettingsUseCase>(),
+    ),
   );
   sl.registerFactory<SectionsCubit>(
     () => SectionsCubit(getSectionsUseCase: sl<GetSectionsUseCase>()),
@@ -419,7 +423,6 @@ Future<void> init({SharedPreferences? prefs}) async {
     () => FavoriteCubit(restaurantRepository: sl<RestaurantRepository>()),
   );
 
-
   sl.registerFactory<StoreDetailCubit>(
     () => StoreDetailCubit(
       restaurantRepository: sl<RestaurantRepository>(),
@@ -454,13 +457,25 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton<CartRepository>(
     () => CartRepositoryImpl(remoteDataSource: sl<CartRemoteDataSource>()),
   );
-  
-  sl.registerLazySingleton(() => GetCartUseCase(repository: sl<CartRepository>()));
-  sl.registerLazySingleton(() => AddToCartUseCase(repository: sl<CartRepository>()));
-  sl.registerLazySingleton(() => UpdateCartItemUseCase(repository: sl<CartRepository>()));
-  sl.registerLazySingleton(() => RemoveFromCartUseCase(repository: sl<CartRepository>()));
-  sl.registerLazySingleton(() => ClearCartUseCase(repository: sl<CartRepository>()));
-  sl.registerLazySingleton(() => ApplyPromoUseCase(repository: sl<CartRepository>()));
+
+  sl.registerLazySingleton(
+    () => GetCartUseCase(repository: sl<CartRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => AddToCartUseCase(repository: sl<CartRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => UpdateCartItemUseCase(repository: sl<CartRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => RemoveFromCartUseCase(repository: sl<CartRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => ClearCartUseCase(repository: sl<CartRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => ApplyPromoUseCase(repository: sl<CartRepository>()),
+  );
 
   sl.registerFactory<CartCubit>(
     () => CartCubit(
@@ -484,7 +499,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(() => SaveCardUseCase(sl<PaymentRepository>()));
   sl.registerLazySingleton(() => DeleteCardUseCase(sl<PaymentRepository>()));
   sl.registerLazySingleton(() => CheckoutUseCase(sl<PaymentRepository>()));
-  
+
   sl.registerFactory<PaymentMethodCubit>(
     () => PaymentMethodCubit(
       getSavedCardsUseCase: sl<GetSavedCardsUseCase>(),
@@ -518,33 +533,52 @@ void importMarketDependencies() {
 
   // Use Cases
   sl.registerLazySingleton(() => GetMarketsUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetMarketDetailUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetMarketCategoriesUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetMarketSubCategoriesUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetMarketProductsUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetMarketOffersUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => GetFavoriteMarketsUseCase(sl<MarketRepository>()));
-  sl.registerLazySingleton(() => ToggleFavoriteMarketUseCase(sl<MarketRepository>()));
+  sl.registerLazySingleton(
+    () => GetMarketDetailUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetMarketCategoriesUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetMarketSubCategoriesUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetMarketProductsUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetMarketOffersUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => GetFavoriteMarketsUseCase(sl<MarketRepository>()),
+  );
+  sl.registerLazySingleton(
+    () => ToggleFavoriteMarketUseCase(sl<MarketRepository>()),
+  );
 
   // Cubits
   sl.registerFactory(() => MarketsListCubit(getMarketsUseCase: sl()));
-  sl.registerFactory(() => MarketDetailsCubit(
-        getMarketDetailUseCase: sl(),
-        getMarketCategoriesUseCase: sl(),
-        getMarketOffersUseCase: sl(),
-      ));
-  sl.registerFactory(() => MarketCatalogCubit(
-        getSubCategoriesUseCase: sl(),
-        getProductsUseCase: sl(),
-      ));
-  sl.registerFactory(() => MarketFavoriteCubit(
-        getFavoriteMarketsUseCase: sl(),
-        toggleFavoriteMarketUseCase: sl(),
-      ));
+  sl.registerFactory(
+    () => MarketDetailsCubit(
+      getMarketDetailUseCase: sl(),
+      getMarketCategoriesUseCase: sl(),
+      getMarketOffersUseCase: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => MarketCatalogCubit(
+      getSubCategoriesUseCase: sl(),
+      getProductsUseCase: sl(),
+    ),
+  );
+  sl.registerFactory(
+    () => MarketFavoriteCubit(
+      getFavoriteMarketsUseCase: sl(),
+      toggleFavoriteMarketUseCase: sl(),
+    ),
+  );
 }
 
 void importSupportDependencies() {
-
   // Data Sources
   sl.registerLazySingleton<SupportRemoteDataSource>(
     () => SupportRemoteDataSourceImpl(dio: sl<DioClient>().dio),
@@ -562,7 +596,9 @@ void importSupportDependencies() {
 
   // Cubits
   sl.registerFactory(() => SupportTicketCubit(sl()));
-  sl.registerFactory(() => ChatCubit(sl<GetMessagesUseCase>(), sl<SendMessageUseCase>()));
+  sl.registerFactory(
+    () => ChatCubit(sl<GetMessagesUseCase>(), sl<SendMessageUseCase>()),
+  );
 }
 
 void importOrderDependencies() {
@@ -572,17 +608,23 @@ void importOrderDependencies() {
   sl.registerLazySingleton<OrderRepository>(
     () => OrderRepositoryImpl(sl<OrderRemoteDataSource>()),
   );
-  sl.registerLazySingleton(() => PlaceOrderUseCase(
-        orderRepository: sl<OrderRepository>(),
-        cartRepository: sl<CartRepository>(),
-        paymentRepository: sl<PaymentRepository>(),
-        addressRepository: sl<AddressRepository>(),
-      ));
+  sl.registerLazySingleton(
+    () => PlaceOrderUseCase(
+      orderRepository: sl<OrderRepository>(),
+      cartRepository: sl<CartRepository>(),
+      paymentRepository: sl<PaymentRepository>(),
+      addressRepository: sl<AddressRepository>(),
+    ),
+  );
   sl.registerLazySingleton(() => GetOrderDetailUseCase(sl<OrderRepository>()));
   sl.registerLazySingleton(() => GetOrderHistoryUseCase(sl<OrderRepository>()));
-  sl.registerLazySingleton(() => GetOrderTrackingUseCase(sl<OrderRepository>()));
+  sl.registerLazySingleton(
+    () => GetOrderTrackingUseCase(sl<OrderRepository>()),
+  );
 
   sl.registerFactory<OrderTrackingCubit>(
-    () => OrderTrackingCubit(getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>()),
+    () => OrderTrackingCubit(
+      getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>(),
+    ),
   );
 }

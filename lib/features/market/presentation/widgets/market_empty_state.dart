@@ -18,8 +18,10 @@ class MarketEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final defaultTitle = title ?? (isArabic ? 'لا توجد بيانات' : 'No Items Found');
-    final defaultMessage = message ??
+    final defaultTitle =
+        title ?? (isArabic ? 'لا توجد بيانات' : 'No Items Found');
+    final defaultMessage =
+        message ??
         (isArabic
             ? 'لم نتمكن من العثور على أي منتجات أو أقسام هنا.'
             : 'We could not find any products or categories here.');
@@ -38,27 +40,23 @@ class MarketEmptyState extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                icon,
-                size: 48,
-                color: AppColors.primary,
-              ),
+              child: Icon(icon, size: 48, color: AppColors.primary),
             ),
             const SizedBox(height: 16),
             Text(
               defaultTitle,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               defaultMessage,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).hintColor,
-                  ),
+                color: Theme.of(context).hintColor,
+              ),
             ),
             if (onRetry != null) ...[
               const SizedBox(height: 20),

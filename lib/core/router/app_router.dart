@@ -121,7 +121,10 @@ class AppRouter {
         path: RouteNames.termsAndConditions,
         builder: (c, s) => const TermsAndConditionsScreen(),
       ),
-      GoRoute(path: RouteNames.home, builder: (c, s) => MainLayout(key: MainLayout.globalKey)),
+      GoRoute(
+        path: RouteNames.home,
+        builder: (c, s) => MainLayout(key: MainLayout.globalKey),
+      ),
       GoRoute(path: RouteNames.search, builder: (c, s) => const SearchScreen()),
       GoRoute(
         path: RouteNames.searchResults,
@@ -139,7 +142,9 @@ class AppRouter {
               BlocProvider<StoresCubit>(create: (_) => sl<StoresCubit>()),
             ],
             child: ServiceListingScreen(
-              type: ServiceListingType.fromPathSegment(s.pathParameters['type']),
+              type: ServiceListingType.fromPathSegment(
+                s.pathParameters['type'],
+              ),
               sectionId: sectionId,
             ),
           );
@@ -152,7 +157,9 @@ class AppRouter {
             BlocProvider<TagsCubit>(create: (_) => sl<TagsCubit>()),
             BlocProvider<StoresCubit>(create: (_) => sl<StoresCubit>()),
           ],
-          child: const ServiceListingScreen(type: ServiceListingType.restaurants),
+          child: const ServiceListingScreen(
+            type: ServiceListingType.restaurants,
+          ),
         ),
       ),
       GoRoute(
@@ -177,17 +184,15 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.marketDetail,
-        builder: (c, s) => MarketDetailsScreen(
-          marketId: s.pathParameters['id'] ?? '',
-        ),
+        builder: (c, s) =>
+            MarketDetailsScreen(marketId: s.pathParameters['id'] ?? ''),
       ),
       // Alias route: /market-details/:id — resolves to the same screen.
       // Fixes "route could not be found" when navigation uses this path variant.
       GoRoute(
         path: RouteNames.marketDetails,
-        builder: (c, s) => MarketDetailsScreen(
-          marketId: s.pathParameters['id'] ?? '',
-        ),
+        builder: (c, s) =>
+            MarketDetailsScreen(marketId: s.pathParameters['id'] ?? ''),
       ),
 
       // Store Search — dedicated screen for searching inside a hypermarket.
@@ -217,7 +222,8 @@ class AppRouter {
         builder: (c, s) {
           final item = s.extra as MenuItem;
           return BlocProvider<ProductDetailCubit>(
-            create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+            create: (_) =>
+                sl<ProductDetailCubit>()..fetchProductDetails(item.id),
             child: MenuItemDetailScreen(item: item),
           );
         },
@@ -239,7 +245,8 @@ class AppRouter {
                   available: true,
                 );
           return BlocProvider<ProductDetailCubit>(
-            create: (context) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+            create: (context) =>
+                sl<ProductDetailCubit>()..fetchProductDetails(item.id),
             child: ProductDetailsScreen(item: item),
           );
         },
@@ -295,10 +302,7 @@ class AppRouter {
           final status =
               s.extra as OrderDetailsStatus? ??
               OrderDetailsStatus.waitingAcceptance;
-          return OrderDetailsScreen(
-            orderId: orderId,
-            status: status,
-          );
+          return OrderDetailsScreen(orderId: orderId, status: status);
         },
       ),
       GoRoute(
@@ -328,7 +332,9 @@ class AppRouter {
             return VerifyPhoneOtpScreen(args: s.extra as VerifyPhoneOtpArgs);
           }
           final phone = s.extra is String ? s.extra as String : '';
-          return VerifyPhoneOtpScreen(args: VerifyPhoneOtpArgs(phoneNumber: phone));
+          return VerifyPhoneOtpScreen(
+            args: VerifyPhoneOtpArgs(phoneNumber: phone),
+          );
         },
       ),
       GoRoute(
@@ -353,13 +359,14 @@ class AppRouter {
           final result =
               args?.mapResult ??
               (s.extra is MapPickerResult ? s.extra as MapPickerResult : null);
-          
-          final isOnboardingQuery = s.uri.queryParameters['isOnboarding'] == 'true';
+
+          final isOnboardingQuery =
+              s.uri.queryParameters['isOnboarding'] == 'true';
           final isOnboarding = args?.isOnboarding == true || isOnboardingQuery;
 
           return profile_address.AddressDetailsScreen(
-            mode: isOnboarding 
-                ? profile_address.AddressFlowMode.onboarding 
+            mode: isOnboarding
+                ? profile_address.AddressFlowMode.onboarding
                 : profile_address.AddressFlowMode.add,
             mapResult: result,
           );

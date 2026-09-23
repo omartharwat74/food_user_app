@@ -35,10 +35,10 @@ class AuthEntryScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       body: BlocListener<AuthBloc, AuthState>(
-        listenWhen: (prev, curr) => 
-            curr is PhoneOtpCompleteProfile || 
+        listenWhen: (prev, curr) =>
+            curr is PhoneOtpCompleteProfile ||
             curr is PhoneOtpVerificationRequired ||
-            curr is SocialLoginFailure || 
+            curr is SocialLoginFailure ||
             curr is Authenticated,
         listener: (context, state) {
           if (state is PhoneOtpCompleteProfile) {
@@ -70,7 +70,14 @@ class AuthEntryScreen extends StatelessWidget {
             });
           } else if (state is SocialLoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(localizedErrorMessage(AppLocalizations.of(context)!, state.message))),
+              SnackBar(
+                content: Text(
+                  localizedErrorMessage(
+                    AppLocalizations.of(context)!,
+                    state.message,
+                  ),
+                ),
+              ),
             );
           }
         },
@@ -78,91 +85,94 @@ class AuthEntryScreen extends StatelessWidget {
           top: false,
           child: LayoutBuilder(
             builder: (context, constraints) {
-            return SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              padding: EdgeInsetsDirectional.only(
-                bottom: MediaQuery.paddingOf(context).bottom + 28,
-              ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _AuthEntryHero(l10n: l10n),
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        32,
-                        16,
-                        0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const Center(
-                            child: AppRasterImage.asset(
-                              AppAssets.onboardingLogo,
-                              width: 53,
-                              height: 52,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          _AuthEntryTitle(l10n: l10n),
-                          const SizedBox(height: 24),
-                          _AuthMethodButton(
-                            label: l10n.authContinueWithPhone,
-                            onPressed: () => _startPhoneFlow(context),
-                            icon: const AppRasterImage.asset(
-                              AppAssets.authPhoneIcon,
-                              width: 20,
-                              height: 20,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          _AuthMethodButton(
-                            label: l10n.authContinueWithApple,
-                            onPressed: () => _startSocialFlow(context, 'apple'),
-                            icon: AppSvgImage.asset(
-                              Theme.of(context).brightness == Brightness.dark
-                                  ? AppAssets.socialAppleDark
-                                  : AppAssets.socialApple,
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          _AuthMethodButton(
-                            label: l10n.authContinueWithGoogle,
-                            onPressed: () => _startSocialFlow(context, 'google'),
-                            icon: const AppSvgImage.asset(
-                              AppAssets.socialGoogle,
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          _AuthMethodButton(
-                            label: l10n.authContinueWithFacebook,
-                            onPressed: () => _startSocialFlow(context, 'facebook'),
-                            icon: const Icon(
-                              Icons.facebook_rounded,
-                              size: 20,
-                              color: AppColors.facebookBlue,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                padding: EdgeInsetsDirectional.only(
+                  bottom: MediaQuery.paddingOf(context).bottom + 28,
                 ),
-              ),
-            );
-          },
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _AuthEntryHero(l10n: l10n),
+                      Padding(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          32,
+                          16,
+                          0,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const Center(
+                              child: AppRasterImage.asset(
+                                AppAssets.onboardingLogo,
+                                width: 53,
+                                height: 52,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            _AuthEntryTitle(l10n: l10n),
+                            const SizedBox(height: 24),
+                            _AuthMethodButton(
+                              label: l10n.authContinueWithPhone,
+                              onPressed: () => _startPhoneFlow(context),
+                              icon: const AppRasterImage.asset(
+                                AppAssets.authPhoneIcon,
+                                width: 20,
+                                height: 20,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _AuthMethodButton(
+                              label: l10n.authContinueWithApple,
+                              onPressed: () =>
+                                  _startSocialFlow(context, 'apple'),
+                              icon: AppSvgImage.asset(
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? AppAssets.socialAppleDark
+                                    : AppAssets.socialApple,
+                                width: 20,
+                                height: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _AuthMethodButton(
+                              label: l10n.authContinueWithGoogle,
+                              onPressed: () =>
+                                  _startSocialFlow(context, 'google'),
+                              icon: const AppSvgImage.asset(
+                                AppAssets.socialGoogle,
+                                width: 20,
+                                height: 20,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            _AuthMethodButton(
+                              label: l10n.authContinueWithFacebook,
+                              onPressed: () =>
+                                  _startSocialFlow(context, 'facebook'),
+                              icon: const Icon(
+                                Icons.facebook_rounded,
+                                size: 20,
+                                color: AppColors.facebookBlue,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
         ),
       ),
-    ),
     );
   }
 }
@@ -194,7 +204,7 @@ class _AuthEntryHero extends StatelessWidget {
             height: _heroTotalHeight - 10,
             child: const ColoredBox(color: AppColors.primary),
           ),
-          
+
           // 2. الأفاتار (مفصول عن الشرايط ومتسنتر في مساحة الخلفية الحمراء بالظبط)
           PositionedDirectional(
             top: 0,
@@ -209,7 +219,6 @@ class _AuthEntryHero extends StatelessWidget {
                 fit: BoxFit.contain,
               ),
             ),
-            
           ),
 
           // 3. الشرايط اللي تحت (مرمية في آخر الـ Stack من تحت)

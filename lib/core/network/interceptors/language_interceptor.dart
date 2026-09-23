@@ -14,10 +14,11 @@ class LanguageInterceptor extends Interceptor {
     if (saved == 'ar' || saved == 'en') {
       language = saved!;
     } else {
-      final code = ui.PlatformDispatcher.instance.locale.languageCode.toLowerCase();
+      final code = ui.PlatformDispatcher.instance.locale.languageCode
+          .toLowerCase();
       language = code == 'ar' ? 'ar' : 'en';
     }
-    
+
     options.headers['local'] = language;
     options.headers['Accept-Language'] = language;
     super.onRequest(options, handler);

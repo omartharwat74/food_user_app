@@ -10,9 +10,9 @@ class MarketCatalogCubit extends Cubit<MarketCatalogState> {
   MarketCatalogCubit({
     required GetMarketSubCategoriesUseCase getSubCategoriesUseCase,
     required GetMarketProductsUseCase getProductsUseCase,
-  })  : _getSubCategoriesUseCase = getSubCategoriesUseCase,
-        _getProductsUseCase = getProductsUseCase,
-        super(const MarketCatalogInitial());
+  }) : _getSubCategoriesUseCase = getSubCategoriesUseCase,
+       _getProductsUseCase = getProductsUseCase,
+       super(const MarketCatalogInitial());
 
   Future<void> selectCategory({
     required String marketId,
@@ -21,10 +21,7 @@ class MarketCatalogCubit extends Cubit<MarketCatalogState> {
     emit(const MarketCatalogLoading());
 
     final subCatResult = await _getSubCategoriesUseCase(
-      GetMarketSubCategoriesParams(
-        marketId: marketId,
-        categoryId: categoryId,
-      ),
+      GetMarketSubCategoriesParams(marketId: marketId, categoryId: categoryId),
     );
 
     if (isClosed) return;
@@ -104,12 +101,8 @@ class MarketCatalogCubit extends Cubit<MarketCatalogState> {
     productsResult.fold(
       (failure) => emit(currentState.copyWith(isLoadingProducts: false)),
       (products) => emit(
-        currentState.copyWith(
-          products: products,
-          isLoadingProducts: false,
-        ),
+        currentState.copyWith(products: products, isLoadingProducts: false),
       ),
     );
   }
-
 }

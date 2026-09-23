@@ -155,51 +155,88 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     );
   }
 
-  Future<void> _onSendCurrentPhoneOtp(SendCurrentPhoneOtpEvent event, Emitter<ProfileState> emit) async {
+  Future<void> _onSendCurrentPhoneOtp(
+    SendCurrentPhoneOtpEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     final result = await sendCurrentPhoneOtpUseCase(NoParams());
     if (isClosed || emit.isDone) return;
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (_) => emit(state.copyWith(isLoading: false, sendCurrentOtpSuccess: true)),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (_) =>
+          emit(state.copyWith(isLoading: false, sendCurrentOtpSuccess: true)),
     );
   }
 
-  Future<void> _onVerifyCurrentPhoneOtp(VerifyCurrentPhoneOtpEvent event, Emitter<ProfileState> emit) async {
+  Future<void> _onVerifyCurrentPhoneOtp(
+    VerifyCurrentPhoneOtpEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     final result = await verifyCurrentPhoneOtpUseCase(event.otp);
     if (isClosed || emit.isDone) return;
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (token) => emit(state.copyWith(isLoading: false, verifyCurrentOtpSuccess: true, phoneChangeToken: token)),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (token) => emit(
+        state.copyWith(
+          isLoading: false,
+          verifyCurrentOtpSuccess: true,
+          phoneChangeToken: token,
+        ),
+      ),
     );
   }
 
-  Future<void> _onSendNewPhoneOtp(SendNewPhoneOtpEvent event, Emitter<ProfileState> emit) async {
+  Future<void> _onSendNewPhoneOtp(
+    SendNewPhoneOtpEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
     if (state.phoneChangeToken == null) {
       emit(state.copyWith(errorMessage: 'No phone change token available'));
       return;
     }
     emit(state.copyWith(isLoading: true, errorMessage: null));
-    final result = await sendNewPhoneOtpUseCase(SendNewPhoneOtpParams(token: state.phoneChangeToken!, phone: event.phone));
+    final result = await sendNewPhoneOtpUseCase(
+      SendNewPhoneOtpParams(token: state.phoneChangeToken!, phone: event.phone),
+    );
     if (isClosed || emit.isDone) return;
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (_) => emit(state.copyWith(isLoading: false, sendNewOtpSuccess: true)),
     );
   }
 
-  Future<void> _onVerifyNewPhoneOtp(VerifyNewPhoneOtpEvent event, Emitter<ProfileState> emit) async {
+  Future<void> _onVerifyNewPhoneOtp(
+    VerifyNewPhoneOtpEvent event,
+    Emitter<ProfileState> emit,
+  ) async {
     if (state.phoneChangeToken == null) {
       emit(state.copyWith(errorMessage: 'No phone change token available'));
       return;
     }
     emit(state.copyWith(isLoading: true, errorMessage: null));
-    final result = await verifyNewPhoneOtpUseCase(VerifyNewPhoneOtpParams(token: state.phoneChangeToken!, phone: event.phone, otp: event.otp));
+    final result = await verifyNewPhoneOtpUseCase(
+      VerifyNewPhoneOtpParams(
+        token: state.phoneChangeToken!,
+        phone: event.phone,
+        otp: event.otp,
+      ),
+    );
     if (isClosed || emit.isDone) return;
     result.fold(
-      (failure) => emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
-      (profile) => emit(state.copyWith(isLoading: false, changePhoneSuccess: true, profile: profile)),
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (profile) => emit(
+        state.copyWith(
+          isLoading: false,
+          changePhoneSuccess: true,
+          profile: profile,
+        ),
+      ),
     );
   }
 }

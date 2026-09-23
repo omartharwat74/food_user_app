@@ -45,21 +45,15 @@ class App extends StatelessWidget {
         BlocProvider<BannerCubit>(
           create: (_) => sl<BannerCubit>()..getActiveBanners(),
         ),
-        BlocProvider<SearchCubit>(
-          create: (context) => sl<SearchCubit>(),
-        ),
+        BlocProvider<SearchCubit>(create: (context) => sl<SearchCubit>()),
         BlocProvider<FavoriteCubit>(
           create: (_) => sl<FavoriteCubit>()..loadFavorites(),
         ),
-        BlocProvider<CartCubit>(
-          create: (_) => sl<CartCubit>()..loadCart(),
-        ),
+        BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()..loadCart()),
         BlocProvider<PaymentMethodCubit>(
           create: (_) => sl<PaymentMethodCubit>()..fetchSavedCards(),
         ),
-        BlocProvider<CheckoutCubit>(
-          create: (_) => sl<CheckoutCubit>(),
-        ),
+        BlocProvider<CheckoutCubit>(create: (_) => sl<CheckoutCubit>()),
       ],
       child: AppLocaleScope(
         notifier: localeController,

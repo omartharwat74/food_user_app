@@ -4,8 +4,7 @@ import 'package:food_user_app/core/usecases/usecase.dart';
 import 'package:food_user_app/features/support/domain/entities/ticket.dart';
 import 'package:food_user_app/features/support/domain/repositories/support_repository.dart';
 
-class CreateTicketUseCase
-    implements UseCase<Ticket, CreateTicketParams> {
+class CreateTicketUseCase implements UseCase<Ticket, CreateTicketParams> {
   final SupportRepository repository;
 
   CreateTicketUseCase(this.repository);
@@ -23,8 +22,5 @@ class CreateTicketParams {
   final String subject;
   final String message;
 
-  const CreateTicketParams({
-    required this.subject,
-    required this.message,
-  });
+  const CreateTicketParams({required this.subject, required this.message});
 }

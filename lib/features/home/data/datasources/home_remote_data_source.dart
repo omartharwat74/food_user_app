@@ -116,7 +116,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
         queryParameters: queryParams,
       );
       final data = _extractData(response);
-      
+
       final List<dynamic> listData;
       if (data is List) {
         listData = data;
@@ -168,7 +168,12 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       if (data is! Map<String, dynamic>) {
         return StoreListResultModel(
           items: [],
-          meta: StoreMetaModel(currentPage: 1, lastPage: 1, perPage: perPage, total: 0),
+          meta: StoreMetaModel(
+            currentPage: 1,
+            lastPage: 1,
+            perPage: perPage,
+            total: 0,
+          ),
         );
       }
       return StoreListResultModel.fromJson(data);
@@ -196,7 +201,12 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       if (data is! Map<String, dynamic>) {
         return StoreListResultModel(
           items: [],
-          meta: StoreMetaModel(currentPage: 1, lastPage: 1, perPage: perPage, total: 0),
+          meta: StoreMetaModel(
+            currentPage: 1,
+            lastPage: 1,
+            perPage: perPage,
+            total: 0,
+          ),
         );
       }
       return StoreListResultModel.fromJson(data);

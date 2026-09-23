@@ -17,11 +17,13 @@ class DeliveryTimeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final textStyle = style ?? AppTextStyles.caption(context).copyWith(
-      fontSize: 10,
-      height: 1.25,
-      color: AppColors.onSurface(context),
-    );
+    final textStyle =
+        style ??
+        AppTextStyles.caption(context).copyWith(
+          fontSize: 10,
+          height: 1.25,
+          color: AppColors.onSurface(context),
+        );
 
     if (isArabic) {
       return Row(
@@ -31,18 +33,9 @@ class DeliveryTimeText extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             textDirection: TextDirection.ltr,
             children: [
-              Text(
-                maxTime.toString(),
-                style: textStyle,
-              ),
-              Text(
-                ' - ',
-                style: textStyle,
-              ),
-              Text(
-                minTime.toString(),
-                style: textStyle,
-              ),
+              Text(maxTime.toString(), style: textStyle),
+              Text(' - ', style: textStyle),
+              Text(minTime.toString(), style: textStyle),
             ],
           ),
           const SizedBox(width: 4),

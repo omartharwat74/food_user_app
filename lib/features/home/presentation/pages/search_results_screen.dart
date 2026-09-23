@@ -37,8 +37,13 @@ class SearchResultsScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.md),
                       sliver: SliverToBoxAdapter(
                         child: Text(
-                          result.isRandom ? l10n.serviceNoResultsAvailable : l10n.homeCategoryRestaurants,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          result.isRandom
+                              ? l10n.serviceNoResultsAvailable
+                              : l10n.homeCategoryRestaurants,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -48,7 +53,9 @@ class SearchResultsScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final restaurant = result.restaurants[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                          ),
                           child: RestaurantCard(
                             restaurant: restaurant,
                             width: double.infinity,
@@ -63,7 +70,10 @@ class SearchResultsScreen extends StatelessWidget {
                       sliver: SliverToBoxAdapter(
                         child: Text(
                           l10n.itemsTitle,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -74,15 +84,22 @@ class SearchResultsScreen extends StatelessWidget {
                         final item = result.items[index];
                         return ListTile(
                           leading: item.imageUrl.isNotEmpty
-                              ? Image.network(item.imageUrl, width: 50, height: 50, fit: BoxFit.cover)
+                              ? Image.network(
+                                  item.imageUrl,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
                               : const Icon(Icons.fastfood),
                           title: Text(item.name),
                           subtitle: Text(item.description),
-                          trailing: Text(l10n.priceWithCurrency(item.price.toString())),
+                          trailing: Text(
+                            l10n.priceWithCurrency(item.price.toString()),
+                          ),
                         );
                       },
                     ),
-                  ]
+                  ],
                 ],
               );
             },

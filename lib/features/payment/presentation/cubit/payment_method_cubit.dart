@@ -60,7 +60,7 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       loaded: (cards) => cards,
       orElse: () => null,
     );
-    
+
     if (oldCards == null) return;
 
     // Optimistic UI: remove card immediately
@@ -80,5 +80,4 @@ class PaymentMethodCubit extends Cubit<PaymentMethodState> {
       },
     );
   }
-
 }

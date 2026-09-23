@@ -152,29 +152,27 @@ class AuthRepositoryImpl implements AuthRepository {
         await _persistSession(authFlow.authResponse!);
       }
 
-      return Right(AuthFlowResult(
-        isAuthenticated: authFlow.isAuthenticated,
-        needsPhoneVerification: authFlow.needsPhoneVerification,
-        user: authFlow.authResponse?.user,
-        registrationToken: authFlow.registrationToken,
-        requiredFields: authFlow.requiredFields,
-      ));
+      return Right(
+        AuthFlowResult(
+          isAuthenticated: authFlow.isAuthenticated,
+          needsPhoneVerification: authFlow.needsPhoneVerification,
+          user: authFlow.authResponse?.user,
+          registrationToken: authFlow.registrationToken,
+          requiredFields: authFlow.requiredFields,
+        ),
+      );
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
   }
 
   @override
-  Future<Either<Failure, void>> updateFcm({
-    required String fcmToken,
-  }) async {
+  Future<Either<Failure, void>> updateFcm({required String fcmToken}) async {
     if (!await networkInfo.isConnected) {
       return const Left(NetworkFailure('No internet connection'));
     }
     try {
-      await remoteDataSource.updateFcm(
-        fcmToken: fcmToken,
-      );
+      await remoteDataSource.updateFcm(fcmToken: fcmToken);
       return const Right(null);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -192,18 +190,20 @@ class AuthRepositoryImpl implements AuthRepository {
       final authFlow = await remoteDataSource.loginWithFirebase(
         idToken: idToken,
       );
-      
+
       if (authFlow.isAuthenticated && authFlow.authResponse != null) {
         await _persistSession(authFlow.authResponse!);
       }
 
-      return Right(AuthFlowResult(
-        isAuthenticated: authFlow.isAuthenticated,
-        needsPhoneVerification: authFlow.needsPhoneVerification,
-        user: authFlow.authResponse?.user,
-        registrationToken: authFlow.registrationToken,
-        requiredFields: authFlow.requiredFields,
-      ));
+      return Right(
+        AuthFlowResult(
+          isAuthenticated: authFlow.isAuthenticated,
+          needsPhoneVerification: authFlow.needsPhoneVerification,
+          user: authFlow.authResponse?.user,
+          registrationToken: authFlow.registrationToken,
+          requiredFields: authFlow.requiredFields,
+        ),
+      );
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }
@@ -231,7 +231,8 @@ class AuthRepositoryImpl implements AuthRepository {
     if (error is ServerException) return ServerFailure(error.message);
     if (error is NetworkException) return NetworkFailure(error.message);
     if (error is TimeoutException) return TimeoutFailure(error.message);
-    if (error is UnauthorizedException) return UnauthorizedFailure(error.message);
+    if (error is UnauthorizedException)
+      return UnauthorizedFailure(error.message);
     if (error is ValidationException) {
       return ValidationFailure(error.message, errors: error.errors);
     }

@@ -49,7 +49,7 @@ class PaymentCardDto {
       expMonth = int.tryParse(expiryDate!.substring(0, 2));
       expYear = int.tryParse(expiryDate!.substring(2, 4));
     }
-    
+
     return PaymentCard(
       id: id,
       gateway: null,

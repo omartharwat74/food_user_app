@@ -61,17 +61,17 @@ class CartItem extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        menuItemId,
-        restaurantId,
-        name,
-        description,
-        price,
-        unitPrice,
-        totalPrice,
-        imageAsset,
-        quantity,
-        selectedModifiers,
-        notes,
-      ];
+    id,
+    menuItemId,
+    restaurantId,
+    name,
+    description,
+    price,
+    unitPrice,
+    totalPrice,
+    imageAsset,
+    quantity,
+    selectedModifiers,
+    notes,
+  ];
 }

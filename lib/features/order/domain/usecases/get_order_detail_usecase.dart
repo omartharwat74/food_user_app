@@ -14,4 +14,3 @@ class GetOrderDetailUseCase extends UseCase<Order, String> {
     return await repository.getOrderDetails(params);
   }
 }
-

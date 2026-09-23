@@ -14,4 +14,3 @@ class GetOrderTrackingUseCase extends UseCase<OrderTracking, String> {
     return await repository.trackOrder(params);
   }
 }
-

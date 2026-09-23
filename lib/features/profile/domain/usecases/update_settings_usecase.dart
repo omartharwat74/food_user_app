@@ -5,7 +5,8 @@ import 'package:food_user_app/features/user/domain/repositories/user_repository.
 import '../../../../core/errors/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 
-class UpdateSettingsUseCase extends UseCase<UserSettings, UpdateSettingsRequest> {
+class UpdateSettingsUseCase
+    extends UseCase<UserSettings, UpdateSettingsRequest> {
   final UserRepository repository;
 
   UpdateSettingsUseCase(this.repository);

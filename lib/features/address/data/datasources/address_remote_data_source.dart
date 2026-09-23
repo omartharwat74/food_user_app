@@ -67,7 +67,7 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
     try {
       final data = request.toJson();
       data['id'] = id;
-      
+
       final response = await _dio.put<dynamic>(
         ApiEndpoints.userAddressesEdit,
         data: data,

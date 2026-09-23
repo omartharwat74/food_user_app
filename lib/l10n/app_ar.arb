@@ -1,6 +1,12 @@
 {
   "@@locale": "ar",
+  "discount": "خصم",
+
   "appTitle": "تطبيق توصيل الطعام",
+  "search": "البحث",
+  "statusOpen": "متاح",
+  "statusBusy": "مشغول",
+  "statusClosed": "مغلق",
   "settingsUpdatedSuccess": "تم تحديث الإعدادات بنجاح",
   "deleteAccountSuccess": "تم حذف الحساب بنجاح",
   "changeAppLanguageTitle": "تغيير لغة التطبيق",
@@ -545,5 +551,11 @@
   "searchClearAll": "مسح الكل",
   "searchClearHistoryConfirm": "هل أنت متأكد من مسح سجل البحث؟",
   "clear": "مسح",
-  "seeAll": "عرض الكل"
+  "seeAll": "عرض الكل",
+  "currency": "ج.م",
+  "shopByCategories": "تسوق حسب التصنيفات",
+  "popularProducts": "المنتجات الأكثر طلباً",
+  "searchPlaceholder": "ابحث عن ما تحب",
+  "searchByProductName": "ابحث باسم المنتج",
+  "all": "الكل"
 }

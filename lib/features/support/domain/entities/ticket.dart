@@ -21,12 +21,12 @@ class Ticket extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        userId,
-        subject,
-        status,
-        assigneeId,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    userId,
+    subject,
+    status,
+    assigneeId,
+    createdAt,
+    updatedAt,
+  ];
 }

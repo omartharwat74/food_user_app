@@ -73,5 +73,11 @@ class CompleteRegistrationSubmitted extends AuthEvent {
   });
 
   @override
-  List<Object?> get props => [registrationToken, firstName, lastName, email, phone];
+  List<Object?> get props => [
+    registrationToken,
+    firstName,
+    lastName,
+    email,
+    phone,
+  ];
 }

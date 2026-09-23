@@ -14,10 +14,6 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      trailing: trailing,
-      onTap: onTap,
-    );
+    return ListTile(title: Text(title), trailing: trailing, onTap: onTap);
   }
 }

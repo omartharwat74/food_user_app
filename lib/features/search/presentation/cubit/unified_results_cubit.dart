@@ -26,9 +26,9 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
   UnifiedResultsCubit({
     required MenuRepository menuRepository,
     required StoreRepository storeRepository,
-  })  : _menuRepository = menuRepository,
-        _storeRepository = storeRepository,
-        super(const UnifiedResultsState.initial());
+  }) : _menuRepository = menuRepository,
+       _storeRepository = storeRepository,
+       super(const UnifiedResultsState.initial());
 
   // ─── Load ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,9 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
     try {
       final parentId = config.parentId;
       if (parentId == null || parentId.isEmpty) {
-        emit(const UnifiedResultsState.error('Missing parent store/restaurant ID'));
+        emit(
+          const UnifiedResultsState.error('Missing parent store/restaurant ID'),
+        );
         return;
       }
 
@@ -60,19 +62,23 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
                 name: section.category.name,
                 sortOrder: 0,
                 visible: true,
-                items: section.products.map((hp) => MenuItem(
-                  id: hp.id.toString(),
-                  name: hp.name,
-                  description: hp.description ?? '',
-                  price: hp.priceAfterDiscount ?? hp.price,
-                  originalPrice: hp.price,
-                  imageUrl: hp.mainImage ?? '',
-                  available: hp.isAvailable,
-                  discountValue: 0,
-                  discountType: 'none',
-                  options: const [],
-                  includes: const [],
-                )).toList(),
+                items: section.products
+                    .map(
+                      (hp) => MenuItem(
+                        id: hp.id.toString(),
+                        name: hp.name,
+                        description: hp.description ?? '',
+                        price: hp.priceAfterDiscount ?? hp.price,
+                        originalPrice: hp.price,
+                        imageUrl: hp.mainImage ?? '',
+                        available: hp.isAvailable,
+                        discountValue: 0,
+                        discountType: 'none',
+                        options: const [],
+                        includes: const [],
+                      ),
+                    )
+                    .toList(),
               );
             }).toList();
             _finalizeLoad(config);
@@ -82,7 +88,7 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
         // Search Mode (Get all products)
         final result = await _menuRepository.getStoreMenu(parentId);
         if (isClosed) return;
-        
+
         result.fold(
           (failure) => emit(UnifiedResultsState.error(failure.message)),
           (categories) {
@@ -98,27 +104,32 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
   }
 
   void _finalizeLoad(ResultsConfig config) {
-    _originalIsSearchMode = !config.isCategoryMode; // If not category mode, treat as search mode to hide tabs
+    _originalIsSearchMode = !config
+        .isCategoryMode; // If not category mode, treat as search mode to hide tabs
     _selectedTabIndex = 0;
     _activeQuery = config.searchQuery?.trim() ?? '';
 
     if (_originalIsSearchMode) {
       final results = _scopedFilter(_activeQuery);
-      emit(UnifiedResultsState.loaded(
-        categories: _cachedCategories,
-        searchResults: results,
-        isSearchMode: true,
-        selectedTabIndex: _selectedTabIndex,
-        activeQuery: _activeQuery,
-      ));
+      emit(
+        UnifiedResultsState.loaded(
+          categories: _cachedCategories,
+          searchResults: results,
+          isSearchMode: true,
+          selectedTabIndex: _selectedTabIndex,
+          activeQuery: _activeQuery,
+        ),
+      );
     } else {
-      emit(UnifiedResultsState.loaded(
-        categories: _cachedCategories,
-        searchResults: _tabItems(),
-        isSearchMode: false,
-        selectedTabIndex: _selectedTabIndex,
-        activeQuery: _activeQuery,
-      ));
+      emit(
+        UnifiedResultsState.loaded(
+          categories: _cachedCategories,
+          searchResults: _tabItems(),
+          isSearchMode: false,
+          selectedTabIndex: _selectedTabIndex,
+          activeQuery: _activeQuery,
+        ),
+      );
     }
   }
 
@@ -128,13 +139,15 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
     _activeQuery = query.trim();
     final results = _scopedFilter(_activeQuery);
 
-    emit(UnifiedResultsState.loaded(
-      categories: _cachedCategories,
-      searchResults: results,
-      isSearchMode: _originalIsSearchMode,
-      selectedTabIndex: _selectedTabIndex,
-      activeQuery: _activeQuery,
-    ));
+    emit(
+      UnifiedResultsState.loaded(
+        categories: _cachedCategories,
+        searchResults: results,
+        isSearchMode: _originalIsSearchMode,
+        selectedTabIndex: _selectedTabIndex,
+        activeQuery: _activeQuery,
+      ),
+    );
   }
 
   // ─── Tab change ───────────────────────────────────────────────────────────────
@@ -147,13 +160,15 @@ class UnifiedResultsCubit extends Cubit<UnifiedResultsState> {
         ? _scopedFilter(_activeQuery)
         : _tabItems(); // Use tabItems if no search query!
 
-    emit(UnifiedResultsState.loaded(
-      categories: _cachedCategories,
-      searchResults: results,
-      isSearchMode: _originalIsSearchMode,
-      selectedTabIndex: _selectedTabIndex,
-      activeQuery: _activeQuery,
-    ));
+    emit(
+      UnifiedResultsState.loaded(
+        categories: _cachedCategories,
+        searchResults: results,
+        isSearchMode: _originalIsSearchMode,
+        selectedTabIndex: _selectedTabIndex,
+        activeQuery: _activeQuery,
+      ),
+    );
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────────

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/delivery_time_text.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
@@ -6,7 +8,11 @@ class HypermarketMiniCard extends StatelessWidget {
   final Restaurant market;
   final VoidCallback onTap;
 
-  const HypermarketMiniCard({super.key, required this.market, required this.onTap});
+  const HypermarketMiniCard({
+    super.key,
+    required this.market,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +20,17 @@ class HypermarketMiniCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(8),
-        decoration: ShapeDecoration(
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          shadows: const [
+        decoration: BoxDecoration(
+          // was hardcoded Colors.white — now theme-aware
+          color: AppColors.surfaceCard(context),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border(context), width: 0.5),
+          boxShadow: [
             BoxShadow(
-              color: Color(0x142C2A2A),
+              color: AppColors.black.withValues(alpha: 0.08),
               blurRadius: 4,
-              offset: Offset(0, 0),
-              spreadRadius: 0,
-            )
+              offset: Offset.zero,
+            ),
           ],
         ),
         child: SizedBox(
@@ -35,7 +40,7 @@ class HypermarketMiniCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. Logo Container (40x40 with white border)
+              // Logo
               Container(
                 width: 40,
                 height: 40,
@@ -43,52 +48,63 @@ class HypermarketMiniCard extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     width: 2,
-                    color: Colors.white,
+                    color: AppColors.border(context),
                   ),
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: (market.logoUrl.isNotEmpty)
+                child: market.logoUrl.isNotEmpty
                     ? Image.network(
                         market.logoUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const Icon(Icons.store, color: Colors.grey, size: 20),
+                        errorBuilder: (_, _, _) => Icon(
+                          Icons.store,
+                          color: AppColors.paragraph(context),
+                          size: 20,
+                        ),
                       )
-                    : const Icon(Icons.store, color: Colors.grey, size: 20),
+                    : Icon(
+                        Icons.store,
+                        color: AppColors.paragraph(context),
+                        size: 20,
+                      ),
               ),
               const SizedBox(height: 8),
-              
-              // 2. Market Name
+
+              // Market name
               Text(
                 market.name,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  color: Colors.black,
+                style: AppTextStyles.body(context).copyWith(
+                  // was hardcoded Colors.black
+                  color: AppColors.onSurface(context),
                   fontSize: 12,
-                  fontFamily: 'Expo Arabic',
                   fontWeight: FontWeight.w500,
                   height: 1.30,
                 ),
               ),
               const SizedBox(height: 4),
-              
-              // 3. Delivery Time & Icon
+
+              // Delivery time row
               Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(Icons.access_time, size: 12, color: Color(0xFF787878)),
+                  Icon(
+                    Icons.access_time,
+                    size: 12,
+                    color: AppColors.paragraph(context),
+                  ),
                   const SizedBox(width: 4),
                   Flexible(
                     child: DeliveryTimeText(
                       minTime: market.deliveryTimeMin,
                       maxTime: market.deliveryTimeMax,
-                      style: const TextStyle(
-                        color: Color(0xFF787878),
+                      style: AppTextStyles.caption(context).copyWith(
+                        color: AppColors.paragraph(context),
                         fontSize: 10,
-                        fontFamily: 'Expo Arabic',
                         fontWeight: FontWeight.w400,
                         height: 1.25,
                       ),

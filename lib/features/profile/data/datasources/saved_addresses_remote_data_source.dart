@@ -1,4 +1,3 @@
-
 import 'package:dio/dio.dart';
 
 import 'package:food_user_app/core/constants/api_endpoints.dart';
@@ -23,9 +22,7 @@ abstract class SavedAddressesRemoteDataSource {
 
 class SavedAddressesRemoteDataSourceImpl
     implements SavedAddressesRemoteDataSource {
-  const SavedAddressesRemoteDataSourceImpl({
-    required Dio dio,
-  }) : _dio = dio;
+  const SavedAddressesRemoteDataSourceImpl({required Dio dio}) : _dio = dio;
 
   final Dio _dio;
 
@@ -55,7 +52,8 @@ class SavedAddressesRemoteDataSourceImpl
         ApiEndpoints.userAddressesCreate,
         data: requestBody,
       );
-      if (response.data is! Map<String, dynamic> || !response.data.containsKey('data')) {
+      if (response.data is! Map<String, dynamic> ||
+          !response.data.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
       return _parseAddress(response.data['data']);
@@ -78,7 +76,8 @@ class SavedAddressesRemoteDataSourceImpl
         ApiEndpoints.userAddressesEdit,
         data: data,
       );
-      if (response.data is! Map<String, dynamic> || !response.data.containsKey('data')) {
+      if (response.data is! Map<String, dynamic> ||
+          !response.data.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
       return _parseAddress(response.data['data']);
@@ -129,5 +128,4 @@ class SavedAddressesRemoteDataSourceImpl
     }
     throw const ServerException('Invalid address response');
   }
-
 }

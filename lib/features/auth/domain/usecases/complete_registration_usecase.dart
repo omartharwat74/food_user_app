@@ -13,7 +13,9 @@ class CompleteRegistrationUseCase
   final AuthRepository _repository;
 
   @override
-  Future<Either<Failure, AuthFlowResult>> call(CompleteRegistrationParams params) {
+  Future<Either<Failure, AuthFlowResult>> call(
+    CompleteRegistrationParams params,
+  ) {
     return _repository.completeRegistration(
       registrationToken: params.registrationToken,
       firstName: params.firstName,
@@ -40,5 +42,11 @@ class CompleteRegistrationParams extends Equatable {
   });
 
   @override
-  List<Object?> get props => [registrationToken, firstName, lastName, email, phone];
+  List<Object?> get props => [
+    registrationToken,
+    firstName,
+    lastName,
+    email,
+    phone,
+  ];
 }

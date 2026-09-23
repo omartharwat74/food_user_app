@@ -14,7 +14,8 @@ String? _nullableIdFromJson(dynamic value) => value?.toString();
 abstract class MenuItemDto with _$MenuItemDto {
   const factory MenuItemDto({
     @JsonKey(fromJson: _idFromJson) @Default('') String id,
-    @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson) String? categoryId,
+    @JsonKey(name: 'categoryId', fromJson: _nullableIdFromJson)
+    String? categoryId,
     String? name,
     String? description,
     @JsonKey(name: 'price_after_discount') double? priceAfterDiscount,
@@ -23,8 +24,7 @@ abstract class MenuItemDto with _$MenuItemDto {
     double? originalPrice,
     @JsonKey(name: 'main_image') String? mainImage,
     String? imageUrl,
-    @IntBoolConverter()
-    bool? available,
+    @IntBoolConverter() bool? available,
     Map<String, dynamic>? offer,
   }) = _MenuItemDto;
 

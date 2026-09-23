@@ -16,7 +16,8 @@ class RestaurantListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<RestaurantListCubit>(
-      create: (context) => sl<RestaurantListCubit>()..getRestaurants(categoryId: categoryId),
+      create: (context) =>
+          sl<RestaurantListCubit>()..getRestaurants(categoryId: categoryId),
       child: Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.homeCategoryRestaurants),
@@ -35,7 +36,9 @@ class RestaurantListScreen extends StatelessWidget {
               loaded: (restaurants, hasMore, currentPage) {
                 if (restaurants.isEmpty) {
                   return Center(
-                    child: Text(AppLocalizations.of(context)!.noRestaurantsFound),
+                    child: Text(
+                      AppLocalizations.of(context)!.noRestaurantsFound,
+                    ),
                   );
                 }
                 return ListView.separated(
@@ -44,7 +47,9 @@ class RestaurantListScreen extends StatelessWidget {
                   separatorBuilder: (_, _) => const SizedBox(height: 16),
                   itemBuilder: (context, index) {
                     if (index == restaurants.length) {
-                      context.read<RestaurantListCubit>().loadMore(categoryId: categoryId);
+                      context.read<RestaurantListCubit>().loadMore(
+                        categoryId: categoryId,
+                      );
                       return const Center(child: CircularProgressIndicator());
                     }
                     return SizedBox(

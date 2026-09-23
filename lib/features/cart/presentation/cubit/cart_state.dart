@@ -8,10 +8,8 @@ part 'cart_state.freezed.dart';
 class CartState with _$CartState {
   const factory CartState.initial() = _Initial;
   const factory CartState.loading() = _Loading;
-  const factory CartState.loaded({
-    required Cart cart,
-    Promo? appliedPromo,
-  }) = _Loaded;
+  const factory CartState.loaded({required Cart cart, Promo? appliedPromo}) =
+      _Loaded;
   const factory CartState.conflict({
     required Cart cart,
     required String newRestaurantId,

@@ -17,10 +17,10 @@ class CheckoutResult extends Equatable {
 
   @override
   List<Object?> get props => [
-        transactionId,
-        paymentIntentId,
-        clientSecret,
-        amount,
-        currency,
-      ];
+    transactionId,
+    paymentIntentId,
+    clientSecret,
+    amount,
+    currency,
+  ];
 }

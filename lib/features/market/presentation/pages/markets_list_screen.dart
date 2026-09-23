@@ -26,7 +26,8 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
   void initState() {
     super.initState();
     _marketsListCubit = GetIt.I<MarketsListCubit>()..fetchMarkets();
-    _marketFavoriteCubit = GetIt.I<MarketFavoriteCubit>()..fetchFavoriteMarkets();
+    _marketFavoriteCubit = GetIt.I<MarketFavoriteCubit>()
+      ..fetchFavoriteMarkets();
 
     _scrollController.addListener(_onScroll);
   }
@@ -57,7 +58,9 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(isArabic ? 'المتاجر والسوبرماركت' : 'Markets & Supermarkets'),
+          title: Text(
+            isArabic ? 'المتاجر والسوبرماركت' : 'Markets & Supermarkets',
+          ),
           centerTitle: true,
         ),
         body: Column(
@@ -108,9 +111,11 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                   // Filter Chips
                   BlocBuilder<MarketsListCubit, MarketsListState>(
                     builder: (context, state) {
-                      final pickupActive = state is MarketsListLoaded &&
+                      final pickupActive =
+                          state is MarketsListLoaded &&
                           state.pickupFilter == true;
-                      final availableActive = state is MarketsListLoaded &&
+                      final availableActive =
+                          state is MarketsListLoaded &&
                           state.availableFilter == true;
 
                       return SingleChildScrollView(
@@ -119,7 +124,9 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                           children: [
                             FilterChip(
                               label: Text(
-                                isArabic ? 'استلام من الفرع' : 'Pickup Available',
+                                isArabic
+                                    ? 'استلام من الفرع'
+                                    : 'Pickup Available',
                               ),
                               selected: pickupActive,
                               onSelected: (_) =>
@@ -215,7 +222,8 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                         physics: const AlwaysScrollableScrollPhysics(),
                         padding: const EdgeInsets.only(bottom: 24),
                         itemCount:
-                            state.markets.length + (state.isLoadingMore ? 1 : 0),
+                            state.markets.length +
+                            (state.isLoadingMore ? 1 : 0),
                         itemBuilder: (context, index) {
                           if (index >= state.markets.length) {
                             return const Padding(

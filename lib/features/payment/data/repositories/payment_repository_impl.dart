@@ -28,7 +28,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<Failure, PaymentCard>> saveCard(SaveCardRequestDto request) async {
+  Future<Either<Failure, PaymentCard>> saveCard(
+    SaveCardRequestDto request,
+  ) async {
     try {
       final dto = await remoteDataSource.saveCard(request);
       return Right(dto.toEntity());
@@ -48,7 +50,9 @@ class PaymentRepositoryImpl implements PaymentRepository {
   }
 
   @override
-  Future<Either<Failure, CheckoutResult>> checkout(CheckoutRequestDto request) async {
+  Future<Either<Failure, CheckoutResult>> checkout(
+    CheckoutRequestDto request,
+  ) async {
     try {
       final dto = await remoteDataSource.checkout(request);
       return Right(dto.toEntity());

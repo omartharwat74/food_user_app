@@ -21,12 +21,12 @@ class MarketOffer extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        marketId,
-        title,
-        description,
-        image,
-        discountPercent,
-        minOrderAmount,
-      ];
+    id,
+    marketId,
+    title,
+    description,
+    image,
+    discountPercent,
+    minOrderAmount,
+  ];
 }

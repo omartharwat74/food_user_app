@@ -21,16 +21,26 @@ class AddressModel extends Address {
     return AddressModel(
       id: json['id'] as String? ?? '',
       label: json['label'] as String? ?? json['name'] as String? ?? '',
-      fullAddress: json['full_address'] as String? ?? json['fullAddress'] as String? ?? '',
+      fullAddress:
+          json['full_address'] as String? ??
+          json['fullAddress'] as String? ??
+          '',
       lat: (json['lat'] as num?)?.toDouble() ?? 0.0,
-      lng: (json['lng'] as num?)?.toDouble() ?? (json['long'] as num?)?.toDouble() ?? 0.0,
+      lng:
+          (json['lng'] as num?)?.toDouble() ??
+          (json['long'] as num?)?.toDouble() ??
+          0.0,
       city: json['city'] as String? ?? '',
       neighborhood: json['neighborhood'] as String? ?? '',
       streetNumber: json['streetNumber'] as String? ?? '',
-      buildingNumber: json['building_number'] as String? ?? json['buildingNumber'] as String? ?? '',
+      buildingNumber:
+          json['building_number'] as String? ??
+          json['buildingNumber'] as String? ??
+          '',
       floor: json['floor'] as String? ?? '',
       apartment: json['apartment'] as String? ?? '',
-      addressType: json['type'] as String? ?? json['addressType'] as String? ?? '',
+      addressType:
+          json['type'] as String? ?? json['addressType'] as String? ?? '',
       isDefault: json['isDefault'] as bool? ?? (json['type'] == 'primary'),
     );
   }

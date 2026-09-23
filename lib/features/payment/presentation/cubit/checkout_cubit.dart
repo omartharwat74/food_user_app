@@ -6,7 +6,8 @@ import 'package:food_user_app/features/payment/presentation/cubit/checkout_state
 class CheckoutCubit extends Cubit<CheckoutState> {
   final PlaceOrderUseCase placeOrderUseCase;
 
-  CheckoutCubit({required this.placeOrderUseCase}) : super(const CheckoutState.initial());
+  CheckoutCubit({required this.placeOrderUseCase})
+    : super(const CheckoutState.initial());
 
   Future<void> checkout() async {
     emit(const CheckoutState.loading());
@@ -17,5 +18,4 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       (order) => emit(CheckoutState.success(order)),
     );
   }
-
 }

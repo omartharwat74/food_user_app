@@ -140,14 +140,9 @@ class _AccountHeaderBar extends StatelessWidget {
       height: height,
       child: Stack(
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.primary),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.primary)),
           Positioned.fill(
-            child: Image.asset(
-              AppAssets.headerPattern,
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(AppAssets.headerPattern, fit: BoxFit.cover),
           ),
           PositionedDirectional(
             top: topRowTop,

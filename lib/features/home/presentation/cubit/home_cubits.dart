@@ -18,21 +18,32 @@ abstract class SettingsState extends Equatable {
   @override
   List<Object?> get props => [];
 }
-class SettingsInitial extends SettingsState { const SettingsInitial(); }
-class SettingsLoading extends SettingsState { const SettingsLoading(); }
+
+class SettingsInitial extends SettingsState {
+  const SettingsInitial();
+}
+
+class SettingsLoading extends SettingsState {
+  const SettingsLoading();
+}
+
 class SettingsLoaded extends SettingsState {
   final AppSettings settings;
   const SettingsLoaded(this.settings);
-  @override List<Object?> get props => [settings];
+  @override
+  List<Object?> get props => [settings];
 }
+
 class SettingsError extends SettingsState {
   final String message;
   const SettingsError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class SettingsCubit extends Cubit<SettingsState> {
-  SettingsCubit({required this.getGeneralSettingsUseCase}) : super(const SettingsInitial());
+  SettingsCubit({required this.getGeneralSettingsUseCase})
+    : super(const SettingsInitial());
 
   final GetGeneralSettingsUseCase getGeneralSettingsUseCase;
 
@@ -53,23 +64,35 @@ class SettingsCubit extends Cubit<SettingsState> {
 
 abstract class SectionsState extends Equatable {
   const SectionsState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
-class SectionsInitial extends SectionsState { const SectionsInitial(); }
-class SectionsLoading extends SectionsState { const SectionsLoading(); }
+
+class SectionsInitial extends SectionsState {
+  const SectionsInitial();
+}
+
+class SectionsLoading extends SectionsState {
+  const SectionsLoading();
+}
+
 class SectionsLoaded extends SectionsState {
   final List<Section> sections;
   const SectionsLoaded(this.sections);
-  @override List<Object?> get props => [sections];
+  @override
+  List<Object?> get props => [sections];
 }
+
 class SectionsError extends SectionsState {
   final String message;
   const SectionsError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class SectionsCubit extends Cubit<SectionsState> {
-  SectionsCubit({required this.getSectionsUseCase}) : super(const SectionsInitial());
+  SectionsCubit({required this.getSectionsUseCase})
+    : super(const SectionsInitial());
 
   final GetSectionsUseCase getSectionsUseCase;
 
@@ -90,20 +113,31 @@ class SectionsCubit extends Cubit<SectionsState> {
 
 abstract class TagsState extends Equatable {
   const TagsState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
-class TagsInitial extends TagsState { const TagsInitial(); }
-class TagsLoading extends TagsState { const TagsLoading(); }
+
+class TagsInitial extends TagsState {
+  const TagsInitial();
+}
+
+class TagsLoading extends TagsState {
+  const TagsLoading();
+}
+
 class TagsLoaded extends TagsState {
   final List<Tag> tags;
   final int sectionId;
   const TagsLoaded({required this.tags, required this.sectionId});
-  @override List<Object?> get props => [tags, sectionId];
+  @override
+  List<Object?> get props => [tags, sectionId];
 }
+
 class TagsError extends TagsState {
   final String message;
   const TagsError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class TagsCubit extends Cubit<TagsState> {
@@ -128,21 +162,36 @@ class TagsCubit extends Cubit<TagsState> {
 
 abstract class StoresState extends Equatable {
   const StoresState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
-class StoresInitial extends StoresState { const StoresInitial(); }
-class StoresLoading extends StoresState { const StoresLoading(); }
+
+class StoresInitial extends StoresState {
+  const StoresInitial();
+}
+
+class StoresLoading extends StoresState {
+  const StoresLoading();
+}
+
 class StoresLoaded extends StoresState {
   final List<Store> items;
   final StoreMeta meta;
   final bool isRandom;
-  const StoresLoaded({required this.items, required this.meta, this.isRandom = false});
-  @override List<Object?> get props => [items, meta, isRandom];
+  const StoresLoaded({
+    required this.items,
+    required this.meta,
+    this.isRandom = false,
+  });
+  @override
+  List<Object?> get props => [items, meta, isRandom];
 }
+
 class StoresError extends StoresState {
   final String message;
   const StoresError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class StoresCubit extends Cubit<StoresState> {
@@ -176,7 +225,9 @@ class StoresCubit extends Cubit<StoresState> {
     if (isClosed) return;
     result.fold(
       (f) => emit(StoresError(f.message)),
-      (r) => emit(StoresLoaded(items: r.items, meta: r.meta, isRandom: r.isRandom)),
+      (r) => emit(
+        StoresLoaded(items: r.items, meta: r.meta, isRandom: r.isRandom),
+      ),
     );
   }
 }
@@ -187,24 +238,36 @@ class StoresCubit extends Cubit<StoresState> {
 
 abstract class MajorStoresState extends Equatable {
   const MajorStoresState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
-class MajorStoresInitial extends MajorStoresState { const MajorStoresInitial(); }
-class MajorStoresLoading extends MajorStoresState { const MajorStoresLoading(); }
+
+class MajorStoresInitial extends MajorStoresState {
+  const MajorStoresInitial();
+}
+
+class MajorStoresLoading extends MajorStoresState {
+  const MajorStoresLoading();
+}
+
 class MajorStoresLoaded extends MajorStoresState {
   final List<Store> items;
   final StoreMeta meta;
   const MajorStoresLoaded({required this.items, required this.meta});
-  @override List<Object?> get props => [items, meta];
+  @override
+  List<Object?> get props => [items, meta];
 }
+
 class MajorStoresError extends MajorStoresState {
   final String message;
   const MajorStoresError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class MajorStoresCubit extends Cubit<MajorStoresState> {
-  MajorStoresCubit({required this.getMajorStoresUseCase}) : super(const MajorStoresInitial());
+  MajorStoresCubit({required this.getMajorStoresUseCase})
+    : super(const MajorStoresInitial());
 
   final GetMajorStoresUseCase getMajorStoresUseCase;
 
@@ -231,29 +294,43 @@ class MajorStoresCubit extends Cubit<MajorStoresState> {
 
 abstract class SpotlightsState extends Equatable {
   const SpotlightsState();
-  @override List<Object?> get props => [];
+  @override
+  List<Object?> get props => [];
 }
-class SpotlightsInitial extends SpotlightsState { const SpotlightsInitial(); }
-class SpotlightsLoading extends SpotlightsState { const SpotlightsLoading(); }
+
+class SpotlightsInitial extends SpotlightsState {
+  const SpotlightsInitial();
+}
+
+class SpotlightsLoading extends SpotlightsState {
+  const SpotlightsLoading();
+}
+
 class SpotlightsLoaded extends SpotlightsState {
   final List<Spotlight> spotlights;
   const SpotlightsLoaded(this.spotlights);
-  @override List<Object?> get props => [spotlights];
+  @override
+  List<Object?> get props => [spotlights];
 }
+
 class SpotlightsError extends SpotlightsState {
   final String message;
   const SpotlightsError(this.message);
-  @override List<Object?> get props => [message];
+  @override
+  List<Object?> get props => [message];
 }
 
 class SpotlightsCubit extends Cubit<SpotlightsState> {
-  SpotlightsCubit({required this.getSpotlightsUseCase}) : super(const SpotlightsInitial());
+  SpotlightsCubit({required this.getSpotlightsUseCase})
+    : super(const SpotlightsInitial());
 
   final GetSpotlightsUseCase getSpotlightsUseCase;
 
   Future<void> fetchSpotlights({int? sectionId}) async {
     emit(const SpotlightsLoading());
-    final result = await getSpotlightsUseCase(GetSpotlightsParams(sectionId: sectionId));
+    final result = await getSpotlightsUseCase(
+      GetSpotlightsParams(sectionId: sectionId),
+    );
     if (isClosed) return;
     result.fold(
       (f) => emit(SpotlightsError(f.message)),

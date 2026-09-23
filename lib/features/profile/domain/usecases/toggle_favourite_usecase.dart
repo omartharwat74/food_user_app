@@ -8,7 +8,10 @@ class ToggleFavouriteParams extends Equatable {
   final String restaurantId;
   final bool isCurrentlyFavorite;
 
-  const ToggleFavouriteParams({required this.restaurantId, required this.isCurrentlyFavorite});
+  const ToggleFavouriteParams({
+    required this.restaurantId,
+    required this.isCurrentlyFavorite,
+  });
 
   @override
   List<Object?> get props => [restaurantId, isCurrentlyFavorite];

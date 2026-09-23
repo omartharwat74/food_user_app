@@ -40,10 +40,10 @@ class UserModel extends User {
     String composeName() {
       final full = str('full_name') ?? str('fullName');
       if (full != null && full.isNotEmpty) return full;
-      final parts = [str('first_name') ?? str('firstName'), str('last_name') ?? str('lastName')]
-          .where((p) => p != null && p.isNotEmpty)
-          .cast<String>()
-          .toList();
+      final parts = [
+        str('first_name') ?? str('firstName'),
+        str('last_name') ?? str('lastName'),
+      ].where((p) => p != null && p.isNotEmpty).cast<String>().toList();
       if (parts.isNotEmpty) return parts.join(' ');
       return str('name') ?? '';
     }

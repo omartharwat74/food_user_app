@@ -16,14 +16,16 @@ class CartFloatingBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        final cart = state.maybeWhen(
-          loaded: (c, _) => c,
-          orElse: () => null,
-        );
-        
-        if (cart != null && cart.items.isNotEmpty && cart.restaurantId == currentStoreId) {
-          final totalItems = cart.items.fold<int>(0, (sum, item) => sum + item.quantity);
-          
+        final cart = state.maybeWhen(loaded: (c, _) => c, orElse: () => null);
+
+        if (cart != null &&
+            cart.items.isNotEmpty &&
+            cart.restaurantId == currentStoreId) {
+          final totalItems = cart.items.fold<int>(
+            0,
+            (sum, item) => sum + item.quantity,
+          );
+
           return Container(
             color: AppColors.surfaceCard(context),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -48,7 +50,10 @@ class CartFloatingBanner extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(24),
@@ -77,7 +82,7 @@ class CartFloatingBanner extends StatelessWidget {
             ),
           );
         }
-        
+
         return const SizedBox.shrink();
       },
     );

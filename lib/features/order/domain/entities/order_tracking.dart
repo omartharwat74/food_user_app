@@ -25,16 +25,16 @@ class OrderTracking extends Equatable {
 
   @override
   List<Object?> get props => [
-        orderId,
-        status,
-        estimatedMinutes,
-        driverName,
-        driverPhone,
-        driverLat,
-        driverLng,
-        driverRating,
-        timeline,
-      ];
+    orderId,
+    status,
+    estimatedMinutes,
+    driverName,
+    driverPhone,
+    driverLat,
+    driverLng,
+    driverRating,
+    timeline,
+  ];
 }
 
 class TimelineEntry extends Equatable {

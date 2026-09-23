@@ -49,8 +49,8 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
   MarketRemoteDataSourceImpl({
     required DioClient dioClient,
     required TokenStorage tokenStorage,
-  })  : _dioClient = dioClient,
-        _tokenStorage = tokenStorage;
+  }) : _dioClient = dioClient,
+       _tokenStorage = tokenStorage;
 
   Dio get _dio => _dioClient.dio;
 
@@ -70,10 +70,7 @@ class MarketRemoteDataSourceImpl implements MarketRemoteDataSource {
     int size = 20,
   }) async {
     try {
-      final queryParams = <String, dynamic>{
-        'page': page,
-        'size': size,
-      };
+      final queryParams = <String, dynamic>{'page': page, 'size': size};
       if (search != null && search.trim().isNotEmpty) {
         queryParams['search'] = search.trim();
       }

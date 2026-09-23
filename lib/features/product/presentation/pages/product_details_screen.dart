@@ -34,7 +34,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return BlocBuilder<ProductDetailCubit, ProductDetailState>(
       builder: (context, state) {
         // Use the loaded product if available, otherwise fallback to the summary item passed in
@@ -42,16 +42,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           loaded: (p) => p,
           orElse: () => widget.item,
         );
-        
+
         final isLoading = state.maybeWhen(
           loading: () => true,
           orElse: () => false,
         );
 
-        if (!_hasInitializedDefaults && state.maybeWhen(loaded: (_) => true, orElse: () => false)) {
+        if (!_hasInitializedDefaults &&
+            state.maybeWhen(loaded: (_) => true, orElse: () => false)) {
           for (final modifier in product.options) {
             // Fallback: If it's required OR it's a single-choice option, default to the first value
-            if ((modifier.required || modifier.maxSelect == 1) && modifier.values.isNotEmpty) {
+            if ((modifier.required || modifier.maxSelect == 1) &&
+                modifier.values.isNotEmpty) {
               _selectedOptions[modifier.id] = {modifier.values.first.id};
             }
           }
@@ -68,7 +70,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               (o) => o.id == optId,
               orElse: () => modifier.values.first,
             );
-            
+
             if (selectedOption.id == optId) {
               if (modifier.priceType == 'absolute') {
                 // Absolute options REPLACE the base price (e.g., Size variations)
@@ -109,14 +111,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   quantity: _quantity,
                   optionValueIds: modifierIdsList,
                 );
-                
+
                 if (!context.mounted) return;
 
                 Navigator.of(context).pop();
 
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('تم إضافة المنتج للسلة بنجاح', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    content: Text(
+                      'تم إضافة المنتج للسلة بنجاح',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     backgroundColor: Colors.green,
                     duration: Duration(seconds: 3),
                   ),
@@ -124,7 +133,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               } catch (e) {
                 if (!context.mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('حدث خطأ أثناء الإضافة'), backgroundColor: Colors.red),
+                  const SnackBar(
+                    content: Text('حدث خطأ أثناء الإضافة'),
+                    backgroundColor: Colors.red,
+                  ),
                 );
               }
             },
@@ -137,11 +149,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      16,
+                      16,
+                      0,
+                    ),
                     child: _ProductHeader(title: l10n.productDetailsTitle),
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Product Image
                   if (product.imageUrl.isNotEmpty)
                     AppNetworkImage(
@@ -152,16 +169,21 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     )
                   else
                     _HeroProductImage(imageAsset: AppAssets.productBurgerCombo),
-                  
+
                   // Loading Indicator
                   if (isLoading)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Center(child: CircularProgressIndicator()),
                     ),
-                    
+
                   Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(16, 12, 16, 0),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      12,
+                      16,
+                      0,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -171,7 +193,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           onAddNotes: _showNotesDialog,
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Dynamic Includes (Combo Components)
                         if (product.includes.isNotEmpty) ...[
                           Text(
@@ -190,7 +212,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               padding: const EdgeInsets.only(bottom: 8),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.circle, size: 6, color: Colors.grey),
+                                  const Icon(
+                                    Icons.circle,
+                                    size: 6,
+                                    color: Colors.grey,
+                                  ),
                                   const SizedBox(width: 8),
                                   Text(
                                     '${include.quantity}x ${include.name}',
@@ -219,35 +245,47 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   Text(
                                     modifier.name,
                                     textAlign: TextAlign.start,
-                                    style: AppTextStyles.heading4(context).copyWith(
-                                      color: AppColors.onSurface(context),
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      height: 1.4,
-                                    ),
+                                    style: AppTextStyles.heading4(context)
+                                        .copyWith(
+                                          color: AppColors.onSurface(context),
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.4,
+                                        ),
                                   ),
                                   const SizedBox(height: 12),
                                   ...modifier.values.map((val) {
-                                    final isSelected = (_selectedOptions[modifier.id] ?? <String>{}).contains(val.id);
-                                    
+                                    final isSelected =
+                                        (_selectedOptions[modifier.id] ??
+                                                <String>{})
+                                            .contains(val.id);
+
                                     return InkWell(
                                       onTap: () {
                                         setState(() {
-                                          final current = Set<String>.from(_selectedOptions[modifier.id] ?? {});
+                                          final current = Set<String>.from(
+                                            _selectedOptions[modifier.id] ?? {},
+                                          );
                                           if (modifier.maxSelect <= 1) {
-                                            _selectedOptions[modifier.id] = {val.id};
+                                            _selectedOptions[modifier.id] = {
+                                              val.id,
+                                            };
                                           } else {
                                             if (isSelected) {
                                               current.remove(val.id);
-                                            } else if (current.length < modifier.maxSelect) {
+                                            } else if (current.length <
+                                                modifier.maxSelect) {
                                               current.add(val.id);
                                             }
-                                            _selectedOptions[modifier.id] = current;
+                                            _selectedOptions[modifier.id] =
+                                                current;
                                           }
                                         });
                                       },
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 4,
+                                        ),
                                         child: Row(
                                           children: [
                                             if (modifier.maxSelect <= 1)
@@ -256,17 +294,30 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                 height: 24,
                                                 child: Radio<String>(
                                                   value: val.id,
-                                                  groupValue: _selectedOptions[modifier.id]?.isNotEmpty == true
-                                                      ? _selectedOptions[modifier.id]!.first
+                                                  groupValue:
+                                                      _selectedOptions[modifier
+                                                                  .id]
+                                                              ?.isNotEmpty ==
+                                                          true
+                                                      ? _selectedOptions[modifier
+                                                                .id]!
+                                                            .first
                                                       : null,
                                                   onChanged: (_) {
                                                     setState(() {
-                                                      _selectedOptions[modifier.id] = {val.id};
+                                                      _selectedOptions[modifier
+                                                          .id] = {
+                                                        val.id,
+                                                      };
                                                     });
                                                   },
-                                                  activeColor: AppColors.primary,
-                                                  visualDensity: VisualDensity.compact,
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  activeColor:
+                                                      AppColors.primary,
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  materialTapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
                                                 ),
                                               )
                                             else
@@ -277,27 +328,43 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   value: isSelected,
                                                   onChanged: (_) {
                                                     setState(() {
-                                                      final current = Set<String>.from(_selectedOptions[modifier.id] ?? {});
+                                                      final current =
+                                                          Set<String>.from(
+                                                            _selectedOptions[modifier
+                                                                    .id] ??
+                                                                {},
+                                                          );
                                                       if (isSelected) {
                                                         current.remove(val.id);
-                                                      } else if (current.length < modifier.maxSelect) {
+                                                      } else if (current
+                                                              .length <
+                                                          modifier.maxSelect) {
                                                         current.add(val.id);
                                                       }
-                                                      _selectedOptions[modifier.id] = current;
+                                                      _selectedOptions[modifier
+                                                              .id] =
+                                                          current;
                                                     });
                                                   },
-                                                  activeColor: AppColors.primary,
-                                                  visualDensity: VisualDensity.compact,
-                                                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                                  activeColor:
+                                                      AppColors.primary,
+                                                  visualDensity:
+                                                      VisualDensity.compact,
+                                                  materialTapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
                                                 ),
                                               ),
                                             const SizedBox(width: 8),
                                             Text(
                                               val.name,
-                                              style: AppTextStyles.body(context).copyWith(
-                                                color: AppColors.onSurface(context),
-                                                fontSize: 14,
-                                              ),
+                                              style: AppTextStyles.body(context)
+                                                  .copyWith(
+                                                    color: AppColors.onSurface(
+                                                      context,
+                                                    ),
+                                                    fontSize: 14,
+                                                  ),
                                             ),
                                             const Spacer(),
                                             if (val.price > 0)
@@ -305,11 +372,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                 modifier.priceType == 'addon'
                                                     ? '(+${(val.price).toFormattedPrice()} ج.م)'
                                                     : '(${(val.price).toFormattedPrice()} ج.م)',
-                                                style: AppTextStyles.textLink(context).copyWith(
-                                                  color: AppColors.onSurface(context),
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                                style:
+                                                    AppTextStyles.textLink(
+                                                      context,
+                                                    ).copyWith(
+                                                      color:
+                                                          AppColors.onSurface(
+                                                            context,
+                                                          ),
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                               ),
                                           ],
                                         ),
@@ -507,7 +581,6 @@ class _ProductIntro extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class _SavedProductNotes extends StatelessWidget {
@@ -857,7 +930,12 @@ class _ProductBottomBar extends StatelessWidget {
                       onTap: (enabled && !isLoading) ? onSubmit : null,
                       child: Container(
                         height: 48,
-                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 0),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          0,
+                          16,
+                          0,
+                        ),
                         decoration: BoxDecoration(
                           color: (enabled && !isLoading)
                               ? AppColors.primary
@@ -876,34 +954,45 @@ class _ProductBottomBar extends StatelessWidget {
                                 ),
                               )
                             : Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      isError ? (message ?? 'حدث خطأ') : l10n.productAddToCart,
+                                      isError
+                                          ? (message ?? 'حدث خطأ')
+                                          : l10n.productAddToCart,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: AppTextStyles.buttonHeading(context).copyWith(
-                                        color: (enabled && !isLoading)
-                                            ? AppColors.text
-                                            : AppColors.paragraph(context),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.25,
-                                      ),
+                                      style:
+                                          AppTextStyles.buttonHeading(
+                                            context,
+                                          ).copyWith(
+                                            color: (enabled && !isLoading)
+                                                ? AppColors.text
+                                                : AppColors.paragraph(context),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.25,
+                                          ),
                                     ),
                                   ),
                                   if (!isError)
                                     Text(
-                                      l10n.cartPrice((total).toFormattedPrice()),
-                                      style: AppTextStyles.buttonHeading(context).copyWith(
-                                        color: (enabled && !isLoading)
-                                            ? AppColors.text
-                                            : AppColors.paragraph(context),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.25,
+                                      l10n.cartPrice(
+                                        (total).toFormattedPrice(),
                                       ),
+                                      style:
+                                          AppTextStyles.buttonHeading(
+                                            context,
+                                          ).copyWith(
+                                            color: (enabled && !isLoading)
+                                                ? AppColors.text
+                                                : AppColors.paragraph(context),
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.25,
+                                          ),
                                     ),
                                 ],
                               ),
@@ -984,5 +1073,3 @@ class _BottomQuantityControl extends StatelessWidget {
     );
   }
 }
-
-

@@ -31,7 +31,7 @@ class SavedAddressDto {
   final String? addressType;
   final bool isDefault;
 
-    factory SavedAddressDto.fromJson(Map<String, dynamic> json) {
+  factory SavedAddressDto.fromJson(Map<String, dynamic> json) {
     final type = _readString(json, 'type') ?? 'other';
     return SavedAddressDto(
       id: _readString(json, 'id') ?? '',
@@ -51,14 +51,18 @@ class SavedAddressDto {
   }
 
   SavedAddress toEntity() {
-    final title = _nonEmpty(label) ?? _addressTypeLabel(addressType);
+    // Use the user-given label as-is for Arabic (it's typically in Arabic from the backend).
+    // For English, fall back to a localized type label so it doesn't show raw Arabic.
+    final rawLabel = _nonEmpty(label);
+    final titleAr = rawLabel ?? _addressTypeLabelAr(addressType);
+    final titleEn = _addressTypeLabelEn(addressType); // always English regardless of label
     final details = _detailsText();
     final location = _locationText();
 
     return SavedAddress(
       id: id,
-      titleAr: title,
-      titleEn: title,
+      titleAr: titleAr,
+      titleEn: titleEn,
       detailsAr: details,
       detailsEn: details,
       locationAr: location,
@@ -96,12 +100,21 @@ class SavedAddressDto {
     ].map(_nonEmpty).whereType<String>().join(', ');
   }
 
-  static String _addressTypeLabel(String? value) {
-    return switch (value?.toUpperCase()) {
-      'HOME' => 'Home',
-      'WORK' => 'Work',
-      'APARTMENT' => 'Apartment',
-      _ => 'Address',
+  static String _addressTypeLabelAr(String? value) {
+    return switch (value?.toLowerCase()) {
+      'home' || 'primary' => 'المنزل',
+      'work'              => 'العمل',
+      'apartment'         => 'الشقة',
+      _                   => 'العنوان',
+    };
+  }
+
+  static String _addressTypeLabelEn(String? value) {
+    return switch (value?.toLowerCase()) {
+      'home' || 'primary' => 'Home',
+      'work'              => 'Work',
+      'apartment'         => 'Apartment',
+      _                   => 'Address',
     };
   }
 }
@@ -141,11 +154,15 @@ class SavedAddressRequest {
       'lat': lat,
       'long': lng,
       if (_nonEmpty(fullAddress) != null) 'full_address': fullAddress.trim(),
-      if (_nonEmpty(buildingNumber) != null) 'building_number': buildingNumber!.trim(),
+      if (_nonEmpty(buildingNumber) != null)
+        'building_number': buildingNumber!.trim(),
       if (_nonEmpty(floor) != null) 'floor': floor!.trim(),
       if (_nonEmpty(apartment) != null) 'apartment': apartment!.trim(),
-      'type': addressType.toLowerCase() == 'primary' ? 'primary' : 
-              addressType.toLowerCase() == 'work' ? 'work' : 'other',
+      'type': addressType.toLowerCase() == 'primary'
+          ? 'primary'
+          : addressType.toLowerCase() == 'work'
+          ? 'work'
+          : 'other',
     };
   }
 }

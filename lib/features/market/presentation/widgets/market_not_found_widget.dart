@@ -11,7 +11,8 @@ class MarketNotFoundWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final titleText = isArabic ? 'المتجر غير متاح' : 'Market Unavailable';
-    final messageText = message ??
+    final messageText =
+        message ??
         (isArabic
             ? 'عذراً، هذا المتجر لم يعد متاحاً حالياً أو قد تم إزالته.'
             : 'Sorry, this market is no longer available or has been removed.');
@@ -43,17 +44,17 @@ class MarketNotFoundWidget extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 titleText,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
               Text(
                 messageText,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).hintColor,
-                    ),
+                  color: Theme.of(context).hintColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

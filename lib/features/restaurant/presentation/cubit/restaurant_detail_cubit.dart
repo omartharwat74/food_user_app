@@ -26,19 +26,25 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
     detailResult.fold(
       (failure) => emit(RestaurantDetailState.error(failure.message)),
       (restaurant) async {
-        final branchesResult = await restaurantRepository.getBranches(restaurant.id);
+        final branchesResult = await restaurantRepository.getBranches(
+          restaurant.id,
+        );
         if (isClosed) return;
-        final offersResult = await restaurantRepository.getOffers(restaurant.id);
+        final offersResult = await restaurantRepository.getOffers(
+          restaurant.id,
+        );
         if (isClosed) return;
 
         final branches = branchesResult.fold((_) => <Branch>[], (list) => list);
         final offers = offersResult.fold((_) => <Offer>[], (list) => list);
 
-        emit(RestaurantDetailState.loaded(
-          restaurant: restaurant,
-          branches: branches,
-          offers: offers,
-        ));
+        emit(
+          RestaurantDetailState.loaded(
+            restaurant: restaurant,
+            branches: branches,
+            offers: offers,
+          ),
+        );
       },
     );
   }
@@ -65,10 +71,12 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
           (_) => <MenuCategory>[],
           (cats) => cats as List<MenuCategory>,
         );
-        emit(RestaurantDetailState.loaded(
-          restaurant: restaurant,
-          menuCategories: menuCategories,
-        ));
+        emit(
+          RestaurantDetailState.loaded(
+            restaurant: restaurant,
+            menuCategories: menuCategories,
+          ),
+        );
       },
     );
   }

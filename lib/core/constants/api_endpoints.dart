@@ -50,9 +50,11 @@ class ApiEndpoints {
   static const String userAddressesAll = '/api/v1/user-addresses/all';
   static const String userAddressesCreate = '/api/v1/user-addresses/create';
   static const String userAddressesEdit = '/api/v1/user-addresses/edit';
-  static String userAddressShow(String id) => '/api/v1/user-addresses/show?id=$id';
-  static String userAddressDelete(String id) => '/api/v1/user-addresses/delete?id=$id';
-  
+  static String userAddressShow(String id) =>
+      '/api/v1/user-addresses/show?id=$id';
+  static String userAddressDelete(String id) =>
+      '/api/v1/user-addresses/delete?id=$id';
+
   // Legacy aliases
   static const String userAddresses = '/user/addresses';
   static String userAddress(String id) => '$userAddresses/$id';
@@ -61,14 +63,18 @@ class ApiEndpoints {
   // ── User Profile & Settings ───────────────────────────────────────────────
   /// `GET /api/v1/profile/show`
   static const String profileShow = '/api/v1/profile/show';
+
   /// `PUT /api/v1/profile/edit`
   static const String profileEdit = '/api/v1/profile/edit';
+
   /// `PUT /api/v1/profile/notifications`
   static const String profileNotifications = '/api/v1/profile/notifications';
 
   /// Change Phone Flow
-  static const String phoneSendCurrentOtp = '/api/v1/profile/phone/send-current-otp';
-  static const String phoneVerifyCurrentOtp = '/api/v1/profile/phone/verify-current-otp';
+  static const String phoneSendCurrentOtp =
+      '/api/v1/profile/phone/send-current-otp';
+  static const String phoneVerifyCurrentOtp =
+      '/api/v1/profile/phone/verify-current-otp';
   static const String phoneSendOtp = '/api/v1/profile/phone/send-otp';
   static const String phoneVerifyOtp = '/api/v1/profile/phone/verify-otp';
 
@@ -77,7 +83,7 @@ class ApiEndpoints {
   static const String userSettings = '/user/settings';
   static const String user = '/user';
 
-    // ── Cart ──────────────────────────────────────────────────────────────────
+  // ── Cart ──────────────────────────────────────────────────────────────────
   static const String cart = '/api/v1/cart';
   static const String cartItems = '/api/v1/cart/items';
   static const String applyPromo = '/cart/promo';
@@ -135,10 +141,12 @@ class ApiEndpoints {
   static const String storeProducts = '/api/v1/stores/products/all';
 
   /// `GET /api/v1/stores/products/categories?store_id={store_id}`
-  static const String storeProductCategories = '/api/v1/stores/products/categories';
-  
+  static const String storeProductCategories =
+      '/api/v1/stores/products/categories';
+
   /// `GET /api/v1/stores/products/category-sections?store_id={store_id}&menu_category_id={menu_category_id}`
-  static const String storeProductCategorySections = '/api/v1/stores/products/category-sections';
+  static const String storeProductCategorySections =
+      '/api/v1/stores/products/category-sections';
 
   /// `GET /api/v1/stores/products/search?store_id={id}&search={query}&page=1&per_page=10`
   static const String storeProductSearch = '/api/v1/stores/products/search';
@@ -194,7 +202,6 @@ class ApiEndpoints {
   static String marketOffers(String id) => '$markets/$id/offers';
   static const String favoriteMarkets = '/markets/favorites';
   static String toggleFavoriteMarket(String id) => '$markets/$id/favorite';
-
 
   /// Public auth endpoints that must NOT receive an Authorization header.
   /// `/auth/set-password` is intentionally NOT listed here.

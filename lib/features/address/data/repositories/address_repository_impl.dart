@@ -23,8 +23,11 @@ class AddressRepositoryImpl implements AddressRepository {
     apartment: r.apartment,
     lat: r.lat,
     lng: r.lng,
-    type: r.addressType?.toLowerCase() == 'primary' ? 'primary' : 
-          r.addressType?.toLowerCase() == 'work' ? 'work' : 'other',
+    type: r.addressType?.toLowerCase() == 'primary'
+        ? 'primary'
+        : r.addressType?.toLowerCase() == 'work'
+        ? 'work'
+        : 'other',
   );
 
   @override

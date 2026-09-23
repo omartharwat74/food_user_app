@@ -178,7 +178,6 @@ class AppAssets {
   static const paymentDeleteDialogIcon =
       'assets/images/icons/payment/payment_delete_dialog.svg';
 
-
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
   static const supportBackIcon = 'assets/images/icons/support/back.svg';
   static const supportAttachmentIcon =
@@ -278,8 +277,7 @@ class AppAssets {
   static const serviceStarIcon = 'assets/images/service_listing/icon_star.svg';
   static const serviceFavouriteIcon =
       'assets/images/service_listing/icon_favourite.svg';
-  static const serviceSaleIcon =
-      'assets/images/service_listing/sale.svg';
+  static const serviceSaleIcon = 'assets/images/service_listing/sale.svg';
 
   // ── Search Screen ─────────────────────────────────────────────────────────
   static const searchCake = 'assets/images/search/search_cake.png';

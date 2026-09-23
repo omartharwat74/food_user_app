@@ -41,11 +41,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
     }
     final address = addressesController.selectedAddress;
-    final selectedSavedAddress = (address?.fullAddress?.isNotEmpty == true) 
-        ? address!.fullAddress 
-        : (address?.title(Localizations.localeOf(context)).isNotEmpty == true) 
-            ? address!.title(Localizations.localeOf(context)) 
-            : null;
+    final selectedSavedAddress = (address?.fullAddress?.isNotEmpty == true)
+        ? address!.fullAddress
+        : (address?.title(Localizations.localeOf(context)).isNotEmpty == true)
+        ? address!.title(Localizations.localeOf(context))
+        : null;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -56,11 +56,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             listener: (context, state) {
               state.maybeWhen(
                 success: (order) {
-                  context.pushReplacement(RouteNames.orderConfirmationFor(order.id));
+                  context.pushReplacement(
+                    RouteNames.orderConfirmationFor(order.id),
+                  );
                 },
                 error: (message) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(message), backgroundColor: AppColors.error),
+                    SnackBar(
+                      content: Text(message),
+                      backgroundColor: AppColors.error,
+                    ),
                   );
                 },
                 orElse: () {},
@@ -77,7 +82,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 return Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        20,
+                        16,
+                        0,
+                      ),
                       child: _CheckoutHeader(title: l10n.checkoutTitle),
                     ),
                     const SizedBox(height: 20),
@@ -86,7 +96,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         physics: const ClampingScrollPhysics(),
                         keyboardDismissBehavior:
                             ScrollViewKeyboardDismissBehavior.onDrag,
-                        padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 24),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          0,
+                          16,
+                          24,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -101,7 +116,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                             PaymentOptionsSection(
                               selectedOption: _paymentOption,
                               onChanged: (option) =>
-                                  _handlePaymentOptionSelected(option, total.round()),
+                                  _handlePaymentOptionSelected(
+                                    option,
+                                    total.round(),
+                                  ),
                             ),
                           ],
                         ),
@@ -331,10 +349,7 @@ class _MapStrip extends StatelessWidget {
 }
 
 class _CheckoutBottomBar extends StatefulWidget {
-  const _CheckoutBottomBar({
-    required this.label,
-    required this.onTap,
-  });
+  const _CheckoutBottomBar({required this.label, required this.onTap});
 
   final String label;
   final VoidCallback onTap;
@@ -380,7 +395,7 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
   @override
   Widget build(BuildContext context) {
     final bottomSafe = MediaQuery.of(context).padding.bottom;
-    
+
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         final cart = state.maybeWhen(
@@ -397,7 +412,12 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
 
         return Container(
           width: double.infinity,
-          padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, bottomSafe > 0 ? bottomSafe : 16),
+          padding: EdgeInsetsDirectional.fromSTEB(
+            16,
+            16,
+            16,
+            bottomSafe > 0 ? bottomSafe : 16,
+          ),
           decoration: BoxDecoration(
             color: AppColors.surfaceCard(context),
             boxShadow: [
@@ -428,11 +448,31 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          _buildSummaryRow(context, 'قيمة الطلب', '${subtotal.toFormattedPrice()} ج.م'),
-                          _buildSummaryRow(context, 'التوصيل', '${deliveryFee.toFormattedPrice()} ج.م'),
-                          _buildSummaryRow(context, 'الضريبة', '${tax.toFormattedPrice()} ج.م'),
-                          _buildSummaryRow(context, 'الخصم', '${discount.toFormattedPrice()} ج.م'),
-                          const Divider(color: Color(0xFFE5E5E5), thickness: 0.5, height: 0.5),
+                          _buildSummaryRow(
+                            context,
+                            'قيمة الطلب',
+                            '${subtotal.toFormattedPrice()} ج.م',
+                          ),
+                          _buildSummaryRow(
+                            context,
+                            'التوصيل',
+                            '${deliveryFee.toFormattedPrice()} ج.م',
+                          ),
+                          _buildSummaryRow(
+                            context,
+                            'الضريبة',
+                            '${tax.toFormattedPrice()} ج.م',
+                          ),
+                          _buildSummaryRow(
+                            context,
+                            'الخصم',
+                            '${discount.toFormattedPrice()} ج.م',
+                          ),
+                          const Divider(
+                            color: Color(0xFFE5E5E5),
+                            thickness: 0.5,
+                            height: 0.5,
+                          ),
                         ],
                       )
                     : const SizedBox.shrink(),
@@ -458,7 +498,9 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                         ),
                       ),
                       Icon(
-                        isSummaryExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_up,
+                        isSummaryExpanded
+                            ? Icons.keyboard_arrow_down
+                            : Icons.keyboard_arrow_up,
                         color: const Color(0xFF1B1B1B),
                         size: 24,
                       ),

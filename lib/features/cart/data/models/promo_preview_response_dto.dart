@@ -17,10 +17,6 @@ abstract class PromoPreviewResponseDto with _$PromoPreviewResponseDto {
 
 extension PromoPreviewResponseDtoMapper on PromoPreviewResponseDto {
   Promo toEntity(String? code) {
-    return Promo(
-      discountAmount: discountAmount,
-      total: total,
-      code: code,
-    );
+    return Promo(discountAmount: discountAmount, total: total, code: code);
   }
 }

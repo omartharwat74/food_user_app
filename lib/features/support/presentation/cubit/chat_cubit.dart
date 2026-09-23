@@ -13,10 +13,8 @@ class ChatCubit extends Cubit<ChatState> {
 
   String? _ticketId;
 
-  ChatCubit(
-    this._getMessagesUseCase,
-    this._sendMessageUseCase,
-  ) : super(const ChatState.initial());
+  ChatCubit(this._getMessagesUseCase, this._sendMessageUseCase)
+    : super(const ChatState.initial());
 
   Future<void> fetchMessages(String ticketId) async {
     _ticketId = ticketId;
@@ -60,5 +58,4 @@ class ChatCubit extends Cubit<ChatState> {
       },
     );
   }
-
 }

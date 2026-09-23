@@ -63,11 +63,17 @@ class SavedAddress {
 
     final f = fullAddress?.trim() ?? '';
     if (f.isNotEmpty) {
-      final parts = f.split(RegExp(r'[،,]')).map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+      final parts = f
+          .split(RegExp(r'[،,]'))
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
       final filteredParts = parts.where((p) => !p.contains('+')).toList();
       if (filteredParts.isEmpty) return f;
       final shortParts = filteredParts.take(2).toList();
-      return locale.languageCode == 'ar' ? shortParts.join(' ، ') : shortParts.join(', ');
+      return locale.languageCode == 'ar'
+          ? shortParts.join(' ، ')
+          : shortParts.join(', ');
     }
 
     final t = title(locale).trim();

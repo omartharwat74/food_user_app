@@ -59,10 +59,10 @@ class CartSummaryDto {
 
   @JsonKey(name: 'coupon_code')
   final String? couponCode;
-  
+
   @JsonKey(defaultValue: [])
   final List<CartItemDto>? items;
-  
+
   final CartStoreBriefDto? store;
 
   CartSummaryDto({
@@ -93,7 +93,7 @@ class CartItemDto {
   final num? totalPrice;
   final String? name;
   final String? image;
-  
+
   @JsonKey(name: 'option_value_ids', defaultValue: [])
   final List<int>? optionValueIds;
 
@@ -140,24 +140,34 @@ extension CartResponseDtoMapper on CartResponseDto {
   Cart toEntity() {
     return Cart(
       id: data.id?.toString() ?? '',
-      restaurantId: data.storeId?.toString() ?? data.store?.id?.toString() ?? '',
+      restaurantId:
+          data.storeId?.toString() ?? data.store?.id?.toString() ?? '',
       restaurantName: data.store?.name ?? '',
-      items: (data.items ?? []).map((item) => CartItem(
-        id: item.id?.toString() ?? '',
-        menuItemId: item.productId?.toString() ?? '',
-        name: item.name ?? '',
-        price: (item.unitPrice ?? item.price ?? 0).toDouble(),
-        unitPrice: (item.unitPrice ?? item.price ?? 0).toDouble(),
-        totalPrice: (item.totalPrice ?? item.total ?? 0).toDouble(),
-        imageAsset: item.image ?? '',
-        quantity: item.quantity ?? 1,
-        selectedModifiers: (item.optionValueIds ?? []).map((id) => <String, dynamic>{'option_id': id}).toList(),
-        notes: '',
-      )).toList(),
+      items: (data.items ?? [])
+          .map(
+            (item) => CartItem(
+              id: item.id?.toString() ?? '',
+              menuItemId: item.productId?.toString() ?? '',
+              name: item.name ?? '',
+              price: (item.unitPrice ?? item.price ?? 0).toDouble(),
+              unitPrice: (item.unitPrice ?? item.price ?? 0).toDouble(),
+              totalPrice: (item.totalPrice ?? item.total ?? 0).toDouble(),
+              imageAsset: item.image ?? '',
+              quantity: item.quantity ?? 1,
+              selectedModifiers: (item.optionValueIds ?? [])
+                  .map((id) => <String, dynamic>{'option_id': id})
+                  .toList(),
+              notes: '',
+            ),
+          )
+          .toList(),
       subtotal: (data.summary?.itemsSubtotal ?? 0).toDouble(),
       deliveryFee: (data.summary?.delivery ?? 0).toDouble(),
       tax: (data.summary?.tax ?? 0).toDouble(),
-      discount: ((data.summary?.offerDiscount ?? 0) + (data.summary?.couponDiscount ?? 0)).toDouble(),
+      discount:
+          ((data.summary?.offerDiscount ?? 0) +
+                  (data.summary?.couponDiscount ?? 0))
+              .toDouble(),
       total: (data.summary?.total ?? 0).toDouble(),
     );
   }

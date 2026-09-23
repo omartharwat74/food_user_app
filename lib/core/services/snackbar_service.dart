@@ -11,10 +11,7 @@ class SnackbarService {
     final color = isError ? Colors.red : Colors.green;
 
     final snackBar = SnackBar(
-      content: Text(
-        message,
-        style: const TextStyle(color: Colors.white),
-      ),
+      content: Text(message, style: const TextStyle(color: Colors.white)),
       backgroundColor: color,
       behavior: SnackBarBehavior.floating,
       duration: const Duration(seconds: 3),
@@ -32,12 +29,12 @@ class SnackbarService {
   void handleDioError(DioException error) {
     final context = AppRouter.scaffoldMessengerKey.currentContext;
     if (context == null) return;
-    
+
     final l10n = AppLocalizations.of(context)!;
     String message = l10n.authErrorUnknown;
 
-    if (error.type == DioExceptionType.connectionTimeout || 
-        error.type == DioExceptionType.sendTimeout || 
+    if (error.type == DioExceptionType.connectionTimeout ||
+        error.type == DioExceptionType.sendTimeout ||
         error.type == DioExceptionType.receiveTimeout) {
       message = l10n.authErrorTimeout;
     } else if (error.type == DioExceptionType.connectionError) {
@@ -45,7 +42,8 @@ class SnackbarService {
     } else if (error.type == DioExceptionType.badResponse) {
       final status = error.response?.statusCode ?? 0;
       if (status >= 500) {
-        message = l10n.authErrorRequestFailed; // maps to Server Error generic message
+        message =
+            l10n.authErrorRequestFailed; // maps to Server Error generic message
       } else if (status == 401 || status == 403) {
         message = l10n.authErrorUnauthorized;
       }

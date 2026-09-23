@@ -55,8 +55,7 @@ class _HelpSupportScreenContent extends StatefulWidget {
       _HelpSupportScreenContentState();
 }
 
-class _HelpSupportScreenContentState
-    extends State<_HelpSupportScreenContent> {
+class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
   static const _headerContentHeight = 68.0;
   static const _composerTopPadding = 20.0;
   static const _composerHorizontalPadding = 16.0;
@@ -114,12 +113,14 @@ class _HelpSupportScreenContentState
               loaded: (messages) {
                 setState(() {
                   _messages = messages
-                      .map((m) => SupportChatMessage(
-                            id: m.id,
-                            text: m.content,
-                            isMine: m.senderRole == 'USER',
-                            createdAt: m.sentAt,
-                          ))
+                      .map(
+                        (m) => SupportChatMessage(
+                          id: m.id,
+                          text: m.content,
+                          isMine: m.senderRole == 'USER',
+                          createdAt: m.sentAt,
+                        ),
+                      )
                       .toList();
                 });
                 _scrollToBottom();
@@ -165,10 +166,7 @@ class _HelpSupportScreenContentState
                     ),
                   ),
                 ),
-                _SupportComposer(
-                  controller: _controller,
-                  onSend: _sendText,
-                ),
+                _SupportComposer(controller: _controller, onSend: _sendText),
               ],
             );
           },
@@ -204,14 +202,9 @@ class _SupportChatHeader extends StatelessWidget {
         fit: StackFit.expand,
         clipBehavior: Clip.hardEdge,
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.primary),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.primary)),
           Positioned.fill(
-            child: Image.asset(
-              AppAssets.headerPattern,
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset(AppAssets.headerPattern, fit: BoxFit.cover),
           ),
           PositionedDirectional(
             start: 16,
@@ -348,7 +341,9 @@ class _ChatMessageBubble extends StatelessWidget {
     final isMine = message.isMine;
 
     final bubble = Column(
-      crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: isMine
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         DecoratedBox(
           decoration: BoxDecoration(
@@ -453,10 +448,7 @@ class _MessageTime extends StatelessWidget {
 }
 
 class _SupportComposer extends StatelessWidget {
-  const _SupportComposer({
-    required this.controller,
-    required this.onSend,
-  });
+  const _SupportComposer({required this.controller, required this.onSend});
 
   final TextEditingController controller;
   final VoidCallback onSend;
@@ -495,8 +487,9 @@ class _SupportComposer extends StatelessWidget {
                 cursorColor: AppColors.cursor(context),
                 minLines: 1,
                 maxLines: 1,
-                style:
-                    AppTextStyles.inputText(context).copyWith(fontSize: 12, height: 1.3),
+                style: AppTextStyles.inputText(
+                  context,
+                ).copyWith(fontSize: 12, height: 1.3),
                 decoration: InputDecoration(
                   hintText: l10n.supportInputHint,
                   hintStyle: AppTextStyles.inputHint(context).copyWith(
@@ -506,8 +499,9 @@ class _SupportComposer extends StatelessWidget {
                   ),
                   filled: true,
                   fillColor: AppColors.surfaceCard(context),
-                  contentPadding:
-                      const EdgeInsetsDirectional.symmetric(horizontal: 12),
+                  contentPadding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: 12,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(

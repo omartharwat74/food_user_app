@@ -16,10 +16,8 @@ class SearchCubit extends Cubit<SearchState> {
   List<Tag> tags = [];
   int? selectedTagId;
 
-  SearchCubit({
-    required this.searchRepository,
-    required this.getTagsUseCase,
-  }) : super(const SearchState.initial()) {
+  SearchCubit({required this.searchRepository, required this.getTagsUseCase})
+    : super(const SearchState.initial()) {
     fetchInitialData();
   }
 
@@ -51,10 +49,21 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   Future<void> search(String query) async {
-    if (query.isEmpty && selectedTagId == null && fastPrep == null && topRated == null && hasOffers == null) {
+    if (query.isEmpty &&
+        selectedTagId == null &&
+        fastPrep == null &&
+        topRated == null &&
+        hasOffers == null) {
       state.maybeWhen(
         initialDataLoaded: (h, k, t, m) {
-          emit(SearchState.initialDataLoaded(history: h, keywords: k, tags: t, majorStores: m));
+          emit(
+            SearchState.initialDataLoaded(
+              history: h,
+              keywords: k,
+              tags: t,
+              majorStores: m,
+            ),
+          );
         },
         orElse: () {
           fetchInitialData();
@@ -80,7 +89,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> fetchInitialData() async {
     emit(const SearchState.loading());
-    
+
     final results = await Future.wait([
       searchRepository.getSearchHistory(),
       searchRepository.getSearchKeywords(),
@@ -97,19 +106,21 @@ class SearchCubit extends Cubit<SearchState> {
 
     final history = historyResult.fold((l) => <SearchLog>[], (r) => r);
     final keywords = keywordsResult.fold((l) => <SearchKeyword>[], (r) => r);
-    
+
     // Save tags persistently in Cubit
     tags = tagsResult.fold((l) => <Tag>[], (r) => r);
     final majorStores = majorStoresResult.fold((l) => <Restaurant>[], (r) => r);
 
-    emit(SearchState.initialDataLoaded(
-      history: history,
-      keywords: keywords,
-      tags: tags,
-      majorStores: majorStores,
-    ));
+    emit(
+      SearchState.initialDataLoaded(
+        history: history,
+        keywords: keywords,
+        tags: tags,
+        majorStores: majorStores,
+      ),
+    );
   }
-  
+
   Future<void> addSearchLog(String term) async {
     // Just call API silently
     await searchRepository.addSearchLog(term);
@@ -117,17 +128,19 @@ class SearchCubit extends Cubit<SearchState> {
 
   Future<void> deleteSearchLog(int id) async {
     final currentState = state;
-    
+
     state.maybeWhen(
       initialDataLoaded: (history, keywords, tags, majorStores) async {
         final updatedHistory = history.where((log) => log.id != id).toList();
-        emit(SearchState.initialDataLoaded(
-          history: updatedHistory,
-          keywords: keywords,
-          tags: tags,
-          majorStores: majorStores,
-        ));
-        
+        emit(
+          SearchState.initialDataLoaded(
+            history: updatedHistory,
+            keywords: keywords,
+            tags: tags,
+            majorStores: majorStores,
+          ),
+        );
+
         final result = await searchRepository.deleteSearchLog(id);
         if (result.isLeft()) {
           emit(currentState);
@@ -140,20 +153,24 @@ class SearchCubit extends Cubit<SearchState> {
   Future<void> clearSearchLogs() async {
     state.maybeWhen(
       initialDataLoaded: (_, keywords, tags, majorStores) {
-        emit(SearchState.initialDataLoaded(
-          history: const [],
-          keywords: keywords,
-          tags: tags,
-          majorStores: majorStores,
-        ));
+        emit(
+          SearchState.initialDataLoaded(
+            history: const [],
+            keywords: keywords,
+            tags: tags,
+            majorStores: majorStores,
+          ),
+        );
       },
       orElse: () {
-        emit(const SearchState.initialDataLoaded(
-          history: [],
-          keywords: [],
-          tags: [],
-          majorStores: [],
-        ));
+        emit(
+          const SearchState.initialDataLoaded(
+            history: [],
+            keywords: [],
+            tags: [],
+            majorStores: [],
+          ),
+        );
       },
     );
     await searchRepository.clearSearchLogs();

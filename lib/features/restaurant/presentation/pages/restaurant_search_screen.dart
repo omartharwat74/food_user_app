@@ -14,9 +14,7 @@ class RestaurantSearchScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       appBar: AppBar(title: Text(l10n.searchTitle)),
-      body: Center(
-        child: Text(l10n.connectingToApi),
-      ),
+      body: Center(child: Text(l10n.connectingToApi)),
     );
   }
 }

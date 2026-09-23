@@ -60,5 +60,4 @@ class RestaurantListCubit extends Cubit<RestaurantListState> {
       );
     });
   }
-
 }

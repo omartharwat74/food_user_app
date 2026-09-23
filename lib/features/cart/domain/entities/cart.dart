@@ -25,26 +25,26 @@ class Cart extends Equatable {
   });
 
   const Cart.empty()
-      : id = '',
-        restaurantId = null,
-        restaurantName = null,
-        items = const [],
-        subtotal = 0.0,
-        deliveryFee = 0.0,
-        tax = 0.0,
-        discount = 0.0,
-        total = 0.0;
+    : id = '',
+      restaurantId = null,
+      restaurantName = null,
+      items = const [],
+      subtotal = 0.0,
+      deliveryFee = 0.0,
+      tax = 0.0,
+      discount = 0.0,
+      total = 0.0;
 
   @override
   List<Object?> get props => [
-        id,
-        restaurantId,
-        restaurantName,
-        items,
-        subtotal,
-        deliveryFee,
-        tax,
-        discount,
-        total,
-      ];
+    id,
+    restaurantId,
+    restaurantName,
+    items,
+    subtotal,
+    deliveryFee,
+    tax,
+    discount,
+    total,
+  ];
 }

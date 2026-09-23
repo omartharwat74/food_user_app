@@ -6,7 +6,7 @@ import 'package:food_user_app/features/user/data/models/user_settings_dto.dart';
 abstract class UserLocalDataSource {
   Future<UserProfileDto?> getCachedProfile();
   Future<void> cacheProfile(UserProfileDto profile);
-  
+
   Future<UserSettingsDto?> getCachedSettings();
   Future<void> cacheSettings(UserSettingsDto settings);
 }

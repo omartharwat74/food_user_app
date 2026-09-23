@@ -40,9 +40,7 @@ class _ProductCardState extends State<ProductCard> {
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -63,7 +61,6 @@ class _ProductCardState extends State<ProductCard> {
                       p.image!,
                       fit: BoxFit.cover,
                       errorBuilder: (_, _, _) => const Icon(
-
                         Icons.shopping_bag_outlined,
                         size: 40,
                         color: Colors.grey,
@@ -115,8 +112,12 @@ class _ProductCardState extends State<ProductCard> {
                             c,
                             style: TextStyle(
                               fontSize: 11,
-                              color: isSelected ? Colors.white : theme.textTheme.bodyMedium?.color,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected
+                                  ? Colors.white
+                                  : theme.textTheme.bodyMedium?.color,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
                             ),
                           ),
                           selected: isSelected,

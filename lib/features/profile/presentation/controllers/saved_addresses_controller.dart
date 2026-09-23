@@ -70,7 +70,7 @@ class SavedAddressesController extends ChangeNotifier {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
-    
+
     final result = await getSavedAddressesUseCase(NoParams());
     result.fold(
       (failure) {
@@ -84,7 +84,7 @@ class SavedAddressesController extends ChangeNotifier {
         _hasLoaded = true;
       },
     );
-    
+
     _isLoading = false;
     notifyListeners();
   }
@@ -134,7 +134,9 @@ class SavedAddressesController extends ChangeNotifier {
     required SavedAddressInput input,
   }) async {
     return _mutate(() async {
-      final result = await updateAddressUseCase(UpdateAddressParams(id: id, request: _mapInputToRequest(input)));
+      final result = await updateAddressUseCase(
+        UpdateAddressParams(id: id, request: _mapInputToRequest(input)),
+      );
       return result.fold((f) => throw f, (_) => null);
     });
   }

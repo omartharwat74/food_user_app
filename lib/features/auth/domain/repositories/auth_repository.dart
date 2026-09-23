@@ -29,8 +29,6 @@ class AuthFlowResult {
 }
 
 abstract class AuthRepository {
-
-
   /// Returns the locally cached user (if any), or `null` when not signed in.
   Future<Either<Failure, User?>> getCachedUser();
 
@@ -68,9 +66,7 @@ abstract class AuthRepository {
   });
 
   /// `PATCH /api/v1/auth/update-fcm` — registers/updates FCM token.
-  Future<Either<Failure, void>> updateFcm({
-    required String fcmToken,
-  });
+  Future<Either<Failure, void>> updateFcm({required String fcmToken});
 
   /// Handshake with backend for social login
   Future<Either<Failure, AuthFlowResult>> loginWithFirebase({

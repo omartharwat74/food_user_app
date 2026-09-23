@@ -18,7 +18,8 @@ abstract class OrderTrackingDto with _$OrderTrackingDto {
     List<TimelineEntryDto>? timeline,
   }) = _OrderTrackingDto;
 
-  factory OrderTrackingDto.fromJson(Map<String, dynamic> json) => _$OrderTrackingDtoFromJson(json);
+  factory OrderTrackingDto.fromJson(Map<String, dynamic> json) =>
+      _$OrderTrackingDtoFromJson(json);
 }
 
 @freezed
@@ -29,7 +30,8 @@ abstract class TimelineEntryDto with _$TimelineEntryDto {
     required DateTime timestamp,
   }) = _TimelineEntryDto;
 
-  factory TimelineEntryDto.fromJson(Map<String, dynamic> json) => _$TimelineEntryDtoFromJson(json);
+  factory TimelineEntryDto.fromJson(Map<String, dynamic> json) =>
+      _$TimelineEntryDtoFromJson(json);
 }
 
 extension OrderTrackingDtoMapper on OrderTrackingDto {

@@ -50,7 +50,8 @@ class AppSearchField extends StatefulWidget {
 
 class _AppSearchFieldState extends State<AppSearchField> {
   FocusNode? _internalFocusNode;
-  FocusNode get _effectiveFocusNode => widget.focusNode ?? (_internalFocusNode ??= FocusNode());
+  FocusNode get _effectiveFocusNode =>
+      widget.focusNode ?? (_internalFocusNode ??= FocusNode());
 
   @override
   void initState() {
@@ -89,7 +90,9 @@ class _AppSearchFieldState extends State<AppSearchField> {
 
     return Container(
       height: widget.height,
-      padding: EdgeInsetsDirectional.symmetric(horizontal: widget.horizontalPadding),
+      padding: EdgeInsetsDirectional.symmetric(
+        horizontal: widget.horizontalPadding,
+      ),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: const BorderRadius.all(AppRadius.sm),

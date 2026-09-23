@@ -11,10 +11,7 @@ import 'package:food_user_app/features/service_listing/presentation/models/servi
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 
 class SharedStoreListTile extends StatelessWidget {
-  const SharedStoreListTile({
-    required this.item,
-    super.key,
-  });
+  const SharedStoreListTile({required this.item, super.key});
 
   final ServicePlaceData item;
 
@@ -38,7 +35,9 @@ class SharedStoreListTile extends StatelessWidget {
           child: InkWell(
             onTap: () {
               final storeId = item.id ?? _detailId(item.name);
-              debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
+              debugPrint(
+                '🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}',
+              );
               if (item.isMajor == true) {
                 context.push(RouteNames.marketDetailsFor(storeId.toString()));
               } else {
@@ -74,11 +73,12 @@ class SharedStoreListTile extends StatelessWidget {
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         textAlign: TextAlign.start,
-                                        style: AppTextStyles.body(context).copyWith(
-                                          fontSize: 12,
-                                          height: 1.3,
-                                           // Mobile/12 m
-                                        ),
+                                        style: AppTextStyles.body(context)
+                                            .copyWith(
+                                              fontSize: 12,
+                                              height: 1.3,
+                                              // Mobile/12 m
+                                            ),
                                       ),
                                     ),
                                     const SizedBox(width: 4), // gap: 4px
@@ -88,7 +88,9 @@ class SharedStoreListTile extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: hasDiscount ? 8 : 4), // Dynamic gap
+                                SizedBox(
+                                  height: hasDiscount ? 8 : 4,
+                                ), // Dynamic gap
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
@@ -124,7 +126,7 @@ class SharedStoreListTile extends StatelessWidget {
                                             color: Colors.white,
                                             fontSize: 10,
                                             fontFamily: 'Expo Arabic',
-                                            
+
                                             height: 1.0,
                                           ),
                                         ),
@@ -139,7 +141,7 @@ class SharedStoreListTile extends StatelessWidget {
                       ),
                     ),
                   ),
-                                    SizedBox(
+                  SizedBox(
                     width: 20,
                     height: 20,
                     child: Center(
@@ -246,9 +248,7 @@ class _PlaceImage extends StatelessWidget {
 }
 
 class _TimeLabel extends StatelessWidget {
-  const _TimeLabel({
-    required this.time,
-  });
+  const _TimeLabel({required this.time});
 
   final String time;
 
@@ -257,17 +257,15 @@ class _TimeLabel extends StatelessWidget {
     final color = AppColors.onSurface(context);
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final minLabel = isRtl ? 'دقيقة' : 'mins';
-    
+
     // Clean up any existing "min", "mins", or "دقيقة"
     var cleanTime = time.replaceAll(RegExp(r'\s*(mins?|دقيقة)'), '').trim();
-    if (cleanTime.isEmpty) cleanTime = time; 
+    if (cleanTime.isEmpty) cleanTime = time;
 
     final parts = cleanTime.split('-');
-    final textStyle = AppTextStyles.caption(context).copyWith(
-      color: color,
-      fontSize: 10,
-      height: 1.0,
-    );
+    final textStyle = AppTextStyles.caption(
+      context,
+    ).copyWith(color: color, fontSize: 10, height: 1.0);
 
     Widget timeWidget;
     if (isRtl && parts.length == 2) {

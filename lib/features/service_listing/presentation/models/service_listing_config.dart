@@ -418,7 +418,7 @@ class ServiceListingGroupData {
 
 enum ServicePlaceKind { restaurant, store, pickup }
 
- class ServicePlaceData {
+class ServicePlaceData {
   const ServicePlaceData._({
     required this.kind,
     this.id,
@@ -527,4 +527,3 @@ enum ServicePlaceKind { restaurant, store, pickup }
   final String? subtitle;
   final bool isMajor;
 }
-

@@ -32,10 +32,9 @@ class CartCubit extends Cubit<CartState> {
     final result = await getCartUseCase(NoParams());
     if (isClosed) return;
     result.fold(
-      (failure) => emit(CartState.error(
-        cart: const Cart.empty(),
-        message: failure.message,
-      )),
+      (failure) => emit(
+        CartState.error(cart: const Cart.empty(), message: failure.message),
+      ),
       (cart) => emit(CartState.loaded(cart: cart)),
     );
   }
@@ -69,12 +68,15 @@ class CartCubit extends Cubit<CartState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(CartState.error(
-        cart: currentCart,
-        appliedPromo: currentPromo,
-        message: failure.message,
-      )),
-      (serverCart) => emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
+      (failure) => emit(
+        CartState.error(
+          cart: currentCart,
+          appliedPromo: currentPromo,
+          message: failure.message,
+        ),
+      ),
+      (serverCart) =>
+          emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
     );
   }
 
@@ -101,15 +103,17 @@ class CartCubit extends Cubit<CartState> {
     emit(const CartState.loading());
     final clearResult = await clearCartUseCase(NoParams());
     if (isClosed) return;
-    
+
     await clearResult.fold(
       (failure) async {
         if (isClosed) return;
-        emit(CartState.error(
-          cart: currentCart,
-          appliedPromo: currentPromo,
-          message: failure.message,
-        ));
+        emit(
+          CartState.error(
+            cart: currentCart,
+            appliedPromo: currentPromo,
+            message: failure.message,
+          ),
+        );
       },
       (_) async {
         if (isClosed) return;
@@ -150,17 +154,22 @@ class CartCubit extends Cubit<CartState> {
 
     final result = newQuantity <= 0
         ? await removeFromCartUseCase(itemId)
-        : await updateCartItemUseCase(UpdateCartItemParams(itemId: itemId, quantity: newQuantity));
+        : await updateCartItemUseCase(
+            UpdateCartItemParams(itemId: itemId, quantity: newQuantity),
+          );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(CartState.error(
-        cart: currentCart,
-        appliedPromo: currentPromo,
-        message: failure.message,
-      )),
-      (serverCart) => emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
+      (failure) => emit(
+        CartState.error(
+          cart: currentCart,
+          appliedPromo: currentPromo,
+          message: failure.message,
+        ),
+      ),
+      (serverCart) =>
+          emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
     );
   }
 
@@ -185,12 +194,15 @@ class CartCubit extends Cubit<CartState> {
     final result = await clearCartUseCase(NoParams());
     if (isClosed) return;
     result.fold(
-      (failure) => emit(CartState.error(
-        cart: currentCart,
-        appliedPromo: currentPromo,
-        message: failure.message,
-      )),
-      (_) => emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null)),
+      (failure) => emit(
+        CartState.error(
+          cart: currentCart,
+          appliedPromo: currentPromo,
+          message: failure.message,
+        ),
+      ),
+      (_) =>
+          emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null)),
     );
   }
 
@@ -211,20 +223,19 @@ class CartCubit extends Cubit<CartState> {
     emit(const CartState.loading());
 
     final result = await applyPromoUseCase(
-      ApplyPromoParams(
-        code: code,
-        subtotal: currentCart.subtotal,
-      ),
+      ApplyPromoParams(code: code, subtotal: currentCart.subtotal),
     );
 
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(CartState.error(
-        cart: currentCart,
-        appliedPromo: currentPromo,
-        message: failure.message,
-      )),
+      (failure) => emit(
+        CartState.error(
+          cart: currentCart,
+          appliedPromo: currentPromo,
+          message: failure.message,
+        ),
+      ),
       (promo) {
         final updatedCart = Cart(
           id: currentCart.id,

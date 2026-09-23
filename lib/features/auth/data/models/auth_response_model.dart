@@ -46,7 +46,9 @@ class AuthResponseModel {
     }
 
     // access_token may be at root or inside json directly
-    final token = str('access_token') != '' ? str('access_token') : str('accessToken');
+    final token = str('access_token') != ''
+        ? str('access_token')
+        : str('accessToken');
 
     final userJson = json['user'];
     final UserModel user;

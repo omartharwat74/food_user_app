@@ -14,12 +14,13 @@ String _idFromJson(dynamic value) => value?.toString() ?? '';
 abstract class MenuCategoryDto with _$MenuCategoryDto {
   const factory MenuCategoryDto({
     @JsonKey(fromJson: _idFromJson) @Default('') String id,
-    @JsonKey(name: 'branchId', fromJson: _idFromJson) @Default('') String branchId,
+    @JsonKey(name: 'branchId', fromJson: _idFromJson)
+    @Default('')
+    String branchId,
     String? name,
     @Default(0) int sortOrder,
     @Default([]) List<MenuItemDto> items,
-    @IntBoolConverter()
-    @Default(true) bool visible,
+    @IntBoolConverter() @Default(true) bool visible,
   }) = _MenuCategoryDto;
 
   factory MenuCategoryDto.fromJson(Map<String, dynamic> json) =>

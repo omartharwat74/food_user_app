@@ -15,10 +15,10 @@ class MarketDetailsCubit extends Cubit<MarketDetailsState> {
     required GetMarketDetailUseCase getMarketDetailUseCase,
     required GetMarketCategoriesUseCase getMarketCategoriesUseCase,
     required GetMarketOffersUseCase getMarketOffersUseCase,
-  })  : _getMarketDetailUseCase = getMarketDetailUseCase,
-        _getMarketCategoriesUseCase = getMarketCategoriesUseCase,
-        _getMarketOffersUseCase = getMarketOffersUseCase,
-        super(const MarketDetailsInitial());
+  }) : _getMarketDetailUseCase = getMarketDetailUseCase,
+       _getMarketCategoriesUseCase = getMarketCategoriesUseCase,
+       _getMarketOffersUseCase = getMarketOffersUseCase,
+       super(const MarketDetailsInitial());
 
   Future<void> loadMarketDetails(String marketId) async {
     emit(const MarketDetailsLoading());
@@ -71,5 +71,4 @@ class MarketDetailsCubit extends Cubit<MarketDetailsState> {
       },
     );
   }
-
 }

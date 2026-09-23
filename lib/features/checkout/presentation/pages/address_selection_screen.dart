@@ -299,7 +299,8 @@ class _CheckoutAddressCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          (address.fullAddress != null && address.fullAddress!.trim().isNotEmpty)
+                          (address.fullAddress != null &&
+                                  address.fullAddress!.trim().isNotEmpty)
                               ? address.fullAddress!.trim()
                               : address.location(locale),
                           maxLines: 2,

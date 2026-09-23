@@ -1,5 +1,7 @@
 import 'package:food_user_app/features/restaurant/presentation/widgets/menu_item_tile.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
+import 'package:food_user_app/features/restaurant/presentation/widgets/product_card.dart';
+
 import 'package:food_user_app/features/restaurant/presentation/pages/restaurant_rate_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -617,13 +619,12 @@ class _RestaurantInfoCard extends StatelessWidget {
     final isArabic = locale.languageCode == 'ar';
     final backButton = Padding(
       padding: const EdgeInsets.all(4.0),
-      child: Transform.scale(
-        scaleX: isArabic ? 1 : -1,
-        child: const AppRasterImage.asset(
-          AppAssets.restaurantInfoBackIcon,
-          width: 20,
-          height: 20,
-        ),
+      child: Icon(
+        // arrow_forward_ios auto-flips: < in RTL (Arabic), > in LTR (English)
+        Icons.arrow_forward_ios,
+        size: 20,
+        color: AppColors.onSurface(context),
+        textDirection: Directionality.of(context),
       ),
     );
     final logo = ClipRRect(
@@ -753,7 +754,9 @@ class _RestaurantInfoCard extends StatelessWidget {
                           labelWidget: DeliveryTimeText(
                             minTime: restaurant.deliveryTimeMin,
                             maxTime: restaurant.deliveryTimeMax,
-                            style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
+                            style: AppTextStyles.body(
+                              context,
+                            ).copyWith(fontSize: 12, height: 1.3),
                           ),
                           iconOnRight: true,
                         ),
@@ -766,7 +769,9 @@ class _RestaurantInfoCard extends StatelessWidget {
                           labelWidget: DeliveryTimeText(
                             minTime: restaurant.deliveryTimeMin,
                             maxTime: restaurant.deliveryTimeMax,
-                            style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
+                            style: AppTextStyles.body(
+                              context,
+                            ).copyWith(fontSize: 12, height: 1.3),
                           ),
                           iconOnRight: false,
                         ),
@@ -819,12 +824,15 @@ class _InfoMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      labelWidget ?? Text(
-        label ?? '',
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.body(context).copyWith(fontSize: 12, height: 1.3),
-      ),
+      labelWidget ??
+          Text(
+            label ?? '',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.body(
+              context,
+            ).copyWith(fontSize: 12, height: 1.3),
+          ),
       const SizedBox(width: 4),
       _RestaurantIconAsset(assetName: assetName, size: 20),
     ];
@@ -1251,14 +1259,14 @@ class _SectionProductGrid extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: SizedBox(height: 164, child: MenuItemTile(item: items[i])),
+              child: SizedBox(height: 164, child: ProductCard(item: items[i])),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: i + 1 < items.length
                   ? SizedBox(
                       height: 164,
-                      child: MenuItemTile(item: items[i + 1]),
+                      child: ProductCard(item: items[i + 1]),
                     )
                   : const SizedBox.shrink(),
             ),

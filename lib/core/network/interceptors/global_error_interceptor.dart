@@ -5,10 +5,10 @@ import 'package:food_user_app/core/services/snackbar_service.dart';
 class GlobalErrorHandlerInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
-    // We only want to globally handle unexpected errors like Timeouts, 
+    // We only want to globally handle unexpected errors like Timeouts,
     // No Internet, or 500 Server Errors.
     // 400, 422 (Form Validation) should be handled by the UI/Cubit locally.
-    
+
     bool shouldShowGlobalError = false;
 
     if (err.type == DioExceptionType.connectionTimeout ||

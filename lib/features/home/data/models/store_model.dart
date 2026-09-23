@@ -43,7 +43,9 @@ class StoreModel extends Store {
             if (t is Map<String, dynamic>) {
               return TagModel(
                 id: (t['id'] as num).toInt(),
-                sectionId: json['section_id'] != null ? (json['section_id'] as num).toInt() : 0,
+                sectionId: json['section_id'] != null
+                    ? (json['section_id'] as num).toInt()
+                    : 0,
                 name: t['name']?.toString() ?? '',
               );
             }
@@ -53,17 +55,27 @@ class StoreModel extends Store {
 
     return StoreModel(
       id: (json['id'] as num).toInt(),
-      sectionId: json['section_id'] != null ? (json['section_id'] as num).toInt() : 0,
+      sectionId: json['section_id'] != null
+          ? (json['section_id'] as num).toInt()
+          : 0,
       name: json['name']?.toString() ?? '',
       logo: json['logo']?.toString(),
       cover: json['cover']?.toString(),
       isMajor: parseBoolFromJson(json['is_major']),
-      prepTimeFrom: json['prep_time_from'] != null ? (json['prep_time_from'] as num).toInt() : null,
-      prepTimeTo: json['prep_time_to'] != null ? (json['prep_time_to'] as num).toInt() : null,
+      prepTimeFrom: json['prep_time_from'] != null
+          ? (json['prep_time_from'] as num).toInt()
+          : null,
+      prepTimeTo: json['prep_time_to'] != null
+          ? (json['prep_time_to'] as num).toInt()
+          : null,
       tags: tags,
       hasOffer: json['has_offer'] == true,
-      ratingAvg: json['rating_avg'] != null ? (json['rating_avg'] as num).toDouble() : null,
-      ratingCount: json['rating_count'] != null ? (json['rating_count'] as num).toInt() : null,
+      ratingAvg: json['rating_avg'] != null
+          ? (json['rating_avg'] as num).toDouble()
+          : null,
+      ratingCount: json['rating_count'] != null
+          ? (json['rating_count'] as num).toInt()
+          : null,
       availability: json['availability']?.toString() ?? 'open',
     );
   }
@@ -87,13 +99,21 @@ class StoreListResultModel extends StoreListResult {
   factory StoreListResultModel.fromJson(Map<String, dynamic> json) {
     final rawItems = json['items'];
     final items = rawItems is List
-        ? rawItems.whereType<Map<String, dynamic>>().map(StoreModel.fromJson).toList()
+        ? rawItems
+              .whereType<Map<String, dynamic>>()
+              .map(StoreModel.fromJson)
+              .toList()
         : <StoreModel>[];
 
     final rawMeta = json['meta'];
     final meta = rawMeta is Map<String, dynamic>
         ? StoreMetaModel.fromJson(rawMeta)
-        : const StoreMetaModel(currentPage: 1, lastPage: 1, perPage: 10, total: 0);
+        : const StoreMetaModel(
+            currentPage: 1,
+            lastPage: 1,
+            perPage: 10,
+            total: 0,
+          );
 
     return StoreListResultModel(
       items: items,

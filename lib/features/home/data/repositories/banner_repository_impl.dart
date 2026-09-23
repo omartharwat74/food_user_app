@@ -31,7 +31,8 @@ class BannerRepositoryImpl implements BannerRepository {
     if (error is ServerException) return ServerFailure(error.message);
     if (error is NetworkException) return NetworkFailure(error.message);
     if (error is TimeoutException) return TimeoutFailure(error.message);
-    if (error is UnauthorizedException) return UnauthorizedFailure(error.message);
+    if (error is UnauthorizedException)
+      return UnauthorizedFailure(error.message);
     if (error is ValidationException) {
       return ValidationFailure(error.message, errors: error.errors);
     }

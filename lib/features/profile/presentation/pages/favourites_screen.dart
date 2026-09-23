@@ -99,7 +99,9 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      AppLocalizations.of(context)!.itemRemovedFromFavorites,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.itemRemovedFromFavorites,
                                     ),
                                   ),
                                 );
@@ -250,8 +252,8 @@ class _RestaurantImage extends StatelessWidget {
                 FavouritesScreen._imageRadius,
               ),
               child: AppNetworkImage(
-                item.coverImageUrl.isNotEmpty 
-                    ? item.coverImageUrl 
+                item.coverImageUrl.isNotEmpty
+                    ? item.coverImageUrl
                     : item.logoUrl,
                 fit: BoxFit.cover,
               ),
@@ -347,7 +349,10 @@ class _FavoriteRestaurantDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final rating = _RatingBadge(rating: item.rating.toStringAsFixed(1));
-    final time = _DeliveryTimeLabel(minTime: item.deliveryTimeMin, maxTime: item.deliveryTimeMax);
+    final time = _DeliveryTimeLabel(
+      minTime: item.deliveryTimeMin,
+      maxTime: item.deliveryTimeMax,
+    );
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -401,8 +406,8 @@ class _DeliveryTimeLabel extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        icon, 
-        const SizedBox(width: 4), 
+        icon,
+        const SizedBox(width: 4),
         DeliveryTimeText(
           minTime: minTime,
           maxTime: maxTime,

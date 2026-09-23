@@ -109,12 +109,11 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     try {
       final response = await _dio.post<dynamic>(
         ApiEndpoints.applyPromo,
-        data: {
-          'code': code,
-          'subtotal': subtotal,
-        },
+        data: {'code': code, 'subtotal': subtotal},
       );
-      return PromoPreviewResponseDto.fromJson(response.data as Map<String, dynamic>);
+      return PromoPreviewResponseDto.fromJson(
+        response.data as Map<String, dynamic>,
+      );
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

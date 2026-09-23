@@ -8,17 +8,13 @@ class SearchResultDto {
   final List<MenuItemDto>? items;
   final bool isRandom;
 
-  const SearchResultDto({
-    this.restaurants,
-    this.items,
-    this.isRandom = false,
-  });
+  const SearchResultDto({this.restaurants, this.items, this.isRandom = false});
 
   factory SearchResultDto.fromJson(Map<String, dynamic> json) {
     // The new response format: data: { items: [...], is_random: ... }
     final isRandom = json['is_random'] == true;
     final itemsList = json['items'] as List<dynamic>? ?? [];
-    
+
     // Map Store objects to RestaurantDto objects since UI still uses Restaurant
     final mappedRestaurants = itemsList.map((e) {
       final store = e as Map<String, dynamic>;
@@ -44,7 +40,8 @@ class SearchResultDto {
 
   SearchResult toEntity() {
     return SearchResult(
-      restaurants: restaurants?.map((dto) => dto.toEntity()).toList() ?? const [],
+      restaurants:
+          restaurants?.map((dto) => dto.toEntity()).toList() ?? const [],
       items: items?.map((dto) => dto.toEntity()).toList() ?? const [],
       isRandom: isRandom,
     );

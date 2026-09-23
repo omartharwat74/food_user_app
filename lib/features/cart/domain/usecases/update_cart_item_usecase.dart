@@ -9,10 +9,7 @@ class UpdateCartItemParams extends Equatable {
   final String itemId;
   final int quantity;
 
-  const UpdateCartItemParams({
-    required this.itemId,
-    required this.quantity,
-  });
+  const UpdateCartItemParams({required this.itemId, required this.quantity});
 
   @override
   List<Object?> get props => [itemId, quantity];

@@ -5,7 +5,9 @@ import 'package:food_user_app/features/store/data/models/hyper_sections_response
 import 'package:food_user_app/features/store/data/models/store_search_response.dart';
 
 abstract class StoreRepository {
-  Future<Either<Failure, HyperCategoriesResponse>> getStoreCategories(String storeId);
+  Future<Either<Failure, HyperCategoriesResponse>> getStoreCategories(
+    String storeId,
+  );
   Future<Either<Failure, HyperSectionsResponse>> getStoreCategorySections({
     required String storeId,
     required String categoryId,

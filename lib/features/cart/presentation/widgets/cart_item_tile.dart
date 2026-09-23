@@ -45,7 +45,9 @@ class CartItemTile extends StatelessWidget {
                   fit: BoxFit.contain,
                 )
               : Image.asset(
-                  item.imageAsset.isNotEmpty ? item.imageAsset : AppAssets.cartProductImage,
+                  item.imageAsset.isNotEmpty
+                      ? item.imageAsset
+                      : AppAssets.cartProductImage,
                   width: 70,
                   height: 36,
                   fit: BoxFit.contain,

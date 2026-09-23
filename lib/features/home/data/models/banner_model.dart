@@ -30,7 +30,9 @@ class BannerModel extends BannerItem {
       imageUrl: json['image']?.toString(),
       link: json['link']?.toString(),
       status: json['status'] != null ? (json['status'] as num).toInt() : 1,
-      sortOrder: json['sort_order'] != null ? (json['sort_order'] as num).toInt() : 0,
+      sortOrder: json['sort_order'] != null
+          ? (json['sort_order'] as num).toInt()
+          : 0,
     );
   }
 }

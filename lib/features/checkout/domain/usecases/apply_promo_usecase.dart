@@ -9,10 +9,7 @@ class ApplyPromoParams extends Equatable {
   final String code;
   final double subtotal;
 
-  const ApplyPromoParams({
-    required this.code,
-    required this.subtotal,
-  });
+  const ApplyPromoParams({required this.code, required this.subtotal});
 
   @override
   List<Object?> get props => [code, subtotal];

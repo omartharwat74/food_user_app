@@ -21,18 +21,17 @@ class Product extends Equatable {
     required this.customizations,
   });
 
-  bool get hasDiscount =>
-      originalPrice != null && originalPrice! > price;
+  bool get hasDiscount => originalPrice != null && originalPrice! > price;
 
   @override
   List<Object?> get props => [
-        id,
-        subCategoryId,
-        name,
-        description,
-        image,
-        price,
-        originalPrice,
-        customizations,
-      ];
+    id,
+    subCategoryId,
+    name,
+    description,
+    image,
+    price,
+    originalPrice,
+    customizations,
+  ];
 }

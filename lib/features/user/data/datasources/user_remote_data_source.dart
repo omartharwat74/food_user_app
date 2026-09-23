@@ -22,7 +22,11 @@ abstract class UserRemoteDataSource {
   Future<void> sendCurrentPhoneOtp();
   Future<String> verifyCurrentPhoneOtp(String otp);
   Future<void> sendNewPhoneOtp(String token, String newPhone);
-  Future<UserProfileDto> verifyNewPhoneOtp(String token, String newPhone, String otp);
+  Future<UserProfileDto> verifyNewPhoneOtp(
+    String token,
+    String newPhone,
+    String otp,
+  );
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -146,7 +150,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   }
 
   @override
-  Future<UserProfileDto> verifyNewPhoneOtp(String token, String newPhone, String otp) async {
+  Future<UserProfileDto> verifyNewPhoneOtp(
+    String token,
+    String newPhone,
+    String otp,
+  ) async {
     try {
       final response = await _dio.post<dynamic>(
         ApiEndpoints.phoneVerifyOtp,

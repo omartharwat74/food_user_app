@@ -21,5 +21,13 @@ class MenuCategory extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, branchId, name, imageUrl, sortOrder, items, visible];
+  List<Object?> get props => [
+    id,
+    branchId,
+    name,
+    imageUrl,
+    sortOrder,
+    items,
+    visible,
+  ];
 }

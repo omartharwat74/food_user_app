@@ -11,13 +11,18 @@ class CategoryIconHelper {
       return 'assets/images/categories/meat.png';
     } else if (name.contains('لبان') || name == 'الالبان' || name == 'ألبان') {
       return 'assets/images/categories/dairy.png';
-    } else if (name.contains('كريم') || name == 'ايس كريم' || name == 'آيس كريم') {
+    } else if (name.contains('كريم') ||
+        name == 'ايس كريم' ||
+        name == 'آيس كريم') {
       return 'assets/images/categories/ice_cream.png';
     } else if (name.contains('جبن') || name == 'الجبن') {
       return 'assets/images/categories/cheese.png';
     } else if (name.contains('بقول') || name == 'البقوليات') {
       return 'assets/images/categories/legumes.png';
-    } else if (name.contains('مياه') || name.contains('مياة') || name.contains('غازي') || name.contains('مشروب')) {
+    } else if (name.contains('مياه') ||
+        name.contains('مياة') ||
+        name.contains('غازي') ||
+        name.contains('مشروب')) {
       return 'assets/images/categories/soda.png';
     } else if (name.contains('لكترون')) {
       return 'assets/images/categories/electronics.png';

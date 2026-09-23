@@ -11,14 +11,16 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
   StoreDetailCubit({
     required RestaurantRepository restaurantRepository,
     required MenuRepository menuRepository,
-  })  : _restaurantRepository = restaurantRepository,
-        _menuRepository = menuRepository,
-        super(const StoreDetailState.initial());
+  }) : _restaurantRepository = restaurantRepository,
+       _menuRepository = menuRepository,
+       super(const StoreDetailState.initial());
 
   Future<void> loadStoreDetails(String storeId) async {
     emit(const StoreDetailState.loading());
     try {
-      final restaurantResult = await _restaurantRepository.getRestaurantDetail(storeId);
+      final restaurantResult = await _restaurantRepository.getRestaurantDetail(
+        storeId,
+      );
       if (isClosed) return;
       final menuResult = await _menuRepository.getRestaurantMenu(storeId);
       if (isClosed) return;
@@ -34,11 +36,13 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
                   .take(10)
                   .toList();
 
-              emit(StoreDetailState.loaded(
-                store: restaurant,
-                categories: categories,
-                featuredProducts: featuredProducts,
-              ));
+              emit(
+                StoreDetailState.loaded(
+                  store: restaurant,
+                  categories: categories,
+                  featuredProducts: featuredProducts,
+                ),
+              );
             },
           );
         },
@@ -47,6 +51,5 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
       if (isClosed) return;
       emit(StoreDetailState.error(e.toString()));
     }
-
   }
 }

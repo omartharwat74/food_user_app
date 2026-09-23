@@ -56,7 +56,9 @@ class MenuRepositoryImpl implements MenuRepository {
   }
 
   @override
-  Future<Either<Failure, List<MenuCategory>>> getStoreMenu(String storeId) async {
+  Future<Either<Failure, List<MenuCategory>>> getStoreMenu(
+    String storeId,
+  ) async {
     try {
       final dto = await remoteDataSource.getStoreMenu(storeId);
       return Right(dto.sections);

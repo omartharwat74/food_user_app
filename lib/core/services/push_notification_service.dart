@@ -29,7 +29,9 @@ class PushNotificationService {
       debugPrint('Got a message whilst in the foreground!');
       debugPrint('Message data: ${message.data}');
       if (message.notification != null) {
-        debugPrint('Message also contained a notification: ${message.notification}');
+        debugPrint(
+          'Message also contained a notification: ${message.notification}',
+        );
       }
     });
   }
@@ -38,7 +40,8 @@ class PushNotificationService {
     if (message.data['type'] == 'ORDER_UPDATE') {
       final orderId = message.data['orderId'];
       if (orderId != null) {
-        final context = AppRouter.router.routerDelegate.navigatorKey.currentContext;
+        final context =
+            AppRouter.router.routerDelegate.navigatorKey.currentContext;
         if (context != null) {
           context.push(RouteNames.orderTrackingFor(orderId.toString()));
         }

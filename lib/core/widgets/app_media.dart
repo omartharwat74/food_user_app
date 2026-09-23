@@ -121,10 +121,7 @@ class AppNetworkImage extends StatelessWidget {
       return SizedBox(
         width: width,
         height: height,
-        child: Icon(
-          Icons.storefront,
-          color: AppColors.paragraph(context),
-        ),
+        child: Icon(Icons.storefront, color: AppColors.paragraph(context)),
       );
     }
 

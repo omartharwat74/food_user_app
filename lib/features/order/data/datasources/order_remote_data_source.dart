@@ -30,7 +30,9 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     final response = await _dioClient.dio.get(ApiEndpoints.orders);
     final data = response.data;
     if (data is Map<String, dynamic> && data['content'] != null) {
-      return (data['content'] as List).map((json) => OrderDto.fromJson(json)).toList();
+      return (data['content'] as List)
+          .map((json) => OrderDto.fromJson(json))
+          .toList();
     } else if (data is List) {
       return data.map((json) => OrderDto.fromJson(json)).toList();
     }
@@ -39,13 +41,17 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<OrderDto> getOrderDetails(String orderId) async {
-    final response = await _dioClient.dio.get(ApiEndpoints.orderDetail(orderId));
+    final response = await _dioClient.dio.get(
+      ApiEndpoints.orderDetail(orderId),
+    );
     return OrderDto.fromJson(response.data);
   }
 
   @override
   Future<OrderTrackingDto> trackOrder(String orderId) async {
-    final response = await _dioClient.dio.get(ApiEndpoints.orderTracking(orderId));
+    final response = await _dioClient.dio.get(
+      ApiEndpoints.orderTracking(orderId),
+    );
     return OrderTrackingDto.fromJson(response.data);
   }
 }

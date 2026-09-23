@@ -64,10 +64,12 @@ class _OrderDetailsScreenContent extends StatefulWidget {
   });
 
   @override
-  State<_OrderDetailsScreenContent> createState() => _OrderDetailsScreenContentState();
+  State<_OrderDetailsScreenContent> createState() =>
+      _OrderDetailsScreenContentState();
 }
 
-class _OrderDetailsScreenContentState extends State<_OrderDetailsScreenContent> {
+class _OrderDetailsScreenContentState
+    extends State<_OrderDetailsScreenContent> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -86,80 +88,81 @@ class _OrderDetailsScreenContentState extends State<_OrderDetailsScreenContent> 
         );
       },
       child: Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(context),
-      body: SafeArea(
-        bottom: false,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  OrderDetailsScreen.screenPadding,
-                  OrderDetailsScreen.headerTopPadding,
-                  OrderDetailsScreen.screenPadding,
-                  24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _OrderDetailsHeader(
-                      title: l10n.trackYourOrder,
-                      showSupport: config.showSupportAction,
-                      onSupport: () {
-                        context.read<SupportTicketCubit>().createTicket(
-                          subject: 'Order #${widget.orderId}',
-                          message: 'I need help with order #${widget.orderId}',
-                        );
-                      },
-                    ),
-                    const SizedBox(height: OrderDetailsScreen.contentGap),
-                    _OrderStatusSummaryCard(config: config),
-                    const SizedBox(height: 16),
-                    if (config.showCourierSection) ...[
-                      _CourierDetailsSection(l10n: l10n),
-                      const SizedBox(height: 16),
-                    ],
-                    _DeliveryAddressSection(l10n: l10n),
-                    const SizedBox(height: 16),
-                    _OrderItemsSection(l10n: l10n),
-                    const SizedBox(height: 16),
-                    _PaymentSummarySection(l10n: l10n),
-                    if (config.showCancellationReason) ...[
-                      const SizedBox(height: 16),
-                      Divider(
-                        height: 1,
-                        thickness: 0.5,
-                        color: AppColors.border(context),
+        backgroundColor: AppColors.scaffoldBackground(context),
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    OrderDetailsScreen.screenPadding,
+                    OrderDetailsScreen.headerTopPadding,
+                    OrderDetailsScreen.screenPadding,
+                    24,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _OrderDetailsHeader(
+                        title: l10n.trackYourOrder,
+                        showSupport: config.showSupportAction,
+                        onSupport: () {
+                          context.read<SupportTicketCubit>().createTicket(
+                            subject: 'Order #${widget.orderId}',
+                            message:
+                                'I need help with order #${widget.orderId}',
+                          );
+                        },
                       ),
+                      const SizedBox(height: OrderDetailsScreen.contentGap),
+                      _OrderStatusSummaryCard(config: config),
                       const SizedBox(height: 16),
-                      _CancellationReasonSection(l10n: l10n),
+                      if (config.showCourierSection) ...[
+                        _CourierDetailsSection(l10n: l10n),
+                        const SizedBox(height: 16),
+                      ],
+                      _DeliveryAddressSection(l10n: l10n),
+                      const SizedBox(height: 16),
+                      _OrderItemsSection(l10n: l10n),
+                      const SizedBox(height: 16),
+                      _PaymentSummarySection(l10n: l10n),
+                      if (config.showCancellationReason) ...[
+                        const SizedBox(height: 16),
+                        Divider(
+                          height: 1,
+                          thickness: 0.5,
+                          color: AppColors.border(context),
+                        ),
+                        const SizedBox(height: 16),
+                        _CancellationReasonSection(l10n: l10n),
+                      ],
+                      if (config.showRateAction) ...[
+                        const SizedBox(height: 24),
+                        _PrimaryFilledButton(
+                          label: l10n.rateOrder,
+                          onTap: () => _showRatingSheet(context),
+                        ),
+                      ],
                     ],
-                    if (config.showRateAction) ...[
-                      const SizedBox(height: 24),
-                      _PrimaryFilledButton(
-                        label: l10n.rateOrder,
-                        onTap: () => _showRatingSheet(context),
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
               ),
-            ),
-            if (config.showCancelAction)
-              _BottomCancelBar(
-                label: l10n.cancelOrder,
-                onTap: () {
-                  // TODO: Cancel order through real order API.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.orderCancelDesignOnly)),
-                  );
-                },
-              ),
-          ],
+              if (config.showCancelAction)
+                _BottomCancelBar(
+                  label: l10n.cancelOrder,
+                  onTap: () {
+                    // TODO: Cancel order through real order API.
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.orderCancelDesignOnly)),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 

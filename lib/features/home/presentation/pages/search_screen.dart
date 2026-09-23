@@ -29,7 +29,6 @@ import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
 
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
@@ -107,14 +106,16 @@ class _SearchScreenState extends State<SearchScreen> {
     final searchState = context.watch<SearchCubit>().state;
     final selectedTagId = context.watch<SearchCubit>().selectedTagId;
     final hasActiveFilters = _selectedFilters.isNotEmpty;
-    final showFilters = scope != null || query.isNotEmpty || selectedTagId != null || hasActiveFilters;
-    
+    final showFilters =
+        scope != null ||
+        query.isNotEmpty ||
+        selectedTagId != null ||
+        hasActiveFilters;
+
     final keywords = searchState.maybeWhen(
       initialDataLoaded: (_, kw, _, _) => kw,
       orElse: () => const <SearchKeyword>[],
     );
-
-
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
@@ -173,14 +174,31 @@ class _SearchScreenState extends State<SearchScreen> {
                                 : _selectedFilters.add(filter);
                           });
                           _resetScroll();
-                          
+
                           // Map to SearchCubit
-                          final hasOffers = _selectedFilters.contains(ServiceFilterId.offers) ? 1 : null;
-                          final fastPrep = _selectedFilters.contains(ServiceFilterId.fastDelivery) ? 1 : null;
-                          final topRated = _selectedFilters.contains(ServiceFilterId.topRated) ? 1 : null;
+                          final hasOffers =
+                              _selectedFilters.contains(ServiceFilterId.offers)
+                              ? 1
+                              : null;
+                          final fastPrep =
+                              _selectedFilters.contains(
+                                ServiceFilterId.fastDelivery,
+                              )
+                              ? 1
+                              : null;
+                          final topRated =
+                              _selectedFilters.contains(
+                                ServiceFilterId.topRated,
+                              )
+                              ? 1
+                              : null;
 
                           final cubit = context.read<SearchCubit>();
-                          cubit.setFilters(fastPrep: fastPrep, topRated: topRated, hasOffers: hasOffers);
+                          cubit.setFilters(
+                            fastPrep: fastPrep,
+                            topRated: topRated,
+                            hasOffers: hasOffers,
+                          );
                           cubit.search(_controller.text.trim());
                         },
                       ),
@@ -193,29 +211,42 @@ class _SearchScreenState extends State<SearchScreen> {
               Expanded(
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
-                    final isLoading = state.maybeWhen(loading: () => true, orElse: () => false);
-                    final isLoaded = state.maybeWhen(loaded: (_) => true, orElse: () => false);
+                    final isLoading = state.maybeWhen(
+                      loading: () => true,
+                      orElse: () => false,
+                    );
+                    final isLoaded = state.maybeWhen(
+                      loaded: (_) => true,
+                      orElse: () => false,
+                    );
 
                     return state.maybeWhen(
                       error: (msg) => Center(
                         child: Text(msg, style: AppTextStyles.body(context)),
                       ),
-                      initialDataLoaded: (history, kw, tags, majorStores) => _buildSearchResults(
-                        context,
-                        query: query,
-                        scope: scope,
-                        history: history,
-                        keywords: kw,
-                        restaurants: const [],
-                        majorStores: query.isNotEmpty ? const [] : majorStores,
-                        items: const [],
-                        selectedTagId: selectedTagId,
-                        isLoaded: isLoaded,
-                        isLoading: isLoading,
-                      ),
+                      initialDataLoaded: (history, kw, tags, majorStores) =>
+                          _buildSearchResults(
+                            context,
+                            query: query,
+                            scope: scope,
+                            history: history,
+                            keywords: kw,
+                            restaurants: const [],
+                            majorStores: query.isNotEmpty
+                                ? const []
+                                : majorStores,
+                            items: const [],
+                            selectedTagId: selectedTagId,
+                            isLoaded: isLoaded,
+                            isLoading: isLoading,
+                          ),
                       loaded: (result) {
-                        final majorStores = result.restaurants.where((r) => r.isMajor == true).toList();
-                        final normalStores = result.restaurants.where((r) => r.isMajor == false).toList();
+                        final majorStores = result.restaurants
+                            .where((r) => r.isMajor == true)
+                            .toList();
+                        final normalStores = result.restaurants
+                            .where((r) => r.isMajor == false)
+                            .toList();
                         return _buildSearchResults(
                           context,
                           query: query,
@@ -272,7 +303,10 @@ class _SearchScreenState extends State<SearchScreen> {
               Navigator.of(ctx).pop();
               context.read<SearchCubit>().clearSearchLogs();
             },
-            child: Text(l10n.clear, style: const TextStyle(color: AppColors.error)),
+            child: Text(
+              l10n.clear,
+              style: const TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -295,14 +329,20 @@ class _SearchScreenState extends State<SearchScreen> {
   }) {
     final l10n = AppLocalizations.of(context)!;
 
-    final displayedLargeStores = majorStores.map(_mapToServicePlaceData).toList();
+    final displayedLargeStores = majorStores
+        .map(_mapToServicePlaceData)
+        .toList();
     final displayedStores = restaurants.map(_mapToServicePlaceData).toList();
 
     // Map products directly since backend filters them
     final filteredProducts = items.map(_mapToSearchResult).toList();
 
     final hasActiveFilters = _selectedFilters.isNotEmpty;
-    final showFilters = scope != null || query.isNotEmpty || selectedTagId != null || hasActiveFilters;
+    final showFilters =
+        scope != null ||
+        query.isNotEmpty ||
+        selectedTagId != null ||
+        hasActiveFilters;
     // We also consider noResults if API returned isRandom = true since those are fallback suggestions
     final noResults =
         (query.isNotEmpty || selectedTagId != null || hasActiveFilters) &&
@@ -347,19 +387,15 @@ class _SearchScreenState extends State<SearchScreen> {
                         ),
                         child: Text(
                           l10n.searchClearAll,
-                          style: AppTextStyles.caption(context).copyWith(
-                            color: AppColors.primary,
-                            fontSize: 12,
-                          ),
+                          style: AppTextStyles.caption(
+                            context,
+                          ).copyWith(color: AppColors.primary, fontSize: 12),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  _RecentSearchesWrap(
-                    history: history,
-                    onTap: _onTokenTap,
-                  ),
+                  _RecentSearchesWrap(history: history, onTap: _onTokenTap),
                   const SizedBox(height: 24),
                 ],
                 if (keywords.isNotEmpty) ...[
@@ -371,7 +407,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                 ],
               ] else ...[
-                if (isLoading && displayedStores.isEmpty && filteredProducts.isEmpty) ...[
+                if (isLoading &&
+                    displayedStores.isEmpty &&
+                    filteredProducts.isEmpty) ...[
                   const SizedBox(height: 48),
                   const Center(child: CircularProgressIndicator()),
                 ] else if (noResults) ...[
@@ -403,7 +441,6 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-
   _SearchResult _mapToSearchResult(MenuItem item) {
     return _SearchResult(
       id: item.id,
@@ -425,7 +462,7 @@ class _SearchScreenState extends State<SearchScreen> {
       id: restaurant.id,
       name: restaurant.name,
       subtitle: restaurant.cuisineType,
-      time: isArabic 
+      time: isArabic
           ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
           : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
       imageAsset: restaurant.coverImageUrl,
@@ -695,7 +732,9 @@ class _LargeStoreRow extends StatelessWidget {
             market: item,
             onTap: () {
               final storeId = item.id;
-              debugPrint('🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}');
+              debugPrint(
+                '🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}',
+              );
               if (item.isMajor == true) {
                 context.push(RouteNames.marketDetailsFor(storeId));
               } else {
@@ -708,8 +747,6 @@ class _LargeStoreRow extends StatelessWidget {
     );
   }
 }
-
-
 
 class _MostSearchedTokens extends StatelessWidget {
   const _MostSearchedTokens({required this.tokens, required this.onTap});
@@ -979,8 +1016,6 @@ void _openSearchResult(BuildContext context, _SearchResult result) {
     ),
   );
 }
-
-
 
 class _SearchGroup {
   const _SearchGroup({
@@ -1328,9 +1363,3 @@ class _PlaceList extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-

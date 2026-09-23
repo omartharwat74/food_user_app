@@ -10,7 +10,7 @@ class SupportTicketCubit extends Cubit<SupportTicketState> {
   final CreateTicketUseCase _createTicketUseCase;
 
   SupportTicketCubit(this._createTicketUseCase)
-      : super(const SupportTicketState.initial());
+    : super(const SupportTicketState.initial());
 
   Future<void> createTicket({
     required String subject,
@@ -26,5 +26,4 @@ class SupportTicketCubit extends Cubit<SupportTicketState> {
       (ticket) => emit(SupportTicketState.success(ticket)),
     );
   }
-
 }

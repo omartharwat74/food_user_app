@@ -46,71 +46,88 @@ class StoreDetailsScreen extends StatelessWidget {
               },
               error: (cart, promo, message) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                    backgroundColor: Colors.red,
-                  ),
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
                 );
               },
 
-              conflict: (cart, newRestaurantId, menuItemId, name, price, quantity, modifiers, notes) {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(AppLocalizations.of(context)!.cartConflictTitle),
-                    content: Text(AppLocalizations.of(context)!.cartConflictMessage),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: Text(AppLocalizations.of(context)!.cancel),
+              conflict:
+                  (
+                    cart,
+                    newRestaurantId,
+                    menuItemId,
+                    name,
+                    price,
+                    quantity,
+                    modifiers,
+                    notes,
+                  ) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(
+                          AppLocalizations.of(context)!.cartConflictTitle,
+                        ),
+                        content: Text(
+                          AppLocalizations.of(context)!.cartConflictMessage,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              context.read<CartCubit>().clearAndAddToCart(
+                                restaurantId: newRestaurantId,
+                                menuItemId: menuItemId,
+                                name: name,
+                                price: price,
+                                quantity: quantity,
+                                selectedModifiers: modifiers,
+                                notes: notes,
+                              );
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.continueButton,
+                            ),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          context.read<CartCubit>().clearAndAddToCart(
-                            restaurantId: newRestaurantId,
-                            menuItemId: menuItemId,
-                            name: name,
-                            price: price,
-                            quantity: quantity,
-                            selectedModifiers: modifiers,
-                            notes: notes,
-                          );
-                        },
-                        child: Text(AppLocalizations.of(context)!.continueButton),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
               orElse: () {},
             );
           },
           child: BlocBuilder<StoreDetailCubit, StoreDetailState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => const Center(child: CircularProgressIndicator()),
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (msg) => Center(child: Text(msg, style: TextStyle(color: AppColors.error))),
-              loaded: (store, categories, featuredProducts) {
-                return CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(child: _buildCustomHeader(context, store)),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    SliverToBoxAdapter(child: _PromoBanners(store: store)),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
-                    _buildCategoryGrid(context, store.id, categories),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    _buildSectionTitle(context, 'المنتجات الاكثر طلباً'),
-                    _buildFeaturedProducts(context, featuredProducts),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
-                  ],
-                );
-              },
-            );
-          },
-        ),
+            builder: (context, state) {
+              return state.when(
+                initial: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (msg) => Center(
+                  child: Text(msg, style: TextStyle(color: AppColors.error)),
+                ),
+                loaded: (store, categories, featuredProducts) {
+                  return CustomScrollView(
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: _buildCustomHeader(context, store),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      SliverToBoxAdapter(child: _PromoBanners(store: store)),
+                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
+                      _buildCategoryGrid(context, store.id, categories),
+                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      _buildSectionTitle(context, 'المنتجات الاكثر طلباً'),
+                      _buildFeaturedProducts(context, featuredProducts),
+                      const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -122,15 +139,13 @@ class StoreDetailsScreen extends StatelessWidget {
     final contentHeight = 16.0 + 36.0 + 17.0 + 44.0 + 20.0; // 133
 
     return Container(
-      height: topPadding + contentHeight, 
+      height: topPadding + contentHeight,
       decoration: const BoxDecoration(color: AppColors.primary),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           // Background decorations
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.primary),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.primary)),
           const Positioned.fill(
             child: AppRasterImage.asset(
               AppAssets.headerPattern,
@@ -162,7 +177,9 @@ class StoreDetailsScreen extends StatelessWidget {
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: AppColors.surfaceCard(context).withValues(alpha: 0.2),
+                                color: AppColors.surfaceCard(
+                                  context,
+                                ).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
@@ -188,12 +205,15 @@ class StoreDetailsScreen extends StatelessWidget {
                         height: 36,
                         decoration: BoxDecoration(
                           color: AppColors.surfaceCard(context),
-                          borderRadius: BorderRadius.circular(10), // Adjusted for smaller 36px size
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ), // Adjusted for smaller 36px size
                         ),
                         child: Image.network(
                           store.logoUrl,
                           fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.store),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.store),
                         ),
                       ),
                     ],
@@ -206,7 +226,10 @@ class StoreDetailsScreen extends StatelessWidget {
                   onTap: () {
                     context.push(
                       RouteNames.unifiedResults,
-                      extra: ResultsConfig(parentId: store.id, searchQuery: ' '),
+                      extra: ResultsConfig(
+                        parentId: store.id,
+                        searchQuery: ' ',
+                      ),
                     );
                   },
                   child: Container(
@@ -217,10 +240,17 @@ class StoreDetailsScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.border(context)),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: AppColors.hint(context), size: 20),
+                        Icon(
+                          Icons.search,
+                          color: AppColors.hint(context),
+                          size: 20,
+                        ),
                         const SizedBox(width: 10),
                         Text(
                           'ابحث عن ما تحب',
@@ -258,14 +288,16 @@ class StoreDetailsScreen extends StatelessWidget {
 
   Widget _buildSectionTitle(BuildContext context, String title) {
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.sm),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
       sliver: SliverToBoxAdapter(
         child: Text(
-          title, 
-          style: AppTextStyles.heading4(context).copyWith(
-            fontSize: 15,
-            fontWeight: FontWeight.w600,
-          ),
+          title,
+          style: AppTextStyles.heading4(
+            context,
+          ).copyWith(fontSize: 15, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -278,7 +310,8 @@ class StoreDetailsScreen extends StatelessWidget {
 
     return SliverToBoxAdapter(
       child: SizedBox(
-        height: 230, // Updated to accommodate ProductCard's 120px image + content
+        height:
+            230, // Updated to accommodate ProductCard's 120px image + content
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -286,7 +319,8 @@ class StoreDetailsScreen extends StatelessWidget {
           separatorBuilder: (context, index) => const SizedBox(width: 12),
           itemBuilder: (context, index) {
             return Container(
-              width: 125, // Adjusted to match Figma visual proportions (cards are smaller)
+              width:
+                  125, // Adjusted to match Figma visual proportions (cards are smaller)
               margin: const EdgeInsets.only(right: 12),
               child: ProductCard(item: featuredProducts[index]),
             );
@@ -296,13 +330,20 @@ class StoreDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryGrid(BuildContext context, String storeId, List<MenuCategory> categories) {
+  Widget _buildCategoryGrid(
+    BuildContext context,
+    String storeId,
+    List<MenuCategory> categories,
+  ) {
     if (categories.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Text(AppLocalizations.of(context)!.noCategoriesAvailable, style: AppTextStyles.body(context)),
+            child: Text(
+              AppLocalizations.of(context)!.noCategoriesAvailable,
+              style: AppTextStyles.body(context),
+            ),
           ),
         ),
       );
@@ -327,7 +368,10 @@ class StoreDetailsScreen extends StatelessWidget {
               onTap: () {
                 context.push(
                   RouteNames.unifiedResults,
-                  extra: ResultsConfig(parentId: storeId, categoryId: category.id),
+                  extra: ResultsConfig(
+                    parentId: storeId,
+                    categoryId: category.id,
+                  ),
                 );
               },
               borderRadius: BorderRadius.circular(12),
@@ -339,7 +383,9 @@ class StoreDetailsScreen extends StatelessWidget {
                     width: 60, // Fixed width
                     height: 60, // Fixed height
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F7F7), // Light grey background like Figma
+                      color: const Color(
+                        0xFFF7F7F7,
+                      ), // Light grey background like Figma
                       borderRadius: BorderRadius.circular(16),
                     ),
                     alignment: Alignment.center,
@@ -350,7 +396,10 @@ class StoreDetailsScreen extends StatelessWidget {
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) {
                         // Fallback if the specific local asset isn't added yet
-                        return Image.asset(AppAssets.homeCategoryGrocery, fit: BoxFit.contain);
+                        return Image.asset(
+                          AppAssets.homeCategoryGrocery,
+                          fit: BoxFit.contain,
+                        );
                       },
                     ),
                   ),
@@ -361,10 +410,9 @@ class StoreDetailsScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(context).copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -399,8 +447,8 @@ class _PromoBannersState extends State<_PromoBanners> {
 
     if (apiImages.isEmpty) return const SizedBox.shrink();
 
-    final displayImages = apiImages.length == 1 
-        ? [apiImages[0], apiImages[0], apiImages[0]] 
+    final displayImages = apiImages.length == 1
+        ? [apiImages[0], apiImages[0], apiImages[0]]
         : apiImages;
 
     return Column(
@@ -421,7 +469,8 @@ class _PromoBannersState extends State<_PromoBanners> {
                     child: Image.network(
                       displayImages[index],
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.grey),
+                      errorBuilder: (context, error, stackTrace) =>
+                          const ColoredBox(color: Colors.grey),
                     ),
                   ),
                 ),
@@ -440,7 +489,9 @@ class _PromoBannersState extends State<_PromoBanners> {
               width: _currentIndex == index ? 24 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _currentIndex == index ? AppColors.primary : Colors.grey.shade300,
+                color: _currentIndex == index
+                    ? AppColors.primary
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

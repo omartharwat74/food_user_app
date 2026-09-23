@@ -50,7 +50,9 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 
   void _onFocusChange() {
-    if (_focusNode.hasFocus && widget.controller != null && widget.controller!.text.isNotEmpty) {
+    if (_focusNode.hasFocus &&
+        widget.controller != null &&
+        widget.controller!.text.isNotEmpty) {
       widget.controller!.selection = TextSelection.collapsed(
         offset: widget.controller!.text.length,
       );

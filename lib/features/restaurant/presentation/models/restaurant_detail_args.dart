@@ -1,4 +1,3 @@
-
 class RestaurantDetailArgs {
   const RestaurantDetailArgs({
     required this.id,
@@ -21,5 +20,4 @@ class RestaurantDetailArgs {
   final String coverAsset;
   final String? deliveryFee;
   final bool initialFavorite;
-
 }

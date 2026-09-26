@@ -88,6 +88,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         final double total = unitPrice * _quantity;
 
         return BlocListener<CartCubit, CartState>(
+          listenWhen: (previous, current) => previous != current,
           listener: (context, cartState) {
             cartState.maybeWhen(
               loaded: (cart, promo) {
@@ -110,7 +111,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 }
               },
               error: (cart, promo, message) {
-                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).clearSnackBars();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(message), backgroundColor: Colors.red),
                 );

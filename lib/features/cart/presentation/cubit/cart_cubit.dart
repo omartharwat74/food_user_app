@@ -68,13 +68,34 @@ class CartCubit extends Cubit<CartState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(
-        CartState.error(
-          cart: currentCart,
-          appliedPromo: currentPromo,
-          message: failure.message,
-        ),
-      ),
+      (failure) {
+        if (failure.message.contains('CART_STORE_CONFLICT') ||
+            failure.message.contains('السلة تحتوي منتجات من متجر آخر')) {
+          emit(
+            CartState.conflict(
+              cart: currentCart,
+              newRestaurantId: '',
+              menuItemId: productId,
+              name: '',
+              price: 0,
+              quantity: quantity,
+              selectedModifiers: optionValueIds
+                  .map((id) => {'option_id': id.toString()})
+                  .toList(),
+              notes: null,
+            ),
+          );
+          return;
+        }
+
+        emit(
+          CartState.error(
+            cart: currentCart,
+            appliedPromo: currentPromo,
+            message: failure.message,
+          ),
+        );
+      },
       (serverCart) =>
           emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
     );

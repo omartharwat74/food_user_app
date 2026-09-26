@@ -66,6 +66,7 @@ class ProductDetailDto {
             id: i['id']?.toString() ?? '',
             name: i['name'] as String? ?? '',
             price: (i['price'] as num?)?.toDouble() ?? 0.0,
+            priceAfterDiscount: (i['price_after_discount'] as num?)?.toDouble(),
           );
         }).toList(),
       );

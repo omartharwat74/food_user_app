@@ -73,8 +73,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
             if (selectedOption.id == optId) {
               if (modifier.priceType == 'absolute') {
-                // Absolute options REPLACE the base price (e.g., Size variations)
-                calculatedBasePrice = selectedOption.price;
+                // Absolute options REPLACE the base price, prioritize discounted price
+                calculatedBasePrice =
+                    selectedOption.priceAfterDiscount ?? selectedOption.price;
               } else {
                 // Addon options ADD to the total (e.g., Extra Cheese)
                 addonsTotal += selectedOption.price;
@@ -86,36 +87,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         final double unitPrice = calculatedBasePrice + addonsTotal;
         final double total = unitPrice * _quantity;
 
-        return Scaffold(
-          backgroundColor: AppColors.scaffoldBackground(context),
-          bottomNavigationBar: _ProductBottomBar(
-            quantity: _quantity,
-            total: total,
-            onIncrement: () => setState(() => _quantity++),
-            onDecrement: () =>
-                setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
-            onSubmit: () async {
-              final List<int> modifierIdsList = [];
-              _selectedOptions.forEach((modId, selectedIds) {
-                for (final optId in selectedIds) {
-                  final idInt = int.tryParse(optId);
-                  if (idInt != null) {
-                    modifierIdsList.add(idInt);
-                  }
-                }
-              });
-
-              try {
-                await context.read<CartCubit>().addItem(
-                  productId: product.id.toString(),
-                  quantity: _quantity,
-                  optionValueIds: modifierIdsList,
-                );
-
-                if (!context.mounted) return;
-
-                Navigator.of(context).pop();
-
+        return BlocListener<CartCubit, CartState>(
+          listener: (context, cartState) {
+            cartState.maybeWhen(
+              loaded: (cart, promo) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
@@ -130,250 +105,332 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     duration: Duration(seconds: 3),
                   ),
                 );
-              } catch (e) {
-                if (!context.mounted) return;
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+              },
+              error: (cart, promo, message) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('حدث خطأ أثناء الإضافة'),
-                    backgroundColor: Colors.red,
-                  ),
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
                 );
-              }
-            },
-          ),
-          body: SafeArea(
-            bottom: false,
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              padding: const EdgeInsetsDirectional.only(bottom: 20),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      16,
-                      16,
-                      16,
-                      0,
-                    ),
-                    child: _ProductHeader(title: l10n.productDetailsTitle),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Product Image
-                  if (product.imageUrl.isNotEmpty)
-                    AppNetworkImage(
-                      product.imageUrl,
-                      width: double.infinity,
-                      height: 180,
-                      fit: BoxFit.contain,
-                    )
-                  else
-                    _HeroProductImage(imageAsset: AppAssets.productBurgerCombo),
-
-                  // Loading Indicator
-                  if (isLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      16,
-                      12,
-                      16,
-                      0,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _ProductIntro(
-                          product: product,
-                          notes: _notes,
-                          onAddNotes: _showNotesDialog,
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Dynamic Includes (Combo Components)
-                        if (product.includes.isNotEmpty) ...[
-                          Text(
-                            'مكونات الوجبة',
-                            textAlign: TextAlign.start,
-                            style: AppTextStyles.heading4(context).copyWith(
-                              color: AppColors.onSurface(context),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              height: 1.4,
+              },
+              conflict:
+                  (
+                    cart,
+                    newRestaurantId,
+                    menuItemId,
+                    name,
+                    price,
+                    quantity,
+                    modifiers,
+                    notes,
+                  ) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('بدء سلة جديدة؟'),
+                        content: const Text('طلب جديد سيمسح سلتك الحالية.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.transparent,
+                            ),
+                            child: Text(
+                              'إلغاء',
+                              style: TextStyle(
+                                color: AppColors.onSurface(context),
+                              ),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          ...product.includes.map((include) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.circle,
-                                    size: 6,
-                                    color: Colors.grey,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '${include.quantity}x ${include.name}',
-                                    style: AppTextStyles.body(context).copyWith(
-                                      color: AppColors.onSurface(context),
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }),
-                          const SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              context.read<CartCubit>().clearAndAddToCart(
+                                restaurantId: newRestaurantId,
+                                menuItemId: menuItemId,
+                                name: name,
+                                price: price,
+                                quantity: quantity,
+                                selectedModifiers: modifiers,
+                                notes: notes,
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppColors.primary,
+                            ),
+                            child: const Text(
+                              'بدء',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
                         ],
+                      ),
+                    );
+                  },
+              orElse: () {},
+            );
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.scaffoldBackground(context),
+            bottomNavigationBar: _ProductBottomBar(
+              quantity: _quantity,
+              total: total,
+              onIncrement: () => setState(() => _quantity++),
+              onDecrement: () =>
+                  setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
+              onSubmit: () {
+                final isLoading = context.read<CartCubit>().state.maybeWhen(
+                  loading: () => true,
+                  orElse: () => false,
+                );
+                if (isLoading) return;
 
-                        // Dynamic Options (Sizes, Modifiers, Addons)
-                        if (product.options.isEmpty)
-                          const SizedBox.shrink()
-                        else
-                          ...product.options.map((modifier) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text(
-                                    modifier.name,
-                                    textAlign: TextAlign.start,
-                                    style: AppTextStyles.heading4(context)
-                                        .copyWith(
-                                          color: AppColors.onSurface(context),
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.4,
-                                        ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  ...modifier.values.map((val) {
-                                    final isSelected =
-                                        (_selectedOptions[modifier.id] ??
-                                                <String>{})
-                                            .contains(val.id);
+                final List<int> modifierIdsList = [];
+                _selectedOptions.forEach((modId, selectedIds) {
+                  for (final optId in selectedIds) {
+                    final idInt = int.tryParse(optId);
+                    if (idInt != null) {
+                      modifierIdsList.add(idInt);
+                    }
+                  }
+                });
 
-                                    return InkWell(
-                                      onTap: () {
-                                        setState(() {
-                                          final current = Set<String>.from(
-                                            _selectedOptions[modifier.id] ?? {},
-                                          );
-                                          if (modifier.maxSelect <= 1) {
-                                            _selectedOptions[modifier.id] = {
-                                              val.id,
-                                            };
-                                          } else {
-                                            if (isSelected) {
-                                              current.remove(val.id);
-                                            } else if (current.length <
-                                                modifier.maxSelect) {
-                                              current.add(val.id);
+                context.read<CartCubit>().addItem(
+                  productId: product.id.toString(),
+                  quantity: _quantity,
+                  optionValueIds: modifierIdsList,
+                );
+              },
+            ),
+            body: SafeArea(
+              bottom: false,
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                padding: const EdgeInsetsDirectional.only(bottom: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        16,
+                        16,
+                        0,
+                      ),
+                      child: _ProductHeader(title: l10n.productDetailsTitle),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Product Image
+                    if (product.imageUrl.isNotEmpty)
+                      AppNetworkImage(
+                        product.imageUrl,
+                        width: double.infinity,
+                        height: 180,
+                        fit: BoxFit.contain,
+                      )
+                    else
+                      _HeroProductImage(
+                        imageAsset: AppAssets.productBurgerCombo,
+                      ),
+
+                    // Loading Indicator
+                    if (isLoading)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+
+                    Padding(
+                      padding: const EdgeInsetsDirectional.fromSTEB(
+                        16,
+                        12,
+                        16,
+                        0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _ProductIntro(
+                            product: product,
+                            notes: _notes,
+                            onAddNotes: _showNotesDialog,
+                          ),
+                          const SizedBox(height: 20),
+
+                          // Dynamic Includes (Combo Components)
+                          if (product.includes.isNotEmpty) ...[
+                            Text(
+                              'مكونات الوجبة',
+                              textAlign: TextAlign.start,
+                              style: AppTextStyles.heading4(context).copyWith(
+                                color: AppColors.onSurface(context),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ...product.includes.map((include) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.circle,
+                                      size: 6,
+                                      color: Colors.grey,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      '${include.quantity}x ${include.name}',
+                                      style: AppTextStyles.body(context)
+                                          .copyWith(
+                                            color: AppColors.onSurface(context),
+                                            fontSize: 14,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                            const SizedBox(height: 20),
+                          ],
+
+                          // Dynamic Options (Sizes, Modifiers, Addons)
+                          if (product.options.isEmpty)
+                            const SizedBox.shrink()
+                          else
+                            ...product.options.map((modifier) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Text(
+                                      modifier.name,
+                                      textAlign: TextAlign.start,
+                                      style: AppTextStyles.heading4(context)
+                                          .copyWith(
+                                            color: AppColors.onSurface(context),
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.4,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 12),
+                                    ...modifier.values.map((val) {
+                                      final isSelected =
+                                          (_selectedOptions[modifier.id] ??
+                                                  <String>{})
+                                              .contains(val.id);
+
+                                      return InkWell(
+                                        onTap: () {
+                                          setState(() {
+                                            final current = Set<String>.from(
+                                              _selectedOptions[modifier.id] ??
+                                                  {},
+                                            );
+                                            if (modifier.maxSelect <= 1) {
+                                              _selectedOptions[modifier.id] = {
+                                                val.id,
+                                              };
+                                            } else {
+                                              if (isSelected) {
+                                                current.remove(val.id);
+                                              } else if (current.length <
+                                                  modifier.maxSelect) {
+                                                current.add(val.id);
+                                              }
+                                              _selectedOptions[modifier.id] =
+                                                  current;
                                             }
-                                            _selectedOptions[modifier.id] =
-                                                current;
-                                          }
-                                        });
-                                      },
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            if (modifier.maxSelect <= 1)
-                                              SizedBox(
-                                                width: 24,
-                                                height: 24,
-                                                child: Radio<String>(
-                                                  value: val.id,
-                                                  groupValue:
-                                                      _selectedOptions[modifier
-                                                                  .id]
-                                                              ?.isNotEmpty ==
-                                                          true
-                                                      ? _selectedOptions[modifier
-                                                                .id]!
-                                                            .first
-                                                      : null,
-                                                  onChanged: (_) {
-                                                    setState(() {
-                                                      _selectedOptions[modifier
-                                                          .id] = {
-                                                        val.id,
-                                                      };
-                                                    });
-                                                  },
-                                                  activeColor:
-                                                      AppColors.primary,
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                  materialTapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                ),
-                                              )
-                                            else
-                                              SizedBox(
-                                                width: 24,
-                                                height: 24,
-                                                child: Checkbox(
-                                                  value: isSelected,
-                                                  onChanged: (_) {
-                                                    setState(() {
-                                                      final current =
-                                                          Set<String>.from(
-                                                            _selectedOptions[modifier
-                                                                    .id] ??
-                                                                {},
-                                                          );
-                                                      if (isSelected) {
-                                                        current.remove(val.id);
-                                                      } else if (current
-                                                              .length <
-                                                          modifier.maxSelect) {
-                                                        current.add(val.id);
-                                                      }
-                                                      _selectedOptions[modifier
-                                                              .id] =
-                                                          current;
-                                                    });
-                                                  },
-                                                  activeColor:
-                                                      AppColors.primary,
-                                                  visualDensity:
-                                                      VisualDensity.compact,
-                                                  materialTapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                ),
-                                              ),
-                                            const SizedBox(width: 8),
-                                            Text(
-                                              val.name,
-                                              style: AppTextStyles.body(context)
-                                                  .copyWith(
-                                                    color: AppColors.onSurface(
-                                                      context,
-                                                    ),
-                                                    fontSize: 14,
+                                          });
+                                        },
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 4,
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              if (modifier.maxSelect <= 1)
+                                                SizedBox(
+                                                  width: 24,
+                                                  height: 24,
+                                                  child: Radio<String>(
+                                                    value: val.id,
+                                                    groupValue:
+                                                        _selectedOptions[modifier
+                                                                    .id]
+                                                                ?.isNotEmpty ==
+                                                            true
+                                                        ? _selectedOptions[modifier
+                                                                  .id]!
+                                                              .first
+                                                        : null,
+                                                    onChanged: (_) {
+                                                      setState(() {
+                                                        _selectedOptions[modifier
+                                                            .id] = {
+                                                          val.id,
+                                                        };
+                                                      });
+                                                    },
+                                                    activeColor:
+                                                        AppColors.primary,
+                                                    visualDensity:
+                                                        VisualDensity.compact,
+                                                    materialTapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
                                                   ),
-                                            ),
-                                            const Spacer(),
-                                            if (val.price > 0)
+                                                )
+                                              else
+                                                SizedBox(
+                                                  width: 24,
+                                                  height: 24,
+                                                  child: Checkbox(
+                                                    value: isSelected,
+                                                    onChanged: (_) {
+                                                      setState(() {
+                                                        final current =
+                                                            Set<String>.from(
+                                                              _selectedOptions[modifier
+                                                                      .id] ??
+                                                                  {},
+                                                            );
+                                                        if (isSelected) {
+                                                          current.remove(
+                                                            val.id,
+                                                          );
+                                                        } else if (current
+                                                                .length <
+                                                            modifier
+                                                                .maxSelect) {
+                                                          current.add(val.id);
+                                                        }
+                                                        _selectedOptions[modifier
+                                                                .id] =
+                                                            current;
+                                                      });
+                                                    },
+                                                    activeColor:
+                                                        AppColors.primary,
+                                                    visualDensity:
+                                                        VisualDensity.compact,
+                                                    materialTapTargetSize:
+                                                        MaterialTapTargetSize
+                                                            .shrinkWrap,
+                                                  ),
+                                                ),
+                                              const SizedBox(width: 8),
                                               Text(
-                                                modifier.priceType == 'addon'
-                                                    ? '(+${(val.price).toFormattedPrice()} ج.م)'
-                                                    : '(${(val.price).toFormattedPrice()} ج.م)',
+                                                val.name,
                                                 style:
-                                                    AppTextStyles.textLink(
+                                                    AppTextStyles.body(
                                                       context,
                                                     ).copyWith(
                                                       color:
@@ -381,23 +438,88 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                             context,
                                                           ),
                                                       fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w500,
                                                     ),
                                               ),
-                                          ],
+                                              const Spacer(),
+                                              if (val.price > 0)
+                                                if (modifier.priceType ==
+                                                        'absolute' &&
+                                                    val.priceAfterDiscount !=
+                                                        null &&
+                                                    val.priceAfterDiscount! <
+                                                        val.price)
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      Text(
+                                                        '${val.price.toFormattedPrice()} ج.م',
+                                                        style:
+                                                            AppTextStyles.body(
+                                                              context,
+                                                            ).copyWith(
+                                                              color:
+                                                                  AppColors.paragraph(
+                                                                    context,
+                                                                  ),
+                                                              fontSize: 12,
+                                                              decoration:
+                                                                  TextDecoration
+                                                                      .lineThrough,
+                                                            ),
+                                                      ),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        '(${val.priceAfterDiscount!.toFormattedPrice()} ج.م)',
+                                                        style:
+                                                            AppTextStyles.textLink(
+                                                              context,
+                                                            ).copyWith(
+                                                              color:
+                                                                  AppColors.onSurface(
+                                                                    context,
+                                                                  ),
+                                                              fontSize: 14,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  )
+                                                else
+                                                  Text(
+                                                    modifier.priceType ==
+                                                            'addon'
+                                                        ? '(+${(val.price).toFormattedPrice()} ج.م)'
+                                                        : '(${(val.price).toFormattedPrice()} ج.م)',
+                                                    style:
+                                                        AppTextStyles.textLink(
+                                                          context,
+                                                        ).copyWith(
+                                                          color:
+                                                              AppColors.onSurface(
+                                                                context,
+                                                              ),
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                        ),
+                                                  ),
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  }),
-                                ],
-                              ),
-                            );
-                          }),
-                      ],
+                                      );
+                                    }),
+                                  ],
+                                ),
+                              );
+                            }),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -916,14 +1038,6 @@ class _ProductBottomBar extends StatelessWidget {
                       loading: () => true,
                       orElse: () => false,
                     );
-                    final isError = state.maybeWhen(
-                      error: (cart, promo, msg) => true,
-                      orElse: () => false,
-                    );
-                    final message = state.maybeWhen(
-                      error: (cart, promo, msg) => msg,
-                      orElse: () => null,
-                    );
 
                     return GestureDetector(
                       behavior: HitTestBehavior.opaque,
@@ -959,9 +1073,7 @@ class _ProductBottomBar extends StatelessWidget {
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      isError
-                                          ? (message ?? 'حدث خطأ')
-                                          : l10n.productAddToCart,
+                                      l10n.productAddToCart,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style:
@@ -977,23 +1089,18 @@ class _ProductBottomBar extends StatelessWidget {
                                           ),
                                     ),
                                   ),
-                                  if (!isError)
-                                    Text(
-                                      l10n.cartPrice(
-                                        (total).toFormattedPrice(),
-                                      ),
-                                      style:
-                                          AppTextStyles.buttonHeading(
-                                            context,
-                                          ).copyWith(
-                                            color: (enabled && !isLoading)
-                                                ? AppColors.text
-                                                : AppColors.paragraph(context),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.25,
-                                          ),
-                                    ),
+                                  Text(
+                                    l10n.cartPrice((total).toFormattedPrice()),
+                                    style: AppTextStyles.buttonHeading(context)
+                                        .copyWith(
+                                          color: (enabled && !isLoading)
+                                              ? AppColors.text
+                                              : AppColors.paragraph(context),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          height: 1.25,
+                                        ),
+                                  ),
                                 ],
                               ),
                       ),

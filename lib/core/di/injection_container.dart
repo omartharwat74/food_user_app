@@ -119,6 +119,7 @@ import 'package:food_user_app/features/support/domain/usecases/create_ticket_use
 import 'package:food_user_app/features/support/domain/usecases/get_messages_usecase.dart';
 import 'package:food_user_app/features/support/domain/usecases/send_message_usecase.dart';
 import 'package:food_user_app/features/support/presentation/cubit/chat_cubit.dart';
+import 'package:food_user_app/features/support/presentation/cubit/support_cubit.dart';
 import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
 
 import 'package:food_user_app/features/payment/data/datasources/payment_remote_data_source.dart';
@@ -599,6 +600,8 @@ void importSupportDependencies() {
   sl.registerFactory(
     () => ChatCubit(sl<GetMessagesUseCase>(), sl<SendMessageUseCase>()),
   );
+  // New SupportCubit — Firebase + REST integration
+  sl.registerFactory(() => SupportCubit(dio: sl<DioClient>().dio));
 }
 
 void importOrderDependencies() {

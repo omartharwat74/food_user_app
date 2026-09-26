@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../constants/api_endpoints.dart';
 import 'interceptors/auth_interceptor.dart';
@@ -31,8 +32,13 @@ class DioClient {
     );
     _dio.interceptors
       ..add(languageInterceptor)
-      ..add(authInterceptor)
-      ..add(loggingInterceptor)
+      ..add(authInterceptor);
+
+    if (kDebugMode) {
+      _dio.interceptors.add(loggingInterceptor);
+    }
+
+    _dio.interceptors
       ..add(retryInterceptor)
       ..add(globalErrorHandlerInterceptor);
   }

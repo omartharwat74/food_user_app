@@ -412,10 +412,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.helpSupport,
-        builder: (c, s) {
-          final ticketId = s.extra is String ? s.extra as String : null;
-          return HelpSupportScreen(ticketId: ticketId);
-        },
+        builder: (c, s) => const HelpSupportScreen(),
       ),
       GoRoute(path: RouteNames.about, builder: (c, s) => const AboutScreen()),
     ],

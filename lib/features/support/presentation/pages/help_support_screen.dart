@@ -8,9 +8,11 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart' as di;
-import 'package:food_user_app/features/support/presentation/cubit/chat_cubit.dart';
+import 'package:food_user_app/features/support/domain/entities/support_conversation.dart';
+import 'package:food_user_app/features/support/presentation/cubit/support_cubit.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
+/// A thin view-model bridging [SupportChatMsg] to the existing UI widgets.
 class SupportChatMessage {
   const SupportChatMessage({
     required this.id,
@@ -23,32 +25,29 @@ class SupportChatMessage {
   final String text;
   final bool isMine;
   final DateTime createdAt;
+
+  factory SupportChatMessage.fromMsg(SupportChatMsg msg) => SupportChatMessage(
+    id: msg.id.toString(),
+    text: msg.body ?? '',
+    isMine: msg.isMine,
+    createdAt: msg.createdAt,
+  );
 }
 
 class HelpSupportScreen extends StatelessWidget {
-  final String? ticketId;
-
-  const HelpSupportScreen({super.key, this.ticketId});
+  const HelpSupportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) {
-        final cubit = di.sl<ChatCubit>();
-        if (ticketId != null) {
-          cubit.fetchMessages(ticketId!);
-        }
-        return cubit;
-      },
-      child: _HelpSupportScreenContent(ticketId: ticketId),
+      create: (_) => di.sl<SupportCubit>(),
+      child: const _HelpSupportScreenContent(),
     );
   }
 }
 
 class _HelpSupportScreenContent extends StatefulWidget {
-  final String? ticketId;
-
-  const _HelpSupportScreenContent({this.ticketId});
+  const _HelpSupportScreenContent();
 
   @override
   State<_HelpSupportScreenContent> createState() =>
@@ -64,16 +63,20 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
 
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
-  List<SupportChatMessage> _messages = [];
 
   @override
   void initState() {
     super.initState();
-    _messages = [];
+    // Kick off the initial load after the first frame so the Cubit is ready.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<SupportCubit>().loadInitialSupport();
+    });
   }
 
   @override
   void dispose() {
+    // Stop Firebase listener to prevent memory leaks.
+    context.read<SupportCubit>().cleanupListeners();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -82,13 +85,13 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
   void _sendText() {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
-
-    context.read<ChatCubit>().sendMessage(text);
+    context.read<SupportCubit>().sendMessage(text: text);
     _controller.clear();
   }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       if (!_scrollController.hasClients) return;
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -107,66 +110,102 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
-        body: BlocConsumer<ChatCubit, ChatState>(
+        body: BlocConsumer<SupportCubit, SupportState>(
+          listenWhen: (prev, curr) => prev != curr,
           listener: (context, state) {
-            state.maybeWhen(
-              loaded: (messages) {
-                setState(() {
-                  _messages = messages
-                      .map(
-                        (m) => SupportChatMessage(
-                          id: m.id,
-                          text: m.content,
-                          isMine: m.senderRole == 'USER',
-                          createdAt: m.sentAt,
-                        ),
-                      )
-                      .toList();
-                });
-                _scrollToBottom();
-              },
-              orElse: () {},
-            );
+            if (!mounted) return;
+            // Scroll to bottom whenever new messages arrive.
+            if (state.messages.isNotEmpty) _scrollToBottom();
+            // Show error snackbar if needed.
+            if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context)
+                ..clearSnackBars()
+                ..showSnackBar(
+                  SnackBar(
+                    content: Text(state.errorMessage!),
+                    backgroundColor: AppColors.error,
+                  ),
+                );
+            }
           },
           builder: (context, state) {
+            final msgs = state.messages
+                .map(SupportChatMessage.fromMsg)
+                .toList();
+            final chatWidgets = <Widget>[];
+            int i = 0;
+            while (i < msgs.length) {
+              if (msgs[i].isMine) {
+                chatWidgets.add(
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _ChatMessageBubble(
+                      message: msgs[i],
+                      text: _resolveMessageText(msgs[i]),
+                    ),
+                  ),
+                );
+                i++;
+              } else {
+                final group = <SupportChatMessage>[];
+                while (i < msgs.length && !msgs[i].isMine) {
+                  group.add(msgs[i]);
+                  i++;
+                }
+                chatWidgets.add(
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _SupportMessageGroup(
+                      messages: group,
+                      resolveText: _resolveMessageText,
+                    ),
+                  ),
+                );
+              }
+            }
+
             return Column(
               children: [
                 _SupportChatHeader(title: l10n.supportChatTitle),
                 Expanded(
-                  child: state.maybeWhen(
-                    loading: () =>
-                        const Center(child: CircularProgressIndicator()),
-                    error: (msg) => Center(child: Text(msg)),
-                    orElse: () => ListView(
-                      controller: _scrollController,
-                      physics: const ClampingScrollPhysics(),
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        _messageHorizontalPadding,
-                        20,
-                        _messageHorizontalPadding,
-                        24,
-                      ),
-                      children: [
-                        _DateSeparator(label: l10n.supportToday),
-                        const SizedBox(height: 20),
-                        _SupportMessageGroup(
-                          messages: _messages.where((m) => !m.isMine).toList(),
-                          resolveText: _resolveMessageText,
-                        ),
-                        const SizedBox(height: 12),
-                        for (final message in _messages.where((m) => m.isMine))
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: _ChatMessageBubble(
-                              message: message,
-                              text: _resolveMessageText(message),
-                            ),
+                  child: state.isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView(
+                          controller: _scrollController,
+                          physics: const ClampingScrollPhysics(),
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            _messageHorizontalPadding,
+                            20,
+                            _messageHorizontalPadding,
+                            24,
                           ),
-                      ],
-                    ),
-                  ),
+                          children: [
+                            _DateSeparator(label: l10n.supportToday),
+                            const SizedBox(height: 20),
+                            ...chatWidgets,
+                            // Loading indicator while sending
+                            if (state.isSending)
+                              const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: SizedBox(
+                                    width: 16,
+                                    height: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                 ),
-                _SupportComposer(controller: _controller, onSend: _sendText),
+                _SupportComposer(
+                  controller: _controller,
+                  onSend: state.isSending ? () {} : _sendText,
+                ),
               ],
             );
           },
@@ -298,14 +337,13 @@ class _SupportMessageGroup extends StatelessWidget {
               width: 24,
               height: 24,
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: SvgPicture.asset(
-                AppAssets.supportAgentIcon,
-                width: 16,
-                height: 16,
+              clipBehavior: Clip.antiAlias,
+              decoration: const BoxDecoration(shape: BoxShape.circle),
+              child: Image.asset(
+                AppAssets.supportAdminIcon,
+                width: 24,
+                height: 24,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(width: 8),

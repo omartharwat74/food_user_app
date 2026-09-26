@@ -216,4 +216,15 @@ class ApiEndpoints {
     socialLogin,
     refreshToken,
   };
+
+  // ── Support Chat ───────────────────────────────────────────────────────────
+  /// `GET /api/v1/support` — returns active conversation + messages (or null).
+  static const String supportLoad = '/api/v1/support';
+
+  /// `POST /api/v1/support/messages` — send a message (multipart/form-data).
+  static const String supportSendMessage = '/api/v1/support/messages';
+
+  /// `GET /api/v1/support/messages?after_id={id}` — poll for new messages.
+  static String supportMessagesAfter(int afterId) =>
+      '/api/v1/support/messages?after_id=$afterId';
 }

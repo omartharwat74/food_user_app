@@ -190,10 +190,29 @@ class SavedAddressesController extends ChangeNotifier {
 
   SavedAddress _mapAddressToSavedAddress(Address address) {
     final loc = '${address.city}, ${address.neighborhood}';
+
+    final type = address.addressType.toLowerCase();
+    String titleAr = address.label;
+    String titleEn = address.label;
+
+    if (type == 'primary' || type == 'home') {
+      titleAr = 'المنزل';
+      titleEn = 'Home';
+    } else if (type == 'work') {
+      titleAr = 'العمل';
+      titleEn = 'Work';
+    } else if (type == 'other' || type == 'office') {
+      titleAr = 'المكتب';
+      titleEn = 'Office';
+    } else if (type == 'apartment') {
+      titleAr = 'الشقة';
+      titleEn = 'Apartment';
+    }
+
     return SavedAddress(
       id: address.id,
-      titleAr: address.label,
-      titleEn: address.label,
+      titleAr: titleAr,
+      titleEn: titleEn,
       detailsAr: address.fullAddress,
       detailsEn: address.fullAddress,
       locationAr: loc,

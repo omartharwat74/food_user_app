@@ -244,14 +244,11 @@ class _CheckoutAddressCard extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      SvgPicture.asset(
-                        AppAssets.addressHomeIcon,
+                      Image.asset(
+                        address.iconAsset,
                         width: 20,
                         height: 20,
-                        colorFilter: const ColorFilter.mode(
-                          AppColors.primary,
-                          BlendMode.srcIn,
-                        ),
+                        color: AppColors.primary,
                       ),
                       const SizedBox(width: 4),
                       Flexible(

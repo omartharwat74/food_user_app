@@ -595,5 +595,9 @@
   "searchResults": "نتائج البحث",
   "sections": "الأقسام",
   "fieldRequired": "هذا الحقل مطلوب",
-  "minutes": "دقيقة"
+  "minutes": "دقيقة",
+  "deliveryToTitle": "التوصيل الى :",
+  "addressTypeHome": "المنزل",
+  "addressTypeWork": "العمل",
+  "addressTypeOffice": "المكتب"
 }

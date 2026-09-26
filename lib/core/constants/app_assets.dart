@@ -150,6 +150,10 @@ class AppAssets {
   static const addressLocationIcon = 'assets/images/icons/address/location.svg';
   static const addressSearchIcon = 'assets/images/icons/address/search.svg';
   static const addressMapIcon = 'assets/images/icons/address/map.svg';
+  static const addressTypeHome = 'assets/images/icons/address/address_type_home.png';
+  static const addressTypeWork = 'assets/images/icons/address/address_type_work.png';
+  static const addressTypeOffice = 'assets/images/icons/address/address_type_office.png';
+
   static const addressDeleteDialogIcon =
       'assets/images/icons/address/gps_off.svg';
 

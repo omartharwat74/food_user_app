@@ -594,5 +594,9 @@
   "searchResults": "Search Results",
   "sections": "Sections",
   "fieldRequired": "This field is required",
-  "minutes": "min"
+  "minutes": "min",
+  "deliveryToTitle": "Delivery to :",
+  "addressTypeHome": "Home",
+  "addressTypeWork": "Work",
+  "addressTypeOffice": "Office"
 }

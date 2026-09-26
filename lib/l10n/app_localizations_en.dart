@@ -1685,4 +1685,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get minutes => 'min';
+
+  @override
+  String get deliveryToTitle => 'Delivery to :';
+
+  @override
+  String get addressTypeHome => 'Home';
+
+  @override
+  String get addressTypeWork => 'Work';
+
+  @override
+  String get addressTypeOffice => 'Office';
 }

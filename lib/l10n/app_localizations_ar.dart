@@ -1664,4 +1664,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get minutes => 'دقيقة';
+
+  @override
+  String get deliveryToTitle => 'التوصيل الى :';
+
+  @override
+  String get addressTypeHome => 'المنزل';
+
+  @override
+  String get addressTypeWork => 'العمل';
+
+  @override
+  String get addressTypeOffice => 'المكتب';
 }

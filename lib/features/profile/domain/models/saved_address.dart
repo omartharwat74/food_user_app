@@ -41,6 +41,15 @@ class SavedAddress {
   final String? addressType;
   final bool isDefault;
 
+  String get iconAsset {
+    final type = addressType?.toLowerCase();
+    if (type == 'work')
+      return 'assets/images/icons/address/address_type_work.png';
+    if (type == 'other' || type == 'office')
+      return 'assets/images/icons/address/address_type_office.png';
+    return 'assets/images/icons/address/address_type_home.png';
+  }
+
   String title(Locale locale) => _localized(locale, ar: titleAr, en: titleEn);
 
   String details(Locale locale) =>

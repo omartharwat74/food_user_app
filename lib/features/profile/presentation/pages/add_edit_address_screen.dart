@@ -13,6 +13,7 @@ import 'package:food_user_app/features/profile/domain/models/saved_address.dart'
 import 'package:food_user_app/features/profile/domain/models/saved_address_input.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/features/profile/presentation/widgets/address_type_selector.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
 enum AddressFlowMode { add, edit, onboarding }
@@ -125,6 +126,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
   final _floorController = TextEditingController();
   final _apartmentController = TextEditingController();
   String? _hydratedAddressId;
+  String _selectedAddressType = 'primary';
 
   @override
   void initState() {
@@ -243,6 +245,15 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 24),
+                      AddressTypeSelector(
+                        initialValue: _selectedAddressType,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedAddressType = value;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -299,6 +310,16 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     if (_fullAddress.isEmpty) {
       _fullAddress = address.fullAddress ?? address.locationEn;
     }
+    // Set initial address type based on existing
+    if (address.addressType != null) {
+      final t = address.addressType!.toLowerCase();
+      if (t == 'work')
+        _selectedAddressType = 'work';
+      else if (t == 'other')
+        _selectedAddressType = 'other';
+      else
+        _selectedAddressType = 'primary';
+    }
   }
 
   Future<bool> _submitAddress({
@@ -346,10 +367,14 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final latitude = selectedLatitude ?? 30.0444;
     final longitude = selectedLongitude ?? 31.2357;
 
+    String localizedLabel = l10n.addressTypeHome;
+    if (_selectedAddressType == 'work')
+      localizedLabel = l10n.addressTypeWork;
+    else if (_selectedAddressType == 'other')
+      localizedLabel = l10n.addressTypeOffice;
+
     final input = SavedAddressInput(
-      label:
-          existingAddress?.title(Localizations.localeOf(context)) ??
-          l10n.apartmentAddressTitle,
+      label: localizedLabel,
       fullAddress: detailedAddress,
       lat: latitude,
       lng: longitude,
@@ -359,7 +384,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
       buildingNumber: _buildingController.text,
       floor: _floorController.text,
       apartment: _apartmentController.text,
-      addressType: existingAddress?.addressType ?? 'APARTMENT',
+      addressType: _selectedAddressType,
       isDefault: existingAddress?.isDefault ?? controller.addresses.isEmpty,
     );
 

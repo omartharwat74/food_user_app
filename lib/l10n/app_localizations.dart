@@ -3337,6 +3337,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'min'**
   String get minutes;
+
+  /// No description provided for @deliveryToTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery to :'**
+  String get deliveryToTitle;
+
+  /// No description provided for @addressTypeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get addressTypeHome;
+
+  /// No description provided for @addressTypeWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get addressTypeWork;
+
+  /// No description provided for @addressTypeOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Office'**
+  String get addressTypeOffice;
 }
 
 class _AppLocalizationsDelegate

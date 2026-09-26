@@ -41,38 +41,28 @@ class _HomeScreenState extends State<HomeScreen>
     }
     final copy = _HomeCopy.of(context);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<SectionsCubit>(
-          create: (context) => sl<SectionsCubit>()..fetchSections(),
-        ),
-        BlocProvider<SpotlightsCubit>(
-          create: (context) => sl<SpotlightsCubit>()..fetchSpotlights(),
-        ),
-      ],
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground(context),
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(child: _HomeHeader(copy: copy)),
-            SliverPadding(
-              padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
-              sliver: SliverList.list(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                    child: CategoryGrid(),
-                  ),
-                  const SizedBox(height: 20),
-                  const BannerSlider(),
-                  const SizedBox(height: 18),
-                  const SizedBox(height: 10),
-                  const _SpotlightsSections(),
-                ],
-              ),
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground(context),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _HomeHeader(copy: copy)),
+          SliverPadding(
+            padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
+            sliver: SliverList.list(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                  child: CategoryGrid(),
+                ),
+                const SizedBox(height: 20),
+                const BannerSlider(),
+                const SizedBox(height: 18),
+                const SizedBox(height: 10),
+                const _SpotlightsSections(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

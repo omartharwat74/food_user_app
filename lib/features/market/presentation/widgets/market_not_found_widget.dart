@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 
@@ -10,16 +11,13 @@ class MarketNotFoundWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final titleText = isArabic ? 'المتجر غير متاح' : 'Market Unavailable';
+    final titleText = AppLocalizations.of(context)!.marketUnavailable;
     final messageText =
-        message ??
-        (isArabic
-            ? 'عذراً، هذا المتجر لم يعد متاحاً حالياً أو قد تم إزالته.'
-            : 'Sorry, this market is no longer available or has been removed.');
+        message ?? AppLocalizations.of(context)!.marketUnavailableMsg;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isArabic ? 'غير موجود' : 'Not Found'),
+        title: Text(AppLocalizations.of(context)!.notFound),
         centerTitle: true,
       ),
       body: Center(
@@ -68,7 +66,7 @@ class MarketNotFoundWidget extends StatelessWidget {
                 },
                 icon: const Icon(Icons.arrow_back, color: Colors.white),
                 label: Text(
-                  isArabic ? 'العودة للمتاجر' : 'Back to Markets',
+                  AppLocalizations.of(context)!.backToMarkets,
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(

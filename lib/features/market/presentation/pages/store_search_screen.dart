@@ -54,48 +54,48 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
       // Figma: #7162:4093 fills=[#FAFAFA]
       backgroundColor: AppColors.scaffoldBackground(context),
       body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // ── Header: back button + title ───────────────────────────────
-              _buildHeader(context),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── Header: back button + title ───────────────────────────────
+            _buildHeader(context),
 
-              // ── Search bar ────────────────────────────────────────────────
-              _buildSearchBar(context),
+            // ── Search bar ────────────────────────────────────────────────
+            _buildSearchBar(context),
 
-              // ── Content: spinner / grid / empty / error ───────────────────
-              Expanded(
-                child: BlocBuilder<StoreSearchCubit, StoreSearchState>(
-                  builder: (context, state) {
-                    if (state is StoreSearchInitial) {
-                      return _buildInitialState(context);
-                    }
-                    if (state is StoreSearchLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (state is StoreSearchError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            state.message,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.error),
-                          ),
+            // ── Content: spinner / grid / empty / error ───────────────────
+            Expanded(
+              child: BlocBuilder<StoreSearchCubit, StoreSearchState>(
+                builder: (context, state) {
+                  if (state is StoreSearchInitial) {
+                    return _buildInitialState(context);
+                  }
+                  if (state is StoreSearchLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (state is StoreSearchError) {
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: AppColors.error),
                         ),
-                      );
-                    }
-                    if (state is StoreSearchLoaded) {
-                      return _buildGrid(context, state);
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                      ),
+                    );
+                  }
+                  if (state is StoreSearchLoaded) {
+                    return _buildGrid(context, state);
+                  }
+                  return const SizedBox.shrink();
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
   }
 
   Widget _buildInitialState(BuildContext context) {
@@ -249,7 +249,9 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'لا توجد نتائج دقيقة — عرض اقتراحات',
+                      AppLocalizations.of(
+                        context,
+                      )!.noExactResultsShowSuggestions,
                       style: AppTextStyles.body(
                         context,
                       ).copyWith(color: AppColors.primary, fontSize: 12),

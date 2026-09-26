@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class MarketEmptyState extends StatelessWidget {
   final String? title;
@@ -18,13 +19,9 @@ class MarketEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final defaultTitle =
-        title ?? (isArabic ? 'لا توجد بيانات' : 'No Items Found');
+    final defaultTitle = title ?? AppLocalizations.of(context)!.noItemsFound;
     final defaultMessage =
-        message ??
-        (isArabic
-            ? 'لم نتمكن من العثور على أي منتجات أو أقسام هنا.'
-            : 'We could not find any products or categories here.');
+        message ?? AppLocalizations.of(context)!.noProductsOrSections;
 
     return Center(
       child: Padding(
@@ -64,7 +61,7 @@ class MarketEmptyState extends StatelessWidget {
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh, color: Colors.white),
                 label: Text(
-                  isArabic ? 'إعادة المحاولة' : 'Try Again',
+                  AppLocalizations.of(context)!.tryAgain,
                   style: const TextStyle(color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(

@@ -93,9 +93,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             cartState.maybeWhen(
               loaded: (cart, promo) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(
-                      'تم إضافة المنتج للسلة بنجاح',
+                      AppLocalizations.of(context)!.productAddedSuccessfully,
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
@@ -146,14 +146,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'بدء سلة جديدة؟',
+                                AppLocalizations.of(context)!.startNewCartTitle,
                                 style: AppTextStyles.heading4(
                                   context,
                                 ).copyWith(fontWeight: FontWeight.bold),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'طلب جديد سيمسح سلتك الحالية.',
+                                AppLocalizations.of(
+                                  context,
+                                )!.cartConflictMessageCustom,
                                 style: AppTextStyles.body(
                                   context,
                                 ).copyWith(color: AppColors.paragraph(context)),
@@ -176,7 +178,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                       ),
                                       child: Text(
-                                        'إلغاء',
+                                        AppLocalizations.of(context)!.cancel,
                                         style: AppTextStyles.buttonHeading(
                                           context,
                                         ),
@@ -211,7 +213,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         elevation: 0,
                                       ),
                                       child: Text(
-                                        'بدء',
+                                        AppLocalizations.of(context)!.start,
                                         style: AppTextStyles.buttonHeading(
                                           context,
                                         ).copyWith(color: Colors.white),
@@ -319,7 +321,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           // Dynamic Includes (Combo Components)
                           if (product.includes.isNotEmpty) ...[
                             Text(
-                              'مكونات الوجبة',
+                              AppLocalizations.of(context)!.mealIngredients,
                               textAlign: TextAlign.start,
                               style: AppTextStyles.heading4(context).copyWith(
                                 color: AppColors.onSurface(context),
@@ -510,7 +512,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                         MainAxisSize.min,
                                                     children: [
                                                       Text(
-                                                        '${val.price.toFormattedPrice()} ج.م',
+                                                        AppLocalizations.of(
+                                                          context,
+                                                        )!.priceWithCurrency(
+                                                          val.price
+                                                              .toFormattedPrice(),
+                                                        ),
                                                         style:
                                                             AppTextStyles.body(
                                                               context,
@@ -527,7 +534,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                       ),
                                                       const SizedBox(width: 4),
                                                       Text(
-                                                        '(${val.priceAfterDiscount!.toFormattedPrice()} ج.م)',
+                                                        '(' +
+                                                            AppLocalizations.of(
+                                                              context,
+                                                            )!.priceWithCurrency(
+                                                              val.priceAfterDiscount!
+                                                                  .toFormattedPrice(),
+                                                            ) +
+                                                            ')',
                                                         style:
                                                             AppTextStyles.textLink(
                                                               context,
@@ -548,8 +562,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   Text(
                                                     modifier.priceType ==
                                                             'addon'
-                                                        ? '(+${(val.price).toFormattedPrice()} ج.م)'
-                                                        : '(${(val.price).toFormattedPrice()} ج.م)',
+                                                        ? '(+' +
+                                                              AppLocalizations.of(
+                                                                context,
+                                                              )!.priceWithCurrency(
+                                                                val.price
+                                                                    .toFormattedPrice(),
+                                                              ) +
+                                                              ')'
+                                                        : '(' +
+                                                              AppLocalizations.of(
+                                                                context,
+                                                              )!.priceWithCurrency(
+                                                                val.price
+                                                                    .toFormattedPrice(),
+                                                              ) +
+                                                              ')',
                                                     style:
                                                         AppTextStyles.textLink(
                                                           context,

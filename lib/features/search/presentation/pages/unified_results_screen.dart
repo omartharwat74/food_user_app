@@ -123,7 +123,7 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
                                   vertical: 16.0,
                                 ),
                                 child: Text(
-                                  'نتائج البحث',
+                                  AppLocalizations.of(context)!.searchResults,
                                   textAlign: TextAlign.start,
                                   style: AppTextStyles.body(context).copyWith(
                                     fontSize: 16,

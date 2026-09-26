@@ -203,7 +203,7 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                         controller: _buildingController,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return 'هذا الحقل مطلوب';
+                            return AppLocalizations.of(context)!.fieldRequired;
                           }
                           return null;
                         },
@@ -218,7 +218,9 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                               controller: _floorController,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'هذا الحقل مطلوب';
+                                  return AppLocalizations.of(
+                                    context,
+                                  )!.fieldRequired;
                                 }
                                 return null;
                               },
@@ -231,7 +233,9 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
                               controller: _apartmentController,
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'هذا الحقل مطلوب';
+                                  return AppLocalizations.of(
+                                    context,
+                                  )!.fieldRequired;
                                 }
                                 return null;
                               },

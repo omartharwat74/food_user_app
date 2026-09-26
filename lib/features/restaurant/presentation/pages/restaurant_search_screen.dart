@@ -42,7 +42,8 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
     final l10n = AppLocalizations.of(context)!;
     return BlocProvider(
       // Calling fetchStoreData which correctly hits /api/v1/stores/products/all
-      create: (_) => sl<RestaurantDetailCubit>()..fetchStoreData(widget.restaurantId),
+      create: (_) =>
+          sl<RestaurantDetailCubit>()..fetchStoreData(widget.restaurantId),
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
         appBar: AppBar(
@@ -64,13 +65,18 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                   color: AppColors.surfaceCard(context),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                      color: AppColors.border(context), width: 0.5),
+                    color: AppColors.border(context),
+                    width: 0.5,
+                  ),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: Row(
                   children: [
-                    Icon(Icons.search,
-                        color: AppColors.paragraph(context), size: 22),
+                    Icon(
+                      Icons.search,
+                      color: AppColors.paragraph(context),
+                      size: 22,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
@@ -81,9 +87,9 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                         decoration: InputDecoration(
                           isDense: true,
                           hintText: l10n.searchPlaceholder,
-                          hintStyle: AppTextStyles.body(context).copyWith(
-                            color: AppColors.hint(context),
-                          ),
+                          hintStyle: AppTextStyles.body(
+                            context,
+                          ).copyWith(color: AppColors.hint(context)),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -92,8 +98,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     if (_query.isNotEmpty)
                       GestureDetector(
                         onTap: () => _searchController.clear(),
-                        child: Icon(Icons.close,
-                            size: 18, color: AppColors.paragraph(context)),
+                        child: Icon(
+                          Icons.close,
+                          size: 18,
+                          color: AppColors.paragraph(context),
+                        ),
                       ),
                   ],
                 ),
@@ -110,23 +119,27 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                     error: (msg) => Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24.0),
-                        child: Text(msg,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.error)),
+                        child: Text(
+                          msg,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: AppColors.error),
+                        ),
                       ),
                     ),
                     loaded: (restaurant, menuCategories, branches, offers) {
                       // Flatten all categories to a single list of MenuItems
-                      final allItems = menuCategories.expand((c) => c.items).toList();
+                      final allItems = menuCategories
+                          .expand((c) => c.items)
+                          .toList();
 
                       // Local filtering logic
                       final displayItems = _query.isEmpty
                           ? allItems
                           : allItems.where((item) {
                               return item.name.toLowerCase().contains(_query) ||
-                                  item.description
-                                      .toLowerCase()
-                                      .contains(_query);
+                                  item.description.toLowerCase().contains(
+                                    _query,
+                                  );
                             }).toList();
 
                       // Empty state
@@ -135,8 +148,11 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.search_off,
-                                  size: 64, color: AppColors.hint(context)),
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: AppColors.hint(context),
+                              ),
                               const SizedBox(height: 16),
                               Text(
                                 _query.isEmpty
@@ -156,14 +172,16 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
                       // Exact 2-column grid using ProductCard
                       return GridView.builder(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 8),
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          mainAxisExtent: 164,
-                        ),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 12,
+                              mainAxisSpacing: 12,
+                              mainAxisExtent: 164,
+                            ),
                         itemCount: displayItems.length,
                         itemBuilder: (context, index) {
                           return ProductCard(

@@ -211,7 +211,7 @@ class _FavoriteRestaurantCard extends StatelessWidget {
   void _openDetails(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final deliveryTimeStr = isRtl
-        ? '\u200E${item.deliveryTimeMin} - ${item.deliveryTimeMax}\u200E دقيقة'
+        ? '\u200E${item.deliveryTimeMin} - ${item.deliveryTimeMax}\u200E ${AppLocalizations.of(context)!.minutes}'
         : '${item.deliveryTimeMin} - ${item.deliveryTimeMax} min';
 
     context.push(

@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get discount => 'خصم';
+  String get discount => 'الخصم';
 
   @override
   String get appTitle => 'تطبيق توصيل الطعام';
@@ -1529,7 +1529,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get currency => 'ج.م';
 
   @override
-  String get shopByCategories => 'تسوق حسب التصنيفات';
+  String get shopByCategories => 'تسوّق حسب التصنيفات';
 
   @override
   String get popularProducts => 'المنتجات الأكثر طلباً';
@@ -1542,4 +1542,126 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get all => 'الكل';
+
+  @override
+  String get startNewCart => 'بدء';
+
+  @override
+  String get mealIngredients => 'مكونات الوجبة';
+
+  @override
+  String get productAddedSuccessfully => 'تم إضافة المنتج للسلة بنجاح';
+
+  @override
+  String get orderSummary => 'ملخص الطلب :';
+
+  @override
+  String get orderValue => 'قيمة الطلب';
+
+  @override
+  String get delivery => 'التوصيل';
+
+  @override
+  String get tax => 'الضريبة';
+
+  @override
+  String get total => 'الاجمالي :';
+
+  @override
+  String get viewCart => 'اطلع على السلة';
+
+  @override
+  String get noExactResultsShowSuggestions =>
+      'لا توجد نتائج دقيقة — عرض اقتراحات';
+
+  @override
+  String get marketsAndSupermarkets => 'المتاجر والسوبرماركت';
+
+  @override
+  String get searchMarketOrSupermarket => 'ابحث عن متجر أو سوبرماركت...';
+
+  @override
+  String get availableNow => 'متاح الآن';
+
+  @override
+  String get errorOccurred => 'حدث خطأ';
+
+  @override
+  String get noMarketsAvailable => 'لا توجد متاجر متاحة';
+
+  @override
+  String get noMarketsMatchingSearch =>
+      'لم نتمكن من العثور على متاجر مطابقة لبحثك.';
+
+  @override
+  String get marketUnavailable => 'المتجر غير متاح';
+
+  @override
+  String get marketUnavailableMsg =>
+      'عذراً، هذا المتجر لم يعد متاحاً حالياً أو قد تم إزالته.';
+
+  @override
+  String get notFound => 'غير موجود';
+
+  @override
+  String get backToMarkets => 'العودة للمتاجر';
+
+  @override
+  String get signInRequired => 'تسجيل الدخول مطلوب';
+
+  @override
+  String get signInRequiredMsg =>
+      'يرجى تسجيل الدخول لإضافة المفضلة واستخدام كامل الخدمات.';
+
+  @override
+  String get signIn => 'تسجيل الدخول';
+
+  @override
+  String get pickupAvailable => 'استلام من الفرع';
+
+  @override
+  String get free => 'مجاني';
+
+  @override
+  String get noItemsFound => 'لا توجد بيانات';
+
+  @override
+  String get noProductsOrSections =>
+      'لم نتمكن من العثور على أي منتجات أو أقسام هنا.';
+
+  @override
+  String get tryAgain => 'إعادة المحاولة';
+
+  @override
+  String get majorStores => 'المتاجر الكبرى';
+
+  @override
+  String get allPlaces => 'كل الاماكن';
+
+  @override
+  String get mostRequestedProducts => 'المنتجات الاكثر طلباً';
+
+  @override
+  String get searchForWhatYouLove => 'ابحث عن ما تحب';
+
+  @override
+  String get start => 'بدء';
+
+  @override
+  String get cartConflictMessageCustom => 'طلب جديد سيمسح سلتك الحالية.';
+
+  @override
+  String get startNewCartTitle => 'بدء سلة جديدة؟';
+
+  @override
+  String get searchResults => 'نتائج البحث';
+
+  @override
+  String get sections => 'الأقسام';
+
+  @override
+  String get fieldRequired => 'هذا الحقل مطلوب';
+
+  @override
+  String get minutes => 'دقيقة';
 }

@@ -1,13 +1,42 @@
 import re
 
-with open('lib/features/main/presentation/pages/main_layout.dart', 'r') as f:
+filepath = 'lib/features/main/presentation/pages/main_layout.dart'
+with open(filepath, 'r', encoding='utf-8') as f:
     content = f.read()
 
-# Make the key public or add a static key
-if 'static final GlobalKey' not in content:
-    content = content.replace('class MainLayout extends StatefulWidget {', 'class MainLayout extends StatefulWidget {\n  static final GlobalKey<MainLayoutState> globalKey = GlobalKey();\n')
-    content = content.replace('State<MainLayout> createState() => _MainLayoutState();', 'State<MainLayout> createState() => MainLayoutState();')
-    content = content.replace('class _MainLayoutState extends State<MainLayout> {', 'class MainLayoutState extends State<MainLayout> {\n  void changeIndex(int index) {\n    if (mounted) setState(() => _selectedIndex = index);\n  }\n')
+# Add imports if missing
+imports = [
+    "import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';",
+    "import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';",
+    "import 'package:food_user_app/core/localization/app_locale_scope.dart';"
+]
+for imp in imports:
+    if imp not in content:
+        content = content.replace("import 'package:food_user_app/l10n/app_localizations.dart';", f"import 'package:food_user_app/l10n/app_localizations.dart';\n{imp}")
 
-with open('lib/features/main/presentation/pages/main_layout.dart', 'w') as f:
+# Insert didChangeDependencies
+insertion = """
+  Locale? _previousLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocaleScope.of(context).locale;
+    if (_previousLocale != null && _previousLocale != currentLocale) {
+      context.read<BannerCubit>().getActiveBanners();
+      context.read<SectionsCubit>().fetchSections();
+      context.read<SpotlightsCubit>().fetchSpotlights();
+      context.read<CartCubit>().getCart();
+    }
+    _previousLocale = currentLocale;
+  }
+
+"""
+
+if "void didChangeDependencies" not in content:
+    content = content.replace("int _selectedIndex = 0;", f"int _selectedIndex = 0;\n{insertion}")
+
+with open(filepath, 'w', encoding='utf-8') as f:
     f.write(content)
+
+print("Patched main_layout.dart")

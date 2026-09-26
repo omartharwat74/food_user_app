@@ -1,68 +1,38 @@
-with open('lib/features/restaurant/presentation/pages/restaurant_rate_screen.dart', 'r') as f:
-    content = f.read()
+import re
 
-# 1. getIt -> sl
-content = content.replace("getIt<RestaurantDetailCubit>()", "sl<RestaurantDetailCubit>()")
+def add_import_if_missing(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    
+    if "import '../../../../l10n/app_localizations.dart';" not in content:
+        content = content.replace("import 'package:flutter/material.dart';", "import 'package:flutter/material.dart';\nimport '../../../../l10n/app_localizations.dart';")
+        
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# 2. Fix BlocBuilder with Freezed
-freezed_builder = """      body: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
-        builder: (context, state) {
-          return state.maybeWhen(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (message) => Center(child: Text(message)),
-            loaded: (restaurant, _, __, ___) {
-              return SafeArea(
-                bottom: false,
-                child: CustomScrollView(
-"""
-content = content.replace("""      body: BlocBuilder<RestaurantDetailCubit, RestaurantDetailState>(
-        builder: (context, state) {
-          if (state is RestaurantDetailLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is RestaurantDetailError) {
-            return Center(child: Text(state.message));
-          }
-          if (state is RestaurantDetailLoaded) {
-            final restaurant = state.restaurant;
-            return SafeArea(
-              bottom: false,
-              child: CustomScrollView(""", freezed_builder)
+add_import_if_missing('lib/features/market/presentation/widgets/market_not_found_widget.dart')
+add_import_if_missing('lib/features/market/presentation/widgets/product_card.dart')
 
-# Replace the closing logic
-content = content.replace("""                ],
-              ),
-            ),
-          ],
-        ),
-      );
-          }
-          return const SizedBox.shrink();
-        },""", """                ],
-              ),
-            ),
-          ],
-        ),
-      );
-            },
-            orElse: () => const SizedBox.shrink(),
-          );
-        },""")
+# Fix invalid constants
+def remove_const(filepath, const_str, target_str):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    content = content.replace(const_str, target_str)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# 3. isArabic undefined in _RestaurantFacts / _FactRow / _PaymentRow.
-# In _FactRow:
-# It already has `final isArabic = Directionality.of(context) == TextDirection.rtl;`
-# But where is it undefined? Let's fix lines 450, 454, 457.
-# It seems my string replacements inserted `isArabic` inside `_RestaurantFacts` or somewhere where it's not defined!
-content = content.replace("isArabic ? '${restaurant.deliveryFee.toInt()} رس' : '${restaurant.deliveryFee.toInt()} SAR'", "Localizations.localeOf(context).languageCode == 'ar' ? '${restaurant.deliveryFee.toFormattedPrice()} رس' : '${restaurant.deliveryFee.toFormattedPrice()} SAR'")
-content = content.replace("isArabic ? '0 رس' : '0 SAR'", "Localizations.localeOf(context).languageCode == 'ar' ? '0 رس' : '0 SAR'")
-content = content.replace("isArabic ? '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} دقيقة' : '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min'", "Localizations.localeOf(context).languageCode == 'ar' ? '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} دقيقة' : '${restaurant.deliveryTimeMin} - ${restaurant.deliveryTimeMax} min'")
-# Note: In earlier script, I replaced `restaurant.deliveryFee.toInt()` but the original was `.toFormattedPrice()`. I'll just use `toFormattedPrice()` here directly.
+# store_details_screen.dart line 39: invalid_constant
+# It might be `const Text(AppLocalizations.of(context)!...)`
+def fix_invalid_consts(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+        
+    content = re.sub(r"const\s+Text\(\s*AppLocalizations", r"Text(AppLocalizations", content)
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.write(content)
 
-# 4. _Stars selectedCount type is int? but rating is double?
-# "The argument type 'double' can't be assigned to the parameter type 'int?'."
-# `_Stars(size: 12, count: 5, selectedCount: review.rating)` -> review.rating is double!
-content = content.replace("selectedCount: review.rating", "selectedCount: review.rating.toInt()")
+fix_invalid_consts('lib/features/product/presentation/pages/product_details_screen.dart')
+fix_invalid_consts('lib/features/store/presentation/pages/store_details_screen.dart')
 
-with open('lib/features/restaurant/presentation/pages/restaurant_rate_screen.dart', 'w') as f:
-    f.write(content)
+print("Fixed errors.")

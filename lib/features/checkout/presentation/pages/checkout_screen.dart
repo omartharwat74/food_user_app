@@ -438,8 +438,8 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'ملخص الطلب :',
+                          Text(
+                            AppLocalizations.of(context)!.orderSummary,
                             style: TextStyle(
                               color: Color(0xFF1B1B1B),
                               fontSize: 16,
@@ -450,23 +450,31 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                           const SizedBox(height: 12),
                           _buildSummaryRow(
                             context,
-                            'قيمة الطلب',
-                            '${subtotal.toFormattedPrice()} ج.م',
+                            AppLocalizations.of(context)!.orderValue,
+                            AppLocalizations.of(
+                              context,
+                            )!.priceWithCurrency(subtotal.toFormattedPrice()),
                           ),
                           _buildSummaryRow(
                             context,
-                            'التوصيل',
-                            '${deliveryFee.toFormattedPrice()} ج.م',
+                            AppLocalizations.of(context)!.delivery,
+                            AppLocalizations.of(context)!.priceWithCurrency(
+                              deliveryFee.toFormattedPrice(),
+                            ),
                           ),
                           _buildSummaryRow(
                             context,
-                            'الضريبة',
-                            '${tax.toFormattedPrice()} ج.م',
+                            AppLocalizations.of(context)!.tax,
+                            AppLocalizations.of(
+                              context,
+                            )!.priceWithCurrency(tax.toFormattedPrice()),
                           ),
                           _buildSummaryRow(
                             context,
-                            'الخصم',
-                            '${discount.toFormattedPrice()} ج.م',
+                            AppLocalizations.of(context)!.discount,
+                            AppLocalizations.of(
+                              context,
+                            )!.priceWithCurrency(discount.toFormattedPrice()),
                           ),
                           const Divider(
                             color: Color(0xFFE5E5E5),
@@ -489,7 +497,11 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'الاجمالي : ${total.toFormattedPrice()} ج.م',
+                        AppLocalizations.of(context)!.total +
+                            ' ' +
+                            AppLocalizations.of(
+                              context,
+                            )!.priceWithCurrency(total.toFormattedPrice()),
                         style: const TextStyle(
                           color: Color(0xFF1B1B1B),
                           fontSize: 16,

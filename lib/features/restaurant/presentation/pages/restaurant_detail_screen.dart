@@ -742,7 +742,9 @@ class _RestaurantInfoCard extends StatelessWidget {
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantDeliveryScooterIcon,
                           label: isArabic
-                              ? '${restaurant.deliveryFee} ج.م'
+                              ? AppLocalizations.of(context)!.priceWithCurrency(
+                                  restaurant.deliveryFee.toString(),
+                                )
                               : 'EGP ${restaurant.deliveryFee}',
                           iconOnRight: true,
                         ),
@@ -781,7 +783,9 @@ class _RestaurantInfoCard extends StatelessWidget {
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantDeliveryScooterIcon,
                           label: isArabic
-                              ? '${restaurant.deliveryFee} ج.م'
+                              ? AppLocalizations.of(context)!.priceWithCurrency(
+                                  restaurant.deliveryFee.toString(),
+                                )
                               : 'EGP ${restaurant.deliveryFee}',
                           iconOnRight: false,
                         ),

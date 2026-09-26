@@ -69,8 +69,12 @@ class CartCubit extends Cubit<CartState> {
 
     result.fold(
       (failure) {
-        if (failure.message.contains('CART_STORE_CONFLICT') ||
-            failure.message.contains('السلة تحتوي منتجات من متجر آخر')) {
+        final msg = failure.message.toLowerCase();
+        if (msg.contains('cart_store_conflict') ||
+            msg.contains('السلة تحتوي منتجات من متجر آخر') ||
+            msg.contains('another store') ||
+            msg.contains('different store') ||
+            msg.contains('من متجر آخر')) {
           emit(
             CartState.conflict(
               cart: currentCart,

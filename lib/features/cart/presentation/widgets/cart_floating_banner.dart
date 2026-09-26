@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
@@ -69,7 +70,7 @@ class CartFloatingBanner extends StatelessWidget {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'اطلع على السلة',
+                        AppLocalizations.of(context)!.viewCart,
                         style: AppTextStyles.body(context).copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w500,

@@ -35,8 +35,10 @@ class StoreDetailsScreen extends StatelessWidget {
             state.maybeWhen(
               loaded: (cart, promo) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم إضافة المنتج للسلة بنجاح'),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.productAddedSuccessfully,
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -116,10 +118,16 @@ class StoreDetailsScreen extends StatelessWidget {
                       const SliverToBoxAdapter(child: SizedBox(height: 24)),
                       SliverToBoxAdapter(child: _PromoBanners(store: store)),
                       const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                      _buildSectionTitle(context, 'تسوّق حسب التصنيفات'),
+                      _buildSectionTitle(
+                        context,
+                        AppLocalizations.of(context)!.shopByCategories,
+                      ),
                       _buildCategoryGrid(context, store.id, categories),
                       const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                      _buildSectionTitle(context, 'المنتجات الاكثر طلباً'),
+                      _buildSectionTitle(
+                        context,
+                        AppLocalizations.of(context)!.mostRequestedProducts,
+                      ),
                       _buildFeaturedProducts(context, featuredProducts),
                       const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
                     ],
@@ -253,7 +261,7 @@ class StoreDetailsScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         Text(
-                          'ابحث عن ما تحب',
+                          AppLocalizations.of(context)!.searchForWhatYouLove,
                           style: AppTextStyles.body(context).copyWith(
                             color: AppColors.hint(context),
                             fontSize: 12,

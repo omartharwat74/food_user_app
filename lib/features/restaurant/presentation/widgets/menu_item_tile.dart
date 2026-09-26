@@ -40,8 +40,18 @@ class MenuItemTile extends StatelessWidget {
               child: Stack(
                 children: [
                   item.imageUrl.isNotEmpty
-                      ? Image.network(item.imageUrl, width: 80, height: 80, fit: BoxFit.cover)
-                      : Image.asset(AppAssets.restaurantMenuBurgerFries1, width: 80, height: 80, fit: BoxFit.cover),
+                      ? Image.network(
+                          item.imageUrl,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.asset(
+                          AppAssets.restaurantMenuBurgerFries1,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
                   _buildDiscountBadge(context, item, locale),
                 ],
               ),
@@ -93,7 +103,9 @@ class MenuItemTile extends StatelessWidget {
                               fontSize: 10,
                               height: 1.3,
                               decoration: TextDecoration.lineThrough,
-                              color: AppColors.paragraph(context).withValues(alpha: 0.6),
+                              color: AppColors.paragraph(
+                                context,
+                              ).withValues(alpha: 0.6),
                             ),
                           ),
                         ),
@@ -144,11 +156,18 @@ class MenuItemTile extends StatelessWidget {
 
     if (item.discountType == 'percentage') {
       badgeText = isArabic
-          ? 'خصم ${item.discountValue.toFormattedPrice()}%'
+          ? (AppLocalizations.of(context)!.discount +
+                ' ' +
+                item.discountValue.toFormattedPrice() +
+                '%')
           : '${item.discountValue.toFormattedPrice()}% OFF';
     } else {
       badgeText = isArabic
-          ? 'خصم ${item.discountValue.toFormattedPrice()} ج.م'
+          ? (AppLocalizations.of(context)!.discount +
+                ' ' +
+                AppLocalizations.of(
+                  context,
+                )!.priceWithCurrency(item.discountValue.toFormattedPrice()))
           : '${item.discountValue.toFormattedPrice()} EGP OFF';
     }
 

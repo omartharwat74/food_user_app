@@ -463,7 +463,7 @@ class _SearchScreenState extends State<SearchScreen> {
       name: restaurant.name,
       subtitle: restaurant.cuisineType,
       time: isArabic
-          ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} دقيقة'
+          ? '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} ${AppLocalizations.of(context)!.minutes}'
           : '${restaurant.deliveryTimeMin}-${restaurant.deliveryTimeMax} min',
       imageAsset: restaurant.coverImageUrl,
       rating: restaurant.rating.toStringAsFixed(1),

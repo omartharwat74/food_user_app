@@ -43,19 +43,15 @@ class MarketCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          isArabic ? 'تسجيل الدخول مطلوب' : 'Sign In Required',
+          AppLocalizations.of(context)!.signInRequired,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: Text(
-          isArabic
-              ? 'يرجى تسجيل الدخول لإضافة المفضلة واستخدام كامل الخدمات.'
-              : 'Please sign in to add markets to your favorites.',
-        ),
+        content: Text(AppLocalizations.of(context)!.signInRequiredMsg),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
             child: Text(
-              isArabic ? 'إلغاء' : 'Cancel',
+              AppLocalizations.of(context)!.cancel,
               style: TextStyle(color: Theme.of(context).hintColor),
             ),
           ),
@@ -71,7 +67,7 @@ class MarketCard extends StatelessWidget {
               ),
             ),
             child: Text(
-              isArabic ? 'تسجيل الدخول' : 'Sign In',
+              AppLocalizations.of(context)!.signIn,
               style: const TextStyle(color: Colors.white),
             ),
           ),
@@ -153,7 +149,7 @@ class MarketCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            isArabic ? 'استلام من الفرع' : 'Pickup Available',
+                            AppLocalizations.of(context)!.pickupAvailable,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 11,
@@ -292,8 +288,8 @@ class MarketCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Text(
                             market.deliveryFee == 0
-                                ? (isArabic ? 'مجاني' : 'Free')
-                                : '${market.deliveryFee.toFormattedPrice()} ${isArabic ? "ج.م" : "EGP"}',
+                                ? (AppLocalizations.of(context)!.free)
+                                : '${market.deliveryFee.toFormattedPrice()} ${AppLocalizations.of(context)!.currencyEgp}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.hintColor,
                             ),

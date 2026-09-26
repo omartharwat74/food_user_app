@@ -65,7 +65,7 @@ class CartSummary extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _SummaryRow(
-            label: 'الضريبة',
+            label: AppLocalizations.of(context)!.tax,
             value: l10n.cartPrice((tax).toFormattedPrice()),
           ),
           const SizedBox(height: 12),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/product.dart';
@@ -35,7 +36,7 @@ class _ProductCardState extends State<ProductCard> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final theme = Theme.of(context);
     final p = widget.product;
-    final currencyText = isArabic ? 'ج.م' : 'EGP';
+    final currencyText = AppLocalizations.of(context)!.currencyEgp;
 
     return Card(
       elevation: 2,

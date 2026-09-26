@@ -3103,6 +3103,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get all;
+
+  /// No description provided for @startNewCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startNewCart;
+
+  /// No description provided for @mealIngredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal ingredients'**
+  String get mealIngredients;
+
+  /// No description provided for @productAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Product added to cart successfully'**
+  String get productAddedSuccessfully;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get orderSummary;
+
+  /// No description provided for @orderValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Value'**
+  String get orderValue;
+
+  /// No description provided for @delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get delivery;
+
+  /// No description provided for @tax.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax'**
+  String get tax;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total :'**
+  String get total;
+
+  /// No description provided for @viewCart.
+  ///
+  /// In en, this message translates to:
+  /// **'View Cart'**
+  String get viewCart;
+
+  /// No description provided for @noExactResultsShowSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No exact results — showing suggestions'**
+  String get noExactResultsShowSuggestions;
+
+  /// No description provided for @marketsAndSupermarkets.
+  ///
+  /// In en, this message translates to:
+  /// **'Markets & Supermarkets'**
+  String get marketsAndSupermarkets;
+
+  /// No description provided for @searchMarketOrSupermarket.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a market or supermarket...'**
+  String get searchMarketOrSupermarket;
+
+  /// No description provided for @availableNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Available Now'**
+  String get availableNow;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Occurred'**
+  String get errorOccurred;
+
+  /// No description provided for @noMarketsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No available markets'**
+  String get noMarketsAvailable;
+
+  /// No description provided for @noMarketsMatchingSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find markets matching your search.'**
+  String get noMarketsMatchingSearch;
+
+  /// No description provided for @marketUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Market Unavailable'**
+  String get marketUnavailable;
+
+  /// No description provided for @marketUnavailableMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Sorry, this market is no longer available or has been removed.'**
+  String get marketUnavailableMsg;
+
+  /// No description provided for @notFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Found'**
+  String get notFound;
+
+  /// No description provided for @backToMarkets.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Markets'**
+  String get backToMarkets;
+
+  /// No description provided for @signInRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In Required'**
+  String get signInRequired;
+
+  /// No description provided for @signInRequiredMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to add favorites and use all services.'**
+  String get signInRequiredMsg;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @pickupAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup Available'**
+  String get pickupAvailable;
+
+  /// No description provided for @free.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
+
+  /// No description provided for @noItemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No Items Found'**
+  String get noItemsFound;
+
+  /// No description provided for @noProductsOrSections.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find any products or sections here.'**
+  String get noProductsOrSections;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @majorStores.
+  ///
+  /// In en, this message translates to:
+  /// **'Major Stores'**
+  String get majorStores;
+
+  /// No description provided for @allPlaces.
+  ///
+  /// In en, this message translates to:
+  /// **'All Places'**
+  String get allPlaces;
+
+  /// No description provided for @mostRequestedProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Most requested products'**
+  String get mostRequestedProducts;
+
+  /// No description provided for @searchForWhatYouLove.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for what you love'**
+  String get searchForWhatYouLove;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @cartConflictMessageCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'A new order will clear your current cart.'**
+  String get cartConflictMessageCustom;
+
+  /// No description provided for @startNewCartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new cart?'**
+  String get startNewCartTitle;
+
+  /// No description provided for @searchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Results'**
+  String get searchResults;
+
+  /// No description provided for @sections.
+  ///
+  /// In en, this message translates to:
+  /// **'Sections'**
+  String get sections;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get fieldRequired;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get minutes;
 }
 
 class _AppLocalizationsDelegate

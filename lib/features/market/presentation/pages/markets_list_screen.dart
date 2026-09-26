@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -58,9 +59,7 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            isArabic ? 'المتاجر والسوبرماركت' : 'Markets & Supermarkets',
-          ),
+          title: Text(AppLocalizations.of(context)!.marketsAndSupermarkets),
           centerTitle: true,
         ),
         body: Column(
@@ -75,9 +74,9 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                     controller: _searchController,
                     onChanged: (val) => _marketsListCubit.updateSearch(val),
                     decoration: InputDecoration(
-                      hintText: isArabic
-                          ? 'ابحث عن متجر أو سوبرماركت...'
-                          : 'Search for a market...',
+                      hintText: AppLocalizations.of(
+                        context,
+                      )!.searchMarketOrSupermarket,
                       prefixIcon: const Icon(Icons.search),
                       suffixIcon: _searchController.text.isNotEmpty
                           ? IconButton(
@@ -124,9 +123,7 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                           children: [
                             FilterChip(
                               label: Text(
-                                isArabic
-                                    ? 'استلام من الفرع'
-                                    : 'Pickup Available',
+                                AppLocalizations.of(context)!.pickupAvailable,
                               ),
                               selected: pickupActive,
                               onSelected: (_) =>
@@ -148,7 +145,7 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                             const SizedBox(width: 8),
                             FilterChip(
                               label: Text(
-                                isArabic ? 'متاح الآن' : 'Available Now',
+                                AppLocalizations.of(context)!.availableNow,
                               ),
                               selected: availableActive,
                               onSelected: (_) =>
@@ -190,7 +187,7 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
 
                   if (state is MarketsListError) {
                     return MarketEmptyState(
-                      title: isArabic ? 'حدث خطأ' : 'Error Occurred',
+                      title: AppLocalizations.of(context)!.errorOccurred,
                       message: state.message,
                       icon: Icons.error_outline,
                       onRetry: () => _marketsListCubit.fetchMarkets(),
@@ -200,12 +197,10 @@ class _MarketsListScreenState extends State<MarketsListScreen> {
                   if (state is MarketsListLoaded) {
                     if (state.markets.isEmpty) {
                       return MarketEmptyState(
-                        title: isArabic
-                            ? 'لا توجد متاجر متاحة'
-                            : 'No Markets Available',
-                        message: isArabic
-                            ? 'لم نتمكن من العثور على متاجر مطابقة لبحثك.'
-                            : 'No markets matched your search or filters.',
+                        title: AppLocalizations.of(context)!.noMarketsAvailable,
+                        message: AppLocalizations.of(
+                          context,
+                        )!.noMarketsMatchingSearch,
                         onRetry: () => _marketsListCubit.fetchMarkets(),
                       );
                     }

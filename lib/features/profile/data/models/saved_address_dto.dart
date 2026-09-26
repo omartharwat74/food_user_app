@@ -55,7 +55,9 @@ class SavedAddressDto {
     // For English, fall back to a localized type label so it doesn't show raw Arabic.
     final rawLabel = _nonEmpty(label);
     final titleAr = rawLabel ?? _addressTypeLabelAr(addressType);
-    final titleEn = _addressTypeLabelEn(addressType); // always English regardless of label
+    final titleEn = _addressTypeLabelEn(
+      addressType,
+    ); // always English regardless of label
     final details = _detailsText();
     final location = _locationText();
 
@@ -103,18 +105,18 @@ class SavedAddressDto {
   static String _addressTypeLabelAr(String? value) {
     return switch (value?.toLowerCase()) {
       'home' || 'primary' => 'المنزل',
-      'work'              => 'العمل',
-      'apartment'         => 'الشقة',
-      _                   => 'العنوان',
+      'work' => 'العمل',
+      'apartment' => 'الشقة',
+      _ => 'العنوان',
     };
   }
 
   static String _addressTypeLabelEn(String? value) {
     return switch (value?.toLowerCase()) {
       'home' || 'primary' => 'Home',
-      'work'              => 'Work',
-      'apartment'         => 'Apartment',
-      _                   => 'Address',
+      'work' => 'Work',
+      'apartment' => 'Apartment',
+      _ => 'Address',
     };
   }
 }

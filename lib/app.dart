@@ -14,6 +14,7 @@ import 'package:food_user_app/features/profile/presentation/controllers/saved_ad
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/search/presentation/cubit/search_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
@@ -41,6 +42,13 @@ class App extends StatelessWidget {
           create: (_) => sl<ProfileBloc>()
             ..add(const GetProfileEvent())
             ..add(const GetSettingsEvent()),
+        ),
+
+        BlocProvider<SectionsCubit>(
+          create: (_) => sl<SectionsCubit>()..fetchSections(),
+        ),
+        BlocProvider<SpotlightsCubit>(
+          create: (_) => sl<SpotlightsCubit>()..fetchSpotlights(),
         ),
         BlocProvider<BannerCubit>(
           create: (_) => sl<BannerCubit>()..getActiveBanners(),

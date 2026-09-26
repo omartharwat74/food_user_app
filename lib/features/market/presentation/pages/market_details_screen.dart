@@ -40,7 +40,8 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _detailsCubit = sl<MarketDetailsCubit>()..loadMarketDetails(widget.marketId);
+    _detailsCubit = sl<MarketDetailsCubit>()
+      ..loadMarketDetails(widget.marketId);
     _hyperCubit = sl<HypermarketCubit>()..fetchCategories(widget.marketId);
   }
 
@@ -88,14 +89,18 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
       ],
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
-        bottomNavigationBar: CartFloatingBanner(currentStoreId: widget.marketId),
+        bottomNavigationBar: CartFloatingBanner(
+          currentStoreId: widget.marketId,
+        ),
         body: BlocListener<CartCubit, CartState>(
           listener: (context, state) {
             state.maybeWhen(
               loaded: (cart, promo) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('تم إضافة المنتج للسلة بنجاح'),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.productAddedSuccessfully,
+                    ),
                     backgroundColor: Colors.green,
                   ),
                 );
@@ -105,67 +110,92 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
               },
               error: (cart, promo, message) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(message),
-                    backgroundColor: Colors.red,
-                  ),
+                  SnackBar(content: Text(message), backgroundColor: Colors.red),
                 );
               },
 
-              conflict: (cart, newRestaurantId, menuItemId, name, price, quantity, modifiers, notes) {
-                showDialog(
-                  context: context,
-                  builder: (ctx) => AlertDialog(
-                    title: Text(AppLocalizations.of(context)!.cartConflictTitle),
-                    content: Text(AppLocalizations.of(context)!.cartConflictMessage),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        child: Text(AppLocalizations.of(context)!.cancel),
+              conflict:
+                  (
+                    cart,
+                    newRestaurantId,
+                    menuItemId,
+                    name,
+                    price,
+                    quantity,
+                    modifiers,
+                    notes,
+                  ) {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Text(
+                          AppLocalizations.of(context)!.cartConflictTitle,
+                        ),
+                        content: Text(
+                          AppLocalizations.of(context)!.cartConflictMessage,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(AppLocalizations.of(context)!.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(ctx);
+                              context.read<CartCubit>().clearAndAddToCart(
+                                restaurantId: newRestaurantId,
+                                menuItemId: menuItemId,
+                                name: name,
+                                price: price,
+                                quantity: quantity,
+                                selectedModifiers: modifiers,
+                                notes: notes,
+                              );
+                            },
+                            child: Text(
+                              AppLocalizations.of(context)!.continueButton,
+                            ),
+                          ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          context.read<CartCubit>().clearAndAddToCart(
-                            restaurantId: newRestaurantId,
-                            menuItemId: menuItemId,
-                            name: name,
-                            price: price,
-                            quantity: quantity,
-                            selectedModifiers: modifiers,
-                            notes: notes,
-                          );
-                        },
-                        child: Text(AppLocalizations.of(context)!.continueButton),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
               orElse: () {},
             );
           },
           child: BlocBuilder<MarketDetailsCubit, MarketDetailsState>(
             builder: (context, state) {
-              if (state is MarketDetailsLoading || state is MarketDetailsInitial) {
+              if (state is MarketDetailsLoading ||
+                  state is MarketDetailsInitial) {
                 return const Center(child: CircularProgressIndicator());
               }
               if (state is MarketDetailsError) {
-                return Center(child: Text(state.message, style: TextStyle(color: AppColors.error)));
+                return Center(
+                  child: Text(
+                    state.message,
+                    style: TextStyle(color: AppColors.error),
+                  ),
+                );
               }
               if (state is MarketDetailsLoaded) {
                 final store = state.market;
                 return CustomScrollView(
                   slivers: [
-                    SliverToBoxAdapter(child: _buildCustomHeader(context, store)),
+                    SliverToBoxAdapter(
+                      child: _buildCustomHeader(context, store),
+                    ),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
                     SliverToBoxAdapter(child: _PromoBanners(store: store)),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    
-                    _buildSectionTitle(context, AppLocalizations.of(context)!.shopByCategories),
+
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.shopByCategories,
+                    ),
                     BlocBuilder<HypermarketCubit, HypermarketState>(
                       builder: (context, hyperState) {
-                        if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
+                        if (hyperState is HypermarketLoading ||
+                            hyperState is HypermarketInitial) {
                           return const SliverToBoxAdapter(
                             child: SizedBox(
                               height: 276,
@@ -174,18 +204,26 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           );
                         }
                         if (hyperState is HypermarketLoaded) {
-                          final cats = hyperState.categories.map(_fromHyperCategory).toList();
+                          final cats = hyperState.categories
+                              .map(_fromHyperCategory)
+                              .toList();
                           return _buildCategoryGrid(context, store.id, cats);
                         }
-                        return const SliverToBoxAdapter(child: SizedBox.shrink());
+                        return const SliverToBoxAdapter(
+                          child: SizedBox.shrink(),
+                        );
                       },
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    
-                    _buildSectionTitle(context, AppLocalizations.of(context)!.popularProducts),
+
+                    _buildSectionTitle(
+                      context,
+                      AppLocalizations.of(context)!.popularProducts,
+                    ),
                     BlocBuilder<HypermarketCubit, HypermarketState>(
                       builder: (context, hyperState) {
-                        if (hyperState is HypermarketLoading || hyperState is HypermarketInitial) {
+                        if (hyperState is HypermarketLoading ||
+                            hyperState is HypermarketInitial) {
                           return const SliverToBoxAdapter(
                             child: SizedBox(
                               height: 230,
@@ -199,10 +237,14 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           for (var section in hyperState.sections) {
                             allProducts.addAll(section.products);
                           }
-                          final featuredItems = allProducts.map(_fromHyperProduct).toList();
+                          final featuredItems = allProducts
+                              .map(_fromHyperProduct)
+                              .toList();
                           return _buildFeaturedProducts(context, featuredItems);
                         }
-                        return const SliverToBoxAdapter(child: SizedBox.shrink());
+                        return const SliverToBoxAdapter(
+                          child: SizedBox.shrink(),
+                        );
                       },
                     ),
                     const SliverPadding(padding: EdgeInsets.only(bottom: 32)),
@@ -222,14 +264,12 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
     final contentHeight = 16.0 + 36.0 + 17.0 + 44.0 + 20.0; // 133
 
     return Container(
-      height: topPadding + contentHeight, 
+      height: topPadding + contentHeight,
       decoration: const BoxDecoration(color: AppColors.primary),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.primary),
-          ),
+          const Positioned.fill(child: ColoredBox(color: AppColors.primary)),
           const Positioned.fill(
             child: AppRasterImage.asset(
               AppAssets.headerPattern,
@@ -258,7 +298,9 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: AppColors.surfaceCard(context).withValues(alpha: 0.2),
+                                color: AppColors.surfaceCard(
+                                  context,
+                                ).withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
@@ -284,9 +326,12 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                         height: 36,
                         decoration: BoxDecoration(
                           color: AppColors.surfaceCard(context),
-                          borderRadius: BorderRadius.circular(10), 
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Image.network(store.logoImage ?? '', fit: BoxFit.cover),
+                        child: Image.network(
+                          store.logoImage ?? '',
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ],
                   ),
@@ -304,10 +349,17 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: AppColors.border(context)),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: AppColors.hint(context), size: 20),
+                        Icon(
+                          Icons.search,
+                          color: AppColors.hint(context),
+                          size: 20,
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -367,8 +419,10 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
     );
   }
 
-
-  Widget _buildFeaturedProducts(BuildContext context, List<MenuItem> featuredProducts) {
+  Widget _buildFeaturedProducts(
+    BuildContext context,
+    List<MenuItem> featuredProducts,
+  ) {
     if (featuredProducts.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
     }
@@ -397,15 +451,20 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
     );
   }
 
-
-
-  Widget _buildCategoryGrid(BuildContext context, String storeId, List<MenuCategory> categories) {
+  Widget _buildCategoryGrid(
+    BuildContext context,
+    String storeId,
+    List<MenuCategory> categories,
+  ) {
     if (categories.isEmpty) {
       return SliverToBoxAdapter(
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: Text(AppLocalizations.of(context)!.noCategoriesAvailable, style: AppTextStyles.body(context)),
+            child: Text(
+              AppLocalizations.of(context)!.noCategoriesAvailable,
+              style: AppTextStyles.body(context),
+            ),
           ),
         ),
       );
@@ -418,10 +477,10 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3, 
-            mainAxisSpacing: 12, 
-            crossAxisSpacing: 12, 
-            childAspectRatio: 1.4, 
+            crossAxisCount: 3,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.4,
           ),
           itemCount: categories.length,
           itemBuilder: (context, index) {
@@ -431,7 +490,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                 context.push(
                   RouteNames.unifiedResults,
                   extra: ResultsConfig(
-                    parentId: storeId, 
+                    parentId: storeId,
                     categoryId: category.id,
                     categoryName: category.name,
                   ),
@@ -443,39 +502,50 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 60, 
-                    height: 60, 
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF7F7F7), 
+                      color: const Color(0xFFF7F7F7),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     alignment: Alignment.center,
-                    child: (category.imageUrl != null && category.imageUrl!.isNotEmpty)
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(category.imageUrl!, width: 40, height: 40, fit: BoxFit.contain)
-                        )
-                      : Image.asset(
-                          CategoryIconHelper.getLocalCategoryIcon(category.name),
-                          width: 40,
-                          height: 40,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(AppAssets.homeCategoryGrocery, fit: BoxFit.contain);
-                          },
-                        ),
+                    child:
+                        (category.imageUrl != null &&
+                            category.imageUrl!.isNotEmpty)
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.network(
+                              category.imageUrl!,
+                              width: 40,
+                              height: 40,
+                              fit: BoxFit.contain,
+                            ),
+                          )
+                        : Image.asset(
+                            CategoryIconHelper.getLocalCategoryIcon(
+                              category.name,
+                            ),
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                AppAssets.homeCategoryGrocery,
+                                fit: BoxFit.contain,
+                              );
+                            },
+                          ),
                   ),
-                  const SizedBox(height: 8), 
+                  const SizedBox(height: 8),
                   Flexible(
                     child: Text(
                       category.name,
                       textAlign: TextAlign.center,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.body(context).copyWith(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: AppTextStyles.body(
+                        context,
+                      ).copyWith(fontSize: 12, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -489,7 +559,8 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
 }
 
 class _PromoBanners extends StatefulWidget {
-  final Market store; // Note: Change 'Market' to your exact entity name if different
+  final Market
+  store; // Note: Change 'Market' to your exact entity name if different
   const _PromoBanners({required this.store});
 
   @override
@@ -502,19 +573,21 @@ class _PromoBannersState extends State<_PromoBanners> {
   @override
   Widget build(BuildContext context) {
     List<String> apiImages = [];
-    
+
     // Fallback: Cover Image -> Logo Image
-    if (widget.store.coverImage != null && widget.store.coverImage!.isNotEmpty) {
+    if (widget.store.coverImage != null &&
+        widget.store.coverImage!.isNotEmpty) {
       apiImages.add(widget.store.coverImage!);
-    } else if (widget.store.logoImage != null && widget.store.logoImage!.isNotEmpty) {
+    } else if (widget.store.logoImage != null &&
+        widget.store.logoImage!.isNotEmpty) {
       apiImages.add(widget.store.logoImage!);
     }
 
     if (apiImages.isEmpty) return const SizedBox.shrink();
 
     // Force swipeability: if only 1 image exists, duplicate it to 3 slides so the user can swipe and see dots.
-    final displayImages = apiImages.length == 1 
-        ? [apiImages[0], apiImages[0], apiImages[0]] 
+    final displayImages = apiImages.length == 1
+        ? [apiImages[0], apiImages[0], apiImages[0]]
         : apiImages;
 
     return Column(
@@ -535,7 +608,8 @@ class _PromoBannersState extends State<_PromoBanners> {
                   displayImages[index],
                   fit: BoxFit.cover,
                   width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.grey),
+                  errorBuilder: (context, error, stackTrace) =>
+                      const ColoredBox(color: Colors.grey),
                 ),
               );
             },
@@ -552,7 +626,9 @@ class _PromoBannersState extends State<_PromoBanners> {
               width: _currentIndex == index ? 24 : 8,
               height: 8,
               decoration: BoxDecoration(
-                color: _currentIndex == index ? AppColors.primary : Colors.grey.shade300,
+                color: _currentIndex == index
+                    ? AppColors.primary
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

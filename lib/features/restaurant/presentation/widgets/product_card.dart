@@ -68,7 +68,7 @@ class ProductCard extends StatelessWidget {
                   image: item.imageUrl.isNotEmpty
                       ? NetworkImage(item.imageUrl)
                       : const AssetImage(AppAssets.productBurgerCombo)
-                          as ImageProvider,
+                            as ImageProvider,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -111,7 +111,9 @@ class ProductCard extends StatelessWidget {
                       top: 8,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 4, vertical: 2),
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
                         decoration: const BoxDecoration(
                           color: Color(0xFF0C9D61),
                           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -137,7 +139,10 @@ class ProductCard extends StatelessWidget {
             // Figma: padding=12, gap=8
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 child: SizedBox(
                   width: double.infinity,
                   child: Column(

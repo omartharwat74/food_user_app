@@ -14,6 +14,10 @@ import 'package:food_user_app/features/home/presentation/pages/home_screen.dart'
 import 'package:food_user_app/features/main/presentation/pages/account_tab_page.dart';
 import 'package:food_user_app/features/order/presentation/pages/order_history_screen.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/localization/app_locale_scope.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
+import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
 
 class MainLayout extends StatefulWidget {
   static final GlobalKey<MainLayoutState> globalKey = GlobalKey();
@@ -30,6 +34,21 @@ class MainLayoutState extends State<MainLayout> {
   }
 
   int _selectedIndex = 0;
+
+  Locale? _previousLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = AppLocaleScope.of(context).locale;
+    if (_previousLocale != null && _previousLocale != currentLocale) {
+      context.read<BannerCubit>().getActiveBanners();
+      context.read<SectionsCubit>().fetchSections();
+      context.read<SpotlightsCubit>().fetchSpotlights();
+      context.read<CartCubit>().loadCart();
+    }
+    _previousLocale = currentLocale;
+  }
 
   @override
   Widget build(BuildContext context) {

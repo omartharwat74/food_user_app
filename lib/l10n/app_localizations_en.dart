@@ -1561,4 +1561,128 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get all => 'All';
+
+  @override
+  String get startNewCart => 'Start';
+
+  @override
+  String get mealIngredients => 'Meal ingredients';
+
+  @override
+  String get productAddedSuccessfully => 'Product added to cart successfully';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get orderValue => 'Order Value';
+
+  @override
+  String get delivery => 'Delivery';
+
+  @override
+  String get tax => 'Tax';
+
+  @override
+  String get total => 'Total :';
+
+  @override
+  String get viewCart => 'View Cart';
+
+  @override
+  String get noExactResultsShowSuggestions =>
+      'No exact results — showing suggestions';
+
+  @override
+  String get marketsAndSupermarkets => 'Markets & Supermarkets';
+
+  @override
+  String get searchMarketOrSupermarket =>
+      'Search for a market or supermarket...';
+
+  @override
+  String get availableNow => 'Available Now';
+
+  @override
+  String get errorOccurred => 'Error Occurred';
+
+  @override
+  String get noMarketsAvailable => 'No available markets';
+
+  @override
+  String get noMarketsMatchingSearch =>
+      'We couldn\'t find markets matching your search.';
+
+  @override
+  String get marketUnavailable => 'Market Unavailable';
+
+  @override
+  String get marketUnavailableMsg =>
+      'Sorry, this market is no longer available or has been removed.';
+
+  @override
+  String get notFound => 'Not Found';
+
+  @override
+  String get backToMarkets => 'Back to Markets';
+
+  @override
+  String get signInRequired => 'Sign In Required';
+
+  @override
+  String get signInRequiredMsg =>
+      'Please sign in to add favorites and use all services.';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String get pickupAvailable => 'Pickup Available';
+
+  @override
+  String get free => 'Free';
+
+  @override
+  String get noItemsFound => 'No Items Found';
+
+  @override
+  String get noProductsOrSections =>
+      'We couldn\'t find any products or sections here.';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get majorStores => 'Major Stores';
+
+  @override
+  String get allPlaces => 'All Places';
+
+  @override
+  String get mostRequestedProducts => 'Most requested products';
+
+  @override
+  String get searchForWhatYouLove => 'Search for what you love';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get cartConflictMessageCustom =>
+      'A new order will clear your current cart.';
+
+  @override
+  String get startNewCartTitle => 'Start a new cart?';
+
+  @override
+  String get searchResults => 'Search Results';
+
+  @override
+  String get sections => 'Sections';
+
+  @override
+  String get fieldRequired => 'This field is required';
+
+  @override
+  String get minutes => 'min';
 }

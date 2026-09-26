@@ -272,7 +272,11 @@ class _CheckoutAddressCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'مبنى : ${address.buildingNumber ?? ''} / شقة : ${address.apartment ?? ''} / الدور : ${address.floor ?? ''}',
+                    AppLocalizations.of(context)!.addressDetailsFormat(
+                      address.buildingNumber ?? '',
+                      address.apartment ?? '',
+                      address.floor ?? '',
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.start,

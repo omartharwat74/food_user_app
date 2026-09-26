@@ -41,6 +41,7 @@ void main() async {
           updateAddressUseCase: di.sl(),
           deleteAddressUseCase: di.sl(),
           setDefaultAddressUseCase: di.sl(),
+          prefs: prefs,
         );
 
         runApp(

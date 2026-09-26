@@ -313,9 +313,9 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     // Set initial address type based on existing
     if (address.addressType != null) {
       final t = address.addressType!.toLowerCase();
-      if (t == 'work')
+      if (t == 'work') {
         _selectedAddressType = 'work';
-      else if (t == 'other')
+      } else if (t == 'other')
         _selectedAddressType = 'other';
       else
         _selectedAddressType = 'primary';
@@ -368,9 +368,9 @@ class _AddressDetailsScreenState extends State<AddressDetailsScreen> {
     final longitude = selectedLongitude ?? 31.2357;
 
     String localizedLabel = l10n.addressTypeHome;
-    if (_selectedAddressType == 'work')
+    if (_selectedAddressType == 'work') {
       localizedLabel = l10n.addressTypeWork;
-    else if (_selectedAddressType == 'other')
+    } else if (_selectedAddressType == 'other')
       localizedLabel = l10n.addressTypeOffice;
 
     final input = SavedAddressInput(

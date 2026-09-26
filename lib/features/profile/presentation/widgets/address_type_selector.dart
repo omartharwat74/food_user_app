@@ -19,9 +19,21 @@ class AddressTypeSelector extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     final types = [
-      {'key': 'primary', 'label': l10n.addressTypeHome, 'icon': AppAssets.addressTypeHome},
-      {'key': 'work', 'label': l10n.addressTypeWork, 'icon': AppAssets.addressTypeWork},
-      {'key': 'other', 'label': l10n.addressTypeOffice, 'icon': AppAssets.addressTypeOffice},
+      {
+        'key': 'primary',
+        'label': l10n.addressTypeHome,
+        'icon': AppAssets.addressTypeHome,
+      },
+      {
+        'key': 'work',
+        'label': l10n.addressTypeWork,
+        'icon': AppAssets.addressTypeWork,
+      },
+      {
+        'key': 'other',
+        'label': l10n.addressTypeOffice,
+        'icon': AppAssets.addressTypeOffice,
+      },
     ];
 
     // Determine the active key. Default to 'primary' (Home) if null or unmapped.
@@ -40,10 +52,9 @@ class AddressTypeSelector extends StatelessWidget {
       children: [
         Text(
           l10n.deliveryToTitle,
-          style: AppTextStyles.heading4(context).copyWith(
-            fontSize: 16,
-            color: AppColors.onSurface(context),
-          ),
+          style: AppTextStyles.heading4(
+            context,
+          ).copyWith(fontSize: 16, color: AppColors.onSurface(context)),
         ),
         const SizedBox(height: 12),
         Row(
@@ -59,13 +70,18 @@ class AddressTypeSelector extends StatelessWidget {
                 },
                 borderRadius: BorderRadius.circular(10),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? AppColors.primary.withValues(alpha: 0.1)
                         : AppColors.surfaceCard(context),
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.border(context),
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.border(context),
                       width: isSelected ? 1.0 : 0.5,
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -77,15 +93,21 @@ class AddressTypeSelector extends StatelessWidget {
                         type['icon'] as String,
                         width: 18,
                         height: 18,
-                        color: isSelected ? AppColors.primary : AppColors.paragraph(context),
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.paragraph(context),
                       ),
                       const SizedBox(width: 6),
                       Text(
                         type['label'] as String,
                         style: AppTextStyles.body(context).copyWith(
                           fontSize: 13,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                          color: isSelected ? AppColors.primary : AppColors.paragraph(context),
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                          color: isSelected
+                              ? AppColors.primary
+                              : AppColors.paragraph(context),
                         ),
                       ),
                     ],

@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   bool _navigated = false;
   bool _minDelayElapsed = false;
+  bool _showErrorRetry = false;
   AuthState? _pendingAuthState;
 
   @override
@@ -43,12 +44,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _maybeNavigate() async {
     if (_navigated || !_minDelayElapsed) return;
+
+    // Prevent multiple parallel navigations
     final state = _pendingAuthState;
     if (state is Authenticated) {
-      _navigated = true;
       final addressController = SavedAddressesScope.of(context);
       await addressController.loadAddressesIfNeeded();
       if (!mounted) return;
+
+      if (addressController.hasError) {
+        if (addressController.hasCachedAddresses) {
+          _navigated = true;
+          context.go(RouteNames.home);
+        } else {
+          setState(() => _showErrorRetry = true);
+        }
+        return;
+      }
+
+      _navigated = true;
       if (addressController.addresses.isEmpty) {
         context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
       } else {
@@ -95,6 +109,37 @@ class _SplashScreenState extends State<SplashScreen> {
                   bottom: 0,
                   child: const _SplashStripes(),
                 ),
+                if (_showErrorRetry)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: height * 0.43 + 120,
+                    child: Center(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                        ),
+                        onPressed: () {
+                          setState(() => _showErrorRetry = false);
+                          SavedAddressesScope.of(
+                            context,
+                          ).loadAddresses().then((_) => _maybeNavigate());
+                        },
+                        child: const Text(
+                          'إعادة المحاولة',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             );
           },

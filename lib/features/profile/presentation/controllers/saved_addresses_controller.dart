@@ -11,6 +11,8 @@ import 'package:food_user_app/features/checkout/domain/usecases/update_address_u
 import 'package:food_user_app/features/checkout/domain/usecases/delete_address_usecase.dart';
 import 'package:food_user_app/features/checkout/domain/usecases/set_default_address_usecase.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SavedAddressesController extends ChangeNotifier {
   SavedAddressesController({
     required this.getSavedAddressesUseCase,
@@ -18,6 +20,7 @@ class SavedAddressesController extends ChangeNotifier {
     required this.updateAddressUseCase,
     required this.deleteAddressUseCase,
     required this.setDefaultAddressUseCase,
+    required this.prefs,
   });
 
   final GetSavedAddressesUseCase getSavedAddressesUseCase;
@@ -25,6 +28,7 @@ class SavedAddressesController extends ChangeNotifier {
   final UpdateAddressUseCase updateAddressUseCase;
   final DeleteAddressUseCase deleteAddressUseCase;
   final SetDefaultAddressUseCase setDefaultAddressUseCase;
+  final SharedPreferences prefs;
 
   List<SavedAddress> _addresses = const [];
   String? _selectedAddressId;
@@ -66,6 +70,8 @@ class SavedAddressesController extends ChangeNotifier {
     await loadAddresses();
   }
 
+  bool get hasCachedAddresses => prefs.getBool('has_saved_address') ?? false;
+
   Future<void> loadAddresses() async {
     _isLoading = true;
     _lastError = null;
@@ -75,12 +81,12 @@ class SavedAddressesController extends ChangeNotifier {
     result.fold(
       (failure) {
         _lastError = failure;
-        _addresses = const [];
-        _selectedAddressId = null;
         _hasLoaded = true;
       },
       (addressList) {
-        _setAddresses(addressList.map(_mapAddressToSavedAddress).toList());
+        final parsed = addressList.map(_mapAddressToSavedAddress).toList();
+        _setAddresses(parsed);
+        prefs.setBool('has_saved_address', parsed.isNotEmpty);
         _hasLoaded = true;
       },
     );

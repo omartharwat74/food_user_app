@@ -18,6 +18,7 @@ class SupportChatMsg {
     required this.body,
     required this.senderType,
     required this.imageUrl,
+    required this.attachments,
     required this.createdAt,
   });
 
@@ -25,6 +26,7 @@ class SupportChatMsg {
   final String? body;
   final String senderType; // 'user' | 'admin'
   final String? imageUrl;
+  final List<String> attachments;
   final DateTime createdAt;
 
   bool get isMine => senderType == 'user';

@@ -188,6 +188,7 @@ class AppAssets {
   static const supportAttachmentIcon =
       'assets/images/icons/support/attachment.svg';
   static const supportSendIcon = 'assets/images/icons/support/send.svg';
+  static const imageAdd = 'assets/images/image-add-01.png';
 
   static const onboardingCollage =
       'assets/images/onboarding_collage/onboarding_collage.png';

@@ -83,7 +83,7 @@ class SupportCubit extends Cubit<SupportState> {
       final formData = FormData.fromMap({
         if (text != null && text.trim().isNotEmpty) 'body': text.trim(),
         if (image != null)
-          'image': await MultipartFile.fromFile(
+          'attachment': await MultipartFile.fromFile(
             image.path,
             filename: 'image.jpg',
           ),

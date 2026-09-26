@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
@@ -11,6 +14,7 @@ import 'package:food_user_app/core/di/injection_container.dart' as di;
 import 'package:food_user_app/features/support/domain/entities/support_conversation.dart';
 import 'package:food_user_app/features/support/presentation/cubit/support_cubit.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/core/widgets/app_media.dart';
 
 /// A thin view-model bridging [SupportChatMsg] to the existing UI widgets.
 class SupportChatMessage {
@@ -18,18 +22,21 @@ class SupportChatMessage {
     required this.id,
     required this.text,
     required this.isMine,
+    required this.attachments,
     required this.createdAt,
   });
 
   final String id;
   final String text;
   final bool isMine;
+  final List<String> attachments;
   final DateTime createdAt;
 
   factory SupportChatMessage.fromMsg(SupportChatMsg msg) => SupportChatMessage(
     id: msg.id.toString(),
     text: msg.body ?? '',
     isMine: msg.isMine,
+    attachments: msg.attachments,
     createdAt: msg.createdAt,
   );
 }
@@ -63,11 +70,11 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
 
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
+  File? _selectedImage;
 
   @override
   void initState() {
     super.initState();
-    // Kick off the initial load after the first frame so the Cubit is ready.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<SupportCubit>().loadInitialSupport();
     });
@@ -75,18 +82,30 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
 
   @override
   void dispose() {
-    // Stop Firebase listener to prevent memory leaks.
     context.read<SupportCubit>().cleanupListeners();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+      });
+    }
+  }
+
   void _sendText() {
     final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    context.read<SupportCubit>().sendMessage(text: text);
+    if (text.isEmpty && _selectedImage == null) return;
+    context.read<SupportCubit>().sendMessage(text: text, image: _selectedImage);
     _controller.clear();
+    setState(() {
+      _selectedImage = null;
+    });
   }
 
   void _scrollToBottom() {
@@ -205,6 +224,13 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
                 _SupportComposer(
                   controller: _controller,
                   onSend: state.isSending ? () {} : _sendText,
+                  selectedImage: _selectedImage,
+                  onPickImage: _pickImage,
+                  onRemoveImage: () {
+                    setState(() {
+                      _selectedImage = null;
+                    });
+                  },
                 ),
               ],
             );
@@ -390,7 +416,7 @@ class _ChatMessageBubble extends StatelessWidget {
                 : AppColors.error.withValues(alpha: 0.10),
             borderRadius: _bubbleRadius(isMine),
           ),
-          child: _MessageContent(text: text),
+          child: _MessageContent(message: message, text: text),
         ),
         if (isMine) ...[
           const SizedBox(height: 4),
@@ -427,12 +453,38 @@ class _ChatMessageBubble extends StatelessWidget {
 }
 
 class _MessageContent extends StatelessWidget {
-  const _MessageContent({required this.text});
+  const _MessageContent({required this.message, required this.text});
 
+  final SupportChatMessage message;
   final String text;
 
   @override
   Widget build(BuildContext context) {
+    final validImageUrl = message.attachments
+        .where((u) => u.trim().isNotEmpty)
+        .firstOrNull;
+
+    if (validImageUrl != null) {
+      return ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 220),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: AppNetworkImage(
+                validImageUrl,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
+              ),
+            ),
+            if (text.trim().isNotEmpty) _TextMessageContent(text: text),
+          ],
+        ),
+      );
+    }
     return _TextMessageContent(text: text);
   }
 }
@@ -486,10 +538,19 @@ class _MessageTime extends StatelessWidget {
 }
 
 class _SupportComposer extends StatelessWidget {
-  const _SupportComposer({required this.controller, required this.onSend});
+  const _SupportComposer({
+    required this.controller,
+    required this.onSend,
+    required this.selectedImage,
+    required this.onPickImage,
+    required this.onRemoveImage,
+  });
 
   final TextEditingController controller;
   final VoidCallback onSend;
+  final File? selectedImage;
+  final VoidCallback onPickImage;
+  final VoidCallback onRemoveImage;
 
   @override
   Widget build(BuildContext context) {
@@ -513,67 +574,114 @@ class _SupportComposer extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        textDirection: TextDirection.ltr,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: SizedBox(
-              height: 40,
-              child: TextField(
-                controller: controller,
-                textAlign: TextAlign.start,
-                cursorColor: AppColors.cursor(context),
-                minLines: 1,
-                maxLines: 1,
-                style: AppTextStyles.inputText(
-                  context,
-                ).copyWith(fontSize: 12, height: 1.3),
-                decoration: InputDecoration(
-                  hintText: l10n.supportInputHint,
-                  hintStyle: AppTextStyles.inputHint(context).copyWith(
-                    color: AppColors.paragraph(context),
-                    fontSize: 12,
-                    height: 1.3,
-                  ),
-                  filled: true,
-                  fillColor: AppColors.surfaceCard(context),
-                  contentPadding: const EdgeInsetsDirectional.symmetric(
-                    horizontal: 12,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: AppColors.border(context),
-                      width: 0.5,
+          if (selectedImage != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      selectedImage!,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: AppColors.border(context),
-                      width: 0.5,
+                  Positioned(
+                    top: 4,
+                    right: 4,
+                    child: GestureDetector(
+                      onTap: onRemoveImage,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.black54,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: AppColors.fieldFocusBorder(context),
-                      width: 0.5,
-                    ),
-                  ),
-                ),
-                onSubmitted: (_) => onSend(),
+                ],
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          _ComposerIconButton(
-            onTap: onSend,
-            child: SvgPicture.asset(
-              AppAssets.supportSendIcon,
-              width: 24,
-              height: 24,
-            ),
+          Row(
+            textDirection: TextDirection.ltr,
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 40,
+                  child: TextField(
+                    controller: controller,
+                    textAlign: TextAlign.start,
+                    cursorColor: AppColors.cursor(context),
+                    minLines: 1,
+                    maxLines: 1,
+                    style: AppTextStyles.inputText(
+                      context,
+                    ).copyWith(fontSize: 12, height: 1.3),
+                    decoration: InputDecoration(
+                      hintText: l10n.supportInputHint,
+                      hintStyle: AppTextStyles.inputHint(context).copyWith(
+                        color: AppColors.paragraph(context),
+                        fontSize: 12,
+                        height: 1.3,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.surfaceCard(context),
+                      contentPadding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: AppColors.border(context),
+                          width: 0.5,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: AppColors.border(context),
+                          width: 0.5,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: AppColors.fieldFocusBorder(context),
+                          width: 0.5,
+                        ),
+                      ),
+                    ),
+                    onSubmitted: (_) => onSend(),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _ComposerIconButton(
+                onTap: onPickImage,
+                child: Image.asset(AppAssets.imageAdd, width: 24, height: 24),
+              ),
+              const SizedBox(width: 8),
+              _ComposerIconButton(
+                onTap: onSend,
+                child: SvgPicture.asset(
+                  AppAssets.supportSendIcon,
+                  width: 24,
+                  height: 24,
+                ),
+              ),
+            ],
           ),
         ],
       ),

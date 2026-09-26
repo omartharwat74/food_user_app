@@ -59,6 +59,7 @@ class SupportChatMsgDto {
     required this.body,
     required this.senderType,
     required this.imageUrl,
+    required this.attachments,
     required this.createdAt,
   });
 
@@ -66,6 +67,7 @@ class SupportChatMsgDto {
   final String? body;
   final String senderType;
   final String? imageUrl;
+  final List<String> attachments;
   final DateTime createdAt;
 
   factory SupportChatMsgDto.fromJson(Map<String, dynamic> json) {
@@ -74,6 +76,18 @@ class SupportChatMsgDto {
       msgJson = json['message'] as Map<String, dynamic>;
     } else if (json.containsKey('data') && json['data'] is Map) {
       msgJson = json['data'] as Map<String, dynamic>;
+    }
+
+    List<String> parsedAttachments = [];
+    if (msgJson['attachments'] is List) {
+      parsedAttachments = (msgJson['attachments'] as List).map((e) {
+        if (e is Map && e['url'] != null) {
+          return e['url'].toString();
+        }
+        return e.toString();
+      }).toList();
+    } else if (msgJson['attachment'] is String) {
+      parsedAttachments.add(msgJson['attachment'] as String);
     }
 
     return SupportChatMsgDto(
@@ -88,6 +102,7 @@ class SupportChatMsgDto {
           (msgJson['sender_type'] ?? msgJson['senderType'])?.toString() ??
           'user',
       imageUrl: msgJson['image_url'] as String?,
+      attachments: parsedAttachments,
       createdAt: _parseDate(msgJson['created_at']),
     );
   }
@@ -97,6 +112,7 @@ class SupportChatMsgDto {
     body: body,
     senderType: senderType,
     imageUrl: imageUrl,
+    attachments: attachments,
     createdAt: createdAt,
   );
 }

@@ -128,44 +128,100 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ) {
                     showDialog(
                       context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('بدء سلة جديدة؟'),
-                        content: const Text('طلب جديد سيمسح سلتك الحالية.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            style: TextButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                            ),
-                            child: Text(
-                              'إلغاء',
-                              style: TextStyle(
-                                color: AppColors.onSurface(context),
+                      builder: (ctx) => Dialog(
+                        insetPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
+                        child: Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'بدء سلة جديدة؟',
+                                style: AppTextStyles.heading4(
+                                  context,
+                                ).copyWith(fontWeight: FontWeight.bold),
                               ),
-                            ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'طلب جديد سيمسح سلتك الحالية.',
+                                style: AppTextStyles.body(
+                                  context,
+                                ).copyWith(color: AppColors.paragraph(context)),
+                              ),
+                              const SizedBox(height: 24),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: () => Navigator.pop(ctx),
+                                      style: OutlinedButton.styleFrom(
+                                        minimumSize: const Size.fromHeight(48),
+                                        side: BorderSide(
+                                          color: AppColors.border(context),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'إلغاء',
+                                        style: AppTextStyles.buttonHeading(
+                                          context,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pop(ctx);
+                                        context
+                                            .read<CartCubit>()
+                                            .clearAndAddToCart(
+                                              restaurantId: newRestaurantId,
+                                              menuItemId: menuItemId,
+                                              name: name,
+                                              price: price,
+                                              quantity: quantity,
+                                              selectedModifiers: modifiers,
+                                              notes: notes,
+                                            );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size.fromHeight(48),
+                                        backgroundColor: AppColors.primary,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
+                                        'بدء',
+                                        style: AppTextStyles.buttonHeading(
+                                          context,
+                                        ).copyWith(color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
-                              context.read<CartCubit>().clearAndAddToCart(
-                                restaurantId: newRestaurantId,
-                                menuItemId: menuItemId,
-                                name: name,
-                                price: price,
-                                quantity: quantity,
-                                selectedModifiers: modifiers,
-                                notes: notes,
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                            ),
-                            child: const Text(
-                              'بدء',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     );
                   },

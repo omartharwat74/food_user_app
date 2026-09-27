@@ -10,6 +10,8 @@ import 'package:food_user_app/core/theme/theme_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/network/dio_client.dart';
+import 'core/services/push_notification_service.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -32,8 +34,8 @@ void main() async {
         final themeController = ThemeController(prefs);
         themeController.hydrate();
 
-        // final pushNotificationService = di.sl<PushNotificationService>();
-        // await pushNotificationService.initialize();
+        final dioClient = di.sl<DioClient>();
+        await PushNotificationService().init(dio: dioClient.dio);
 
         final savedAddressesController = SavedAddressesController(
           getSavedAddressesUseCase: di.sl(),

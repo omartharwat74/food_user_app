@@ -127,6 +127,8 @@ flutter:
     - assets/images/service_listing/3.0x/
     - assets/images/icons/main/
     - assets/images/icons/settings/
+    - assets/images/icons/settings/2.0x/
+    - assets/images/icons/settings/3.0x/
     - assets/images/icons/general_settings/
     - assets/images/icons/notifications/
     - assets/images/cart/

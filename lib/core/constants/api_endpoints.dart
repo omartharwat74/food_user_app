@@ -217,6 +217,10 @@ class ApiEndpoints {
     refreshToken,
   };
 
+  // ── Wallet ─────────────────────────────────────────────────────────────────
+  /// `GET /api/v1/wallet?per_page={perPage}&page={page}`
+  static const String wallet = '/api/v1/wallet';
+
   // ── Support Chat ───────────────────────────────────────────────────────────
   /// `GET /api/v1/support` — returns active conversation + messages (or null).
   static const String supportLoad = '/api/v1/support';

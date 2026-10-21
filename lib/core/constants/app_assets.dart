@@ -48,6 +48,15 @@ class AppAssets {
   static const settingsFavorites =
       'assets/images/icons/settings/settings-2.svg';
   static const settingsWallet = 'assets/images/icons/settings/wallet.svg';
+  static const walletBalanceRope =
+      'assets/images/icons/settings/wallet_balance_rope.svg';
+  static const walletStar1 = 'assets/images/icons/settings/wallet_star_1.svg';
+  static const walletStar2 = 'assets/images/icons/settings/wallet_star_2.svg';
+  static const walletStar3 = 'assets/images/icons/settings/wallet_star_3.svg';
+  static const walletTransactionCredit =
+      'assets/images/icons/settings/wallet_transaction_credit.png';
+  static const walletTransactionDebit =
+      'assets/images/icons/settings/wallet_transaction_debit.png';
   static const settingsDiscountPoints =
       'assets/images/icons/settings/settings-3.svg';
   static const settingsSavedAddresses =

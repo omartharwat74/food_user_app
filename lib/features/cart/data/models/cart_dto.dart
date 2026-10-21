@@ -31,6 +31,7 @@ extension CartDtoMapper on CartDto {
       items: items.map((item) => item.toEntity()).toList(),
       subtotal: subtotal,
       deliveryFee: deliveryFee,
+      tax: 0.0,
       discount: discount,
       total: total,
     );

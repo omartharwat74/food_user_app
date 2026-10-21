@@ -98,6 +98,11 @@ import 'package:food_user_app/features/store/data/datasources/store_remote_data_
 import 'package:food_user_app/features/store/domain/repositories/store_repository.dart';
 import 'package:food_user_app/features/store/data/repositories/store_repository_impl.dart';
 import 'package:food_user_app/features/store/presentation/cubit/hypermarket/hypermarket_cubit.dart';
+import 'package:food_user_app/features/wallet/data/datasources/wallet_remote_data_source.dart';
+import 'package:food_user_app/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:food_user_app/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:food_user_app/features/wallet/domain/usecases/get_wallet_usecase.dart';
+import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_search/store_search_cubit.dart';
 
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
@@ -516,6 +521,7 @@ Future<void> init({SharedPreferences? prefs}) async {
   importOrderDependencies();
   importSupportDependencies();
   importMarketDependencies();
+  importWalletDependencies();
 }
 
 void importMarketDependencies() {
@@ -629,5 +635,20 @@ void importOrderDependencies() {
     () => OrderTrackingCubit(
       getOrderTrackingUseCase: sl<GetOrderTrackingUseCase>(),
     ),
+  );
+}
+
+void importWalletDependencies() {
+  sl.registerLazySingleton<WalletRemoteDataSource>(
+    () => WalletRemoteDataSourceImpl(sl<DioClient>()),
+  );
+  sl.registerLazySingleton<WalletRepository>(
+    () => WalletRepositoryImpl(sl<WalletRemoteDataSource>()),
+  );
+  sl.registerLazySingleton(
+    () => GetWalletUseCase(sl<WalletRepository>()),
+  );
+  sl.registerFactory<WalletCubit>(
+    () => WalletCubit(sl<GetWalletUseCase>()),
   );
 }

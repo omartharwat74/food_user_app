@@ -28,7 +28,7 @@ extension CartItemDtoMapper on CartItemDto {
       menuItemId: menuItemId,
       name: itemName,
       description: notes ?? '',
-      price: unitPrice.round(),
+      price: unitPrice.toDouble(),
       unitPrice: unitPrice,
       totalPrice: totalPrice,
       imageAsset: '',

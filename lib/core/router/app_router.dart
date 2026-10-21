@@ -41,7 +41,7 @@ import '../../features/profile/presentation/pages/verify_phone_otp_screen.dart';
 import '../../features/profile/presentation/pages/address_book_screen.dart';
 import '../../features/profile/presentation/pages/add_edit_address_screen.dart'
     as profile_address;
-import '../../features/profile/presentation/pages/discount_points_screen.dart';
+import '../../features/profile/presentation/pages/wallet_screen.dart';
 import '../../features/profile/presentation/pages/favourites_screen.dart';
 
 import '../../features/profile/presentation/pages/settings_screen.dart';
@@ -402,8 +402,8 @@ class AppRouter {
         builder: (c, s) => const FavouritesScreen(),
       ),
       GoRoute(
-        path: RouteNames.discountPoints,
-        builder: (c, s) => const DiscountPointsScreen(),
+        path: RouteNames.wallet,
+        builder: (c, s) => const WalletScreen(),
       ),
 
       GoRoute(

@@ -315,9 +315,9 @@ class _AccountMenu extends StatelessWidget {
         onTap: () => context.push(RouteNames.favourites),
       ),
       _AccountMenuItem(
-        title: l10n.accountDiscountPoints,
-        iconAsset: AppAssets.settingsDiscountPoints,
-        onTap: () => context.push(RouteNames.discountPoints),
+        title: l10n.accountWallet,
+        iconAsset: AppAssets.settingsWallet,
+        onTap: () => context.push(RouteNames.wallet),
       ),
       _AccountMenuItem(
         title: l10n.accountSavedAddresses,

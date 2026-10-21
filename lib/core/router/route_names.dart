@@ -38,6 +38,7 @@ class RouteNames {
   static const addressBookEditMap = '/profile/address-book/edit/map';
   static const addressBookEditDetails = '/profile/address-book/edit/details';
   static const favourites = '/profile/favourites';
+  static const wallet = '/profile/wallet';
   static const discountPoints = '/profile/discount-points';
 
   static const settings = '/settings';

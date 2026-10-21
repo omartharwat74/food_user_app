@@ -789,6 +789,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountFavorites => 'Favorites';
 
   @override
+  String get accountWallet => 'Wallet';
+
+  @override
   String get accountDiscountPoints => 'Discount Points';
 
   @override

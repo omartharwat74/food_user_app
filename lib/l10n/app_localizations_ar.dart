@@ -781,6 +781,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get accountFavorites => 'المفضلة';
 
   @override
+  String get accountWallet => 'المحفظة';
+
+  @override
   String get accountDiscountPoints => 'نقاط الخصم';
 
   @override

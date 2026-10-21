@@ -47,6 +47,7 @@ class AppAssets {
   static const settingsGeneral = 'assets/images/icons/settings/settings-1.svg';
   static const settingsFavorites =
       'assets/images/icons/settings/settings-2.svg';
+  static const settingsWallet = 'assets/images/icons/settings/wallet.svg';
   static const settingsDiscountPoints =
       'assets/images/icons/settings/settings-3.svg';
   static const settingsSavedAddresses =

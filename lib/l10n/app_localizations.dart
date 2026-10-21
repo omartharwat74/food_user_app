@@ -1604,6 +1604,12 @@ abstract class AppLocalizations {
   /// **'Favorites'**
   String get accountFavorites;
 
+  /// No description provided for @accountWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get accountWallet;
+
   /// No description provided for @accountDiscountPoints.
   ///
   /// In en, this message translates to:

@@ -60,7 +60,13 @@ class PushNotificationService {
     });
 
     try {
-      final token = await _fcm.getToken();
+      final token = await _fcm.getToken().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          log('FCM getToken timed out (APNs token may not be ready)');
+          return null;
+        },
+      );
       if (token != null) {
         await _syncTokenWithServer(token);
       }

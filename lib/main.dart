@@ -35,7 +35,13 @@ void main() async {
         themeController.hydrate();
 
         final dioClient = di.sl<DioClient>();
-        await PushNotificationService().init(dio: dioClient.dio);
+        unawaited(
+          PushNotificationService()
+              .init(dio: dioClient.dio)
+              .catchError((e, st) {
+            debugPrint('⚠️ PushNotificationService init error: $e');
+          }),
+        );
 
         final savedAddressesController = SavedAddressesController(
           getSavedAddressesUseCase: di.sl(),

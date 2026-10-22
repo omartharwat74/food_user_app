@@ -97,6 +97,7 @@ dependencies:
   flutter_facebook_auth: ^7.1.5
   flutter_widget_from_html: ^0.15.2
   firebase_database: ^11.3.10
+  url_launcher: ^6.3.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -315,7 +315,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                           Text(
                             store.name,
                             style: AppTextStyles.heading4(context).copyWith(
-                              color: AppColors.onSurface(context),
+                              color: Colors.white,
                               fontSize: 18,
                             ),
                           ),

@@ -104,6 +104,7 @@ class ApiEndpoints {
   static const String orders = '/api/v1/orders';
   static String orderDetail(String id) => '$orders/$id';
   static String orderTracking(String id) => '$orders/$id/tracking';
+  static String cancelOrder(String id) => '$orders/$id/cancel';
 
   // ── Notifications ──────────────────────────────────────────────────────────
   static const String notifications = '/notifications';

@@ -1,18 +1,26 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
 import 'package:food_user_app/core/router/route_names.dart';
+import 'package:food_user_app/core/services/snackbar_service.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/core/di/injection_container.dart' as di;
-import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
-import 'package:food_user_app/core/services/snackbar_service.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
+import 'package:food_user_app/features/order/domain/entities/order.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_detail_cubit.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_detail_state.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
+import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
+import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 enum OrderDetailsStatus {
   waitingAcceptance,
@@ -22,14 +30,16 @@ enum OrderDetailsStatus {
   cancelled,
 }
 
-class OrderDetailsScreen extends StatefulWidget {
+class OrderDetailsScreen extends StatelessWidget {
   const OrderDetailsScreen({
     super.key,
     required this.orderId,
-    required this.status,
+    this.initialOrder,
+    this.status = OrderDetailsStatus.waitingAcceptance,
   });
 
   final String orderId;
+  final Order? initialOrder;
   final OrderDetailsStatus status;
 
   static const screenPadding = 16.0;
@@ -38,17 +48,18 @@ class OrderDetailsScreen extends StatefulWidget {
   static const cardRadius = 16.0;
 
   @override
-  State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
-}
-
-class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
-  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => di.sl<SupportTicketCubit>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => di.sl<SupportTicketCubit>()),
+        BlocProvider(
+          create: (_) => di.sl<OrderDetailCubit>()
+            ..loadOrderDetails(orderId, initialOrder: initialOrder),
+        ),
+      ],
       child: _OrderDetailsScreenContent(
-        orderId: widget.orderId,
-        status: widget.status,
+        orderId: orderId,
+        fallbackStatus: status,
       ),
     );
   }
@@ -56,11 +67,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
 class _OrderDetailsScreenContent extends StatefulWidget {
   final String orderId;
-  final OrderDetailsStatus status;
+  final OrderDetailsStatus fallbackStatus;
 
   const _OrderDetailsScreenContent({
     required this.orderId,
-    required this.status,
+    required this.fallbackStatus,
   });
 
   @override
@@ -73,96 +84,402 @@ class _OrderDetailsScreenContentState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final config = _OrderDetailsConfig.fromStatus(widget.status, l10n);
 
-    return BlocListener<SupportTicketCubit, SupportTicketState>(
-      listener: (context, state) {
-        state.maybeWhen(
-          success: (ticket) {
-            context.push(RouteNames.helpSupport, extra: ticket.id);
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<SupportTicketCubit, SupportTicketState>(
+          listener: (context, state) {
+            state.maybeWhen(
+              success: (ticket) {
+                context.push(RouteNames.helpSupport, extra: ticket.id);
+              },
+              error: (message) {
+                di.sl<SnackbarService>().showError(message);
+              },
+              orElse: () {},
+            );
           },
-          error: (message) {
-            di.sl<SnackbarService>().showError(message);
+        ),
+        BlocListener<OrderDetailCubit, OrderDetailState>(
+          listener: (context, state) {
+            if (state.status == OrderDetailScreenStatus.cancelSuccess) {
+              final msg = state.successMessage ?? l10n.orderCancelDesignOnly;
+              di.sl<SnackbarService>().showSuccess(msg);
+            } else if (state.status == OrderDetailScreenStatus.error &&
+                state.errorMessage != null) {
+              di.sl<SnackbarService>().showError(state.errorMessage!);
+            }
           },
-          orElse: () {},
-        );
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.scaffoldBackground(context),
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  padding: const EdgeInsetsDirectional.fromSTEB(
-                    OrderDetailsScreen.screenPadding,
-                    OrderDetailsScreen.headerTopPadding,
-                    OrderDetailsScreen.screenPadding,
-                    24,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _OrderDetailsHeader(
-                        title: l10n.trackYourOrder,
-                        showSupport: config.showSupportAction,
-                        onSupport: () {
-                          context.read<SupportTicketCubit>().createTicket(
-                            subject: 'Order #${widget.orderId}',
-                            message:
-                                'I need help with order #${widget.orderId}',
+        ),
+      ],
+      child: BlocBuilder<OrderDetailCubit, OrderDetailState>(
+        builder: (context, state) {
+          final order = state.order;
+
+          return PopScope<Order?>(
+            canPop: true,
+            onPopInvokedWithResult: (didPop, _) {
+              if (order != null) {
+                try {
+                  if (di.sl.isRegistered<OrderHistoryCubit>()) {
+                    di.sl<OrderHistoryCubit>().updateOrder(order);
+                  }
+                } catch (_) {}
+              }
+            },
+            child: Scaffold(
+              backgroundColor: AppColors.scaffoldBackground(context),
+              body: SafeArea(
+                bottom: false,
+                child: Builder(
+                  builder: (context) {
+                    if (state.status == OrderDetailScreenStatus.loading &&
+                        order == null) {
+                      return const Center(
+                        child:
+                            CircularProgressIndicator(color: AppColors.primary),
+                      );
+                    }
+
+                    if (state.status == OrderDetailScreenStatus.error &&
+                        order == null) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.error_outline_rounded,
+                                size: 64,
+                                color: AppColors.error,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                state.errorMessage ?? 'الطلب غير موجود',
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.body(context).copyWith(
+                                  color: AppColors.onSurface(context),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () => context
+                                    .read<OrderDetailCubit>()
+                                    .loadOrderDetails(widget.orderId),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'إعادة المحاولة',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    final uiModel = order != null
+                        ? OrderStatusUiModel.fromStatus(
+                            status: order.status,
+                            l10n: l10n,
+                            isDetailScreen: true,
+                          )
+                        : _OrderDetailsConfig.fromStatus(
+                            widget.fallbackStatus,
+                            l10n,
                           );
-                        },
-                      ),
-                      const SizedBox(height: OrderDetailsScreen.contentGap),
-                      _OrderStatusSummaryCard(config: config),
-                      const SizedBox(height: 16),
-                      if (config.showCourierSection) ...[
-                        _CourierDetailsSection(l10n: l10n),
-                        const SizedBox(height: 16),
-                      ],
-                      _DeliveryAddressSection(l10n: l10n),
-                      const SizedBox(height: 16),
-                      _OrderItemsSection(l10n: l10n),
-                      const SizedBox(height: 16),
-                      _PaymentSummarySection(l10n: l10n),
-                      if (config.showCancellationReason) ...[
-                        const SizedBox(height: 16),
-                        Divider(
-                          height: 1,
-                          thickness: 0.5,
-                          color: AppColors.border(context),
+
+                    final showCourier = order != null
+                        ? (order.delivery != null)
+                        : uiModel.showCourierSection;
+
+                    return Column(
+                      children: [
+                        Expanded(
+                          child: RefreshIndicator(
+                            color: AppColors.primary,
+                            onRefresh: () => context
+                                .read<OrderDetailCubit>()
+                                .loadOrderDetails(widget.orderId),
+                            child: SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(
+                                parent: ClampingScrollPhysics(),
+                              ),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                OrderDetailsScreen.screenPadding,
+                                OrderDetailsScreen.headerTopPadding,
+                                OrderDetailsScreen.screenPadding,
+                                24,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _OrderDetailsHeader(
+                                    title: l10n.trackYourOrder,
+                                    showSupport: !uiModel.cancelled,
+                                    onBack: () {
+                                      if (context.canPop()) {
+                                        context.pop(order);
+                                      } else {
+                                        MainLayout.globalKey.currentState
+                                            ?.changeIndex(2);
+                                        context.go(RouteNames.home);
+                                      }
+                                    },
+                                    onSupport: () {
+                                      context
+                                          .read<SupportTicketCubit>()
+                                          .createTicket(
+                                            subject:
+                                                'Order #${order?.code ?? widget.orderId}',
+                                            message:
+                                                'I need help with order #${order?.code ?? widget.orderId}',
+                                          );
+                                    },
+                                  ),
+                                  const SizedBox(
+                                    height: OrderDetailsScreen.contentGap,
+                                  ),
+                                  _OrderStatusSummaryCard(
+                                    order: order,
+                                    uiModel: uiModel,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  if (showCourier && order?.delivery != null) ...[
+                                    _CourierDetailsSection(
+                                      delivery: order!.delivery!,
+                                      l10n: l10n,
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
+                                  _DeliveryAddressSection(
+                                    order: order,
+                                    l10n: l10n,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _OrderItemsSection(
+                                    items: order?.items ?? const [],
+                                    l10n: l10n,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _PaymentSummarySection(
+                                    order: order,
+                                    l10n: l10n,
+                                  ),
+                                  if (uiModel.showCancellationReason) ...[
+                                    const SizedBox(height: 16),
+                                    Divider(
+                                      height: 1,
+                                      thickness: 0.5,
+                                      color: AppColors.border(context),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    _CancellationReasonSection(
+                                      reason: order?.cancelReason,
+                                      l10n: l10n,
+                                    ),
+                                  ],
+                                  if (uiModel.showRateAction) ...[
+                                    const SizedBox(height: 24),
+                                    _PrimaryFilledButton(
+                                      label: l10n.rateOrder,
+                                      onTap: () => _showRatingSheet(context),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        _CancellationReasonSection(l10n: l10n),
+                        if (uiModel.showCancelAction && order != null)
+                          _BottomCancelBar(
+                            label: l10n.cancelOrder,
+                            isLoading: state.status ==
+                                OrderDetailScreenStatus.cancelling,
+                            onTap: () =>
+                                _showCancelOrderDialog(context, order),
+                          ),
                       ],
-                      if (config.showRateAction) ...[
-                        const SizedBox(height: 24),
-                        _PrimaryFilledButton(
-                          label: l10n.rateOrder,
-                          onTap: () => _showRatingSheet(context),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              if (config.showCancelAction)
-                _BottomCancelBar(
-                  label: l10n.cancelOrder,
-                  onTap: () {
-                    // TODO: Cancel order through real order API.
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.orderCancelDesignOnly)),
                     );
                   },
                 ),
-            ],
-          ),
-        ),
+              ),
+            ),
+          );
+        },
       ),
+    );
+  }
+
+  void _showCancelOrderDialog(BuildContext parentContext, Order order) {
+    final l10n = AppLocalizations.of(parentContext)!;
+    final cubit = parentContext.read<OrderDetailCubit>();
+
+    final reasons = [
+      'تأخر تأكيد الطلب',
+      'طلب خاطئ / أريد تعديل الأصناف',
+      'سبب آخر',
+    ];
+    String selectedReason = reasons.first;
+    final otherReasonController = TextEditingController();
+
+    showModalBottomSheet<void>(
+      context: parentContext,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surfaceCard(parentContext),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final isOther = selectedReason == 'سبب آخر';
+            final keyboardBottom = MediaQuery.of(context).viewInsets.bottom;
+
+            return Padding(
+              padding: EdgeInsetsDirectional.fromSTEB(
+                16,
+                20,
+                16,
+                keyboardBottom + 20 + MediaQuery.of(context).padding.bottom,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        l10n.cancelOrder,
+                        style: AppTextStyles.heading4(context).copyWith(
+                          color: const Color(0xFFA3090F),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => Navigator.of(sheetContext).pop(),
+                        child: const Padding(
+                          padding: EdgeInsets.all(4),
+                          child: Icon(Icons.close, size: 22),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ يرجى تحديد السبب:',
+                    style: AppTextStyles.body(context).copyWith(
+                      color: AppColors.paragraph(context),
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...reasons.map((reason) {
+                    final isSelected = selectedReason == reason;
+                    return InkWell(
+                      onTap: () => setSheetState(() => selectedReason = reason),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isSelected
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              color: isSelected
+                                  ? const Color(0xFFA3090F)
+                                  : AppColors.paragraph(context),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              reason,
+                              style: AppTextStyles.body(context).copyWith(
+                                fontSize: 13,
+                                color: AppColors.onSurface(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }),
+                  if (isOther) ...[
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: otherReasonController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        hintText: 'اكتب سبب الإلغاء هنا...',
+                        hintStyle: AppTextStyles.inputHint(context).copyWith(
+                          fontSize: 12,
+                        ),
+                        filled: true,
+                        fillColor: AppColors.scaffoldBackground(context),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: AppColors.border(context),
+                            width: 0.5,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color(0xFFA3090F),
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _OutlineActionButton(
+                          label: 'تراجع',
+                          onTap: () => Navigator.of(sheetContext).pop(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _PrimaryFilledButton(
+                          label: 'تأكيد الإلغاء',
+                          backgroundColor: const Color(0xFFA3090F),
+                          onTap: () {
+                            final finalReason = isOther
+                                ? (otherReasonController.text.trim().isNotEmpty
+                                    ? otherReasonController.text.trim()
+                                    : 'تأخر تأكيد الطلب')
+                                : selectedReason;
+                            Navigator.of(sheetContext).pop();
+                            cubit.cancelOrder(
+                              orderId: order.id.toString(),
+                              reason: finalReason,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -172,11 +489,12 @@ class _OrderDetailsScreenContentState
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: AppColors.scaffoldBackground(context),
-      constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(context).height),
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.sizeOf(context).height,
+      ),
       builder: (sheetContext) => _OrderRatingSheet(
         onSkip: () => Navigator.of(sheetContext).pop(),
         onSubmit: () {
-          // TODO: Submit rating through real rating API.
           Navigator.of(sheetContext).pop();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -192,109 +510,36 @@ class _OrderDetailsScreenContentState
 }
 
 class _OrderDetailsConfig {
-  const _OrderDetailsConfig({
-    required this.shortStatusLabel,
-    required this.statusLabel,
-    required this.statusColor,
-    required this.statusIconAsset,
-    required this.showEta,
-    required this.progressStep,
-    required this.showCourierSection,
-    required this.showCancelAction,
-    required this.showRateAction,
-    required this.showCancellationReason,
-    required this.showSupportAction,
-    required this.cancelled,
-  });
-
-  final String shortStatusLabel;
-  final String statusLabel;
-  final Color statusColor;
-  final String statusIconAsset;
-  final bool showEta;
-  final int? progressStep;
-  final bool showCourierSection;
-  final bool showCancelAction;
-  final bool showRateAction;
-  final bool showCancellationReason;
-  final bool showSupportAction;
-  final bool cancelled;
-
-  static _OrderDetailsConfig fromStatus(
+  static OrderStatusUiModel fromStatus(
     OrderDetailsStatus status,
     AppLocalizations l10n,
   ) {
     return switch (status) {
-      OrderDetailsStatus.waitingAcceptance => _OrderDetailsConfig(
-        shortStatusLabel: l10n.orderWaitingAcceptanceShort,
-        statusLabel: l10n.orderWaitingAcceptance,
-        statusColor: AppColors.statusWarning,
-        statusIconAsset: AppAssets.orderReceiptRollIcon,
-        showEta: true,
-        progressStep: 0,
-        showCourierSection: false,
-        showCancelAction: true,
-        showRateAction: false,
-        showCancellationReason: false,
-        showSupportAction: true,
-        cancelled: false,
-      ),
-      OrderDetailsStatus.preparing => _OrderDetailsConfig(
-        shortStatusLabel: l10n.orderAcceptedShort,
-        statusLabel: l10n.orderPreparing,
-        statusColor: AppColors.success,
-        statusIconAsset: AppAssets.orderAcceptedIcon,
-        showEta: true,
-        progressStep: 1,
-        showCourierSection: false,
-        showCancelAction: false,
-        showRateAction: false,
-        showCancellationReason: false,
-        showSupportAction: true,
-        cancelled: false,
-      ),
-      OrderDetailsStatus.courierOnWay => _OrderDetailsConfig(
-        shortStatusLabel: l10n.orderHandedToCourierShort,
-        statusLabel: l10n.orderCourierOnWay,
-        statusColor: AppColors.primary,
-        statusIconAsset: AppAssets.orderCourierOnWayIcon,
-        showEta: true,
-        progressStep: 2,
-        showCourierSection: true,
-        showCancelAction: false,
-        showRateAction: false,
-        showCancellationReason: false,
-        showSupportAction: true,
-        cancelled: false,
-      ),
-      OrderDetailsStatus.delivered => _OrderDetailsConfig(
-        shortStatusLabel: l10n.orderDeliveredShort,
-        statusLabel: l10n.orderDelivered,
-        statusColor: AppColors.statusClosed,
-        statusIconAsset: AppAssets.orderDeliveredStatus,
-        showEta: false,
-        progressStep: null,
-        showCourierSection: true,
-        showCancelAction: false,
-        showRateAction: true,
-        showCancellationReason: false,
-        showSupportAction: true,
-        cancelled: false,
-      ),
-      OrderDetailsStatus.cancelled => _OrderDetailsConfig(
-        shortStatusLabel: l10n.orderCancelledShort,
-        statusLabel: l10n.orderYouCancelled,
-        statusColor: AppColors.error,
-        statusIconAsset: AppAssets.orderTornReceiptIcon,
-        showEta: false,
-        progressStep: null,
-        showCourierSection: false,
-        showCancelAction: false,
-        showRateAction: false,
-        showCancellationReason: true,
-        showSupportAction: false,
-        cancelled: true,
-      ),
+      OrderDetailsStatus.waitingAcceptance => OrderStatusUiModel.fromStatus(
+          status: 'pending',
+          l10n: l10n,
+          isDetailScreen: true,
+        ),
+      OrderDetailsStatus.preparing => OrderStatusUiModel.fromStatus(
+          status: 'confirmed',
+          l10n: l10n,
+          isDetailScreen: true,
+        ),
+      OrderDetailsStatus.courierOnWay => OrderStatusUiModel.fromStatus(
+          status: 'assigned',
+          l10n: l10n,
+          isDetailScreen: true,
+        ),
+      OrderDetailsStatus.delivered => OrderStatusUiModel.fromStatus(
+          status: 'delivered',
+          l10n: l10n,
+          isDetailScreen: true,
+        ),
+      OrderDetailsStatus.cancelled => OrderStatusUiModel.fromStatus(
+          status: 'cancelled',
+          l10n: l10n,
+          isDetailScreen: true,
+        ),
     };
   }
 }
@@ -303,11 +548,13 @@ class _OrderDetailsHeader extends StatelessWidget {
   const _OrderDetailsHeader({
     required this.title,
     required this.showSupport,
+    required this.onBack,
     required this.onSupport,
   });
 
   final String title;
   final bool showSupport;
+  final VoidCallback onBack;
   final VoidCallback onSupport;
 
   @override
@@ -317,7 +564,7 @@ class _OrderDetailsHeader extends StatelessWidget {
       children: [
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => context.pop(),
+          onTap: onBack,
           child: SizedBox(
             width: 28,
             height: 28,
@@ -376,13 +623,31 @@ class _OrderDetailsHeader extends StatelessWidget {
 }
 
 class _OrderStatusSummaryCard extends StatelessWidget {
-  const _OrderStatusSummaryCard({required this.config});
+  const _OrderStatusSummaryCard({
+    required this.order,
+    required this.uiModel,
+  });
 
-  final _OrderDetailsConfig config;
+  final Order? order;
+  final OrderStatusUiModel uiModel;
+
+  String _formatAmount(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.toInt().toString();
+    }
+    return amount.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final restaurantName = order?.store?.name ?? l10n.orderRestaurantAzAlSham;
+    final totalLabel = order != null
+        ? '${_formatAmount(order!.summary.total)} ج.م'
+        : l10n.orderTotal;
+    final productsCount = order != null
+        ? '${order!.items.length} منتجات'
+        : l10n.orderProductsCount;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -395,15 +660,20 @@ class _OrderStatusSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _RestaurantPriceRow(
-            restaurantName: l10n.orderRestaurantAzAlSham,
-            totalLabel: l10n.orderTotal,
-            productsLabel: l10n.orderProductsCount,
+            order: order,
+            restaurantName: restaurantName,
+            totalLabel: totalLabel,
+            productsLabel: productsCount,
           ),
-          Divider(height: 17, thickness: 0.5, color: AppColors.border(context)),
-          _StatusEtaRow(config: config, l10n: l10n),
-          if (config.progressStep != null) ...[
+          Divider(
+            height: 17,
+            thickness: 0.5,
+            color: AppColors.border(context),
+          ),
+          _StatusEtaRow(uiModel: uiModel, l10n: l10n),
+          if (uiModel.progressStep != null) ...[
             const SizedBox(height: 16),
-            _OrderProgressBar(activeStep: config.progressStep!),
+            _OrderProgressBar(activeStep: uiModel.progressStep!),
           ],
         ],
       ),
@@ -413,36 +683,58 @@ class _OrderStatusSummaryCard extends StatelessWidget {
 
 class _RestaurantPriceRow extends StatelessWidget {
   const _RestaurantPriceRow({
+    required this.order,
     required this.restaurantName,
     required this.totalLabel,
     required this.productsLabel,
   });
 
+  final Order? order;
   final String restaurantName;
   final String totalLabel;
   final String productsLabel;
 
   @override
   Widget build(BuildContext context) {
+    final logo = order?.store?.logo;
+
     final restaurantGroup = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipOval(
-          child: Image.asset(
-            AppAssets.orderRestaurantAvatar,
-            width: 20,
-            height: 20,
-            fit: BoxFit.cover,
-          ),
+          child: logo != null && logo.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: logo,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Image.asset(
+                    AppAssets.orderRestaurantAvatar,
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : Image.asset(
+                  AppAssets.orderRestaurantAvatar,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
         ),
         const SizedBox(width: 4),
-        Text(
-          restaurantName,
-          style: AppTextStyles.textLink(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 120),
+          child: Text(
+            restaurantName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.textLink(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              height: 1.25,
+            ),
           ),
         ),
       ],
@@ -452,12 +744,12 @@ class _RestaurantPriceRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          totalLabel,
-          style: AppTextStyles.body(context).copyWith(
+          productsLabel,
+          style: AppTextStyles.caption(context).copyWith(
             color: AppColors.onSurface(context),
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            height: 1.3,
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            height: 1.25,
           ),
         ),
         const SizedBox(width: 6),
@@ -471,12 +763,12 @@ class _RestaurantPriceRow extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          productsLabel,
-          style: AppTextStyles.caption(context).copyWith(
+          totalLabel,
+          style: AppTextStyles.body(context).copyWith(
             color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            height: 1.3,
           ),
         ),
       ],
@@ -490,9 +782,9 @@ class _RestaurantPriceRow extends StatelessWidget {
 }
 
 class _StatusEtaRow extends StatelessWidget {
-  const _StatusEtaRow({required this.config, required this.l10n});
+  const _StatusEtaRow({required this.uiModel, required this.l10n});
 
-  final _OrderDetailsConfig config;
+  final OrderStatusUiModel uiModel;
   final AppLocalizations l10n;
 
   @override
@@ -502,8 +794,8 @@ class _StatusEtaRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _OrderStatusIcon(
-          iconAsset: config.statusIconAsset,
-          cancelled: config.cancelled,
+          iconAsset: uiModel.statusIconAsset,
+          cancelled: uiModel.cancelled,
         ),
         const SizedBox(width: 8),
         SizedBox(
@@ -512,12 +804,12 @@ class _StatusEtaRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                config.shortStatusLabel,
+                uiModel.shortStatusLabel,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
                 style: AppTextStyles.caption(context).copyWith(
-                  color: config.statusColor,
+                  color: uiModel.statusColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w400,
                   height: 1.25,
@@ -525,7 +817,7 @@ class _StatusEtaRow extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                config.statusLabel,
+                uiModel.statusLabel,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
@@ -542,7 +834,7 @@ class _StatusEtaRow extends StatelessWidget {
       ],
     );
 
-    if (!config.showEta) {
+    if (!uiModel.showEta) {
       return Align(
         alignment: AlignmentDirectional.centerStart,
         child: statusGroup,
@@ -582,7 +874,10 @@ class _StatusEtaRow extends StatelessWidget {
 }
 
 class _OrderStatusIcon extends StatelessWidget {
-  const _OrderStatusIcon({required this.iconAsset, required this.cancelled});
+  const _OrderStatusIcon({
+    required this.iconAsset,
+    required this.cancelled,
+  });
 
   final String iconAsset;
   final bool cancelled;
@@ -597,7 +892,12 @@ class _OrderStatusIcon extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
-      child: Image.asset(iconAsset, width: 30, height: 30, fit: BoxFit.contain),
+      child: Image.asset(
+        iconAsset,
+        width: 30,
+        height: 30,
+        fit: BoxFit.contain,
+      ),
     );
   }
 }
@@ -631,28 +931,54 @@ class _OrderProgressBar extends StatelessWidget {
 }
 
 class _CourierDetailsSection extends StatelessWidget {
-  const _CourierDetailsSection({required this.l10n});
+  const _CourierDetailsSection({
+    required this.delivery,
+    required this.l10n,
+  });
 
+  final OrderDelivery delivery;
   final AppLocalizations l10n;
+
+  Future<void> _callCourier(String phoneNumber) async {
+    final uri = Uri(scheme: 'tel', path: phoneNumber);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final courierName = delivery.name?.isNotEmpty == true
+        ? delivery.name!
+        : l10n.orderCourierName;
+    final courierPhone = delivery.phone ?? l10n.orderCourierPhone;
+
     final courierInfo = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
-          child: _buildCourierAvatar(),
+          child: delivery.image != null && delivery.image!.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: delivery.image!,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => _buildCourierAvatar(),
+                )
+              : _buildCourierAvatar(),
         ),
         const SizedBox(width: 8),
         SizedBox(
-          width: 105,
+          width: 140,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.orderCourierName,
+                courierName,
                 textAlign: TextAlign.start,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.footerSecondary(context).copyWith(
                   color: AppColors.onSurface(context),
                   fontSize: 14,
@@ -661,26 +987,33 @@ class _CourierDetailsSection extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SvgPicture.asset(
-                    AppAssets.orderPhoneIcon,
-                    width: 16,
-                    height: 16,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    l10n.orderCourierPhone,
-                    textAlign: TextAlign.start,
-                    style: AppTextStyles.body(context).copyWith(
-                      color: AppColors.onSurface(context),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      height: 1.3,
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => _callCourier(courierPhone),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SvgPicture.asset(
+                      AppAssets.orderPhoneIcon,
+                      width: 16,
+                      height: 16,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: Text(
+                        courierPhone,
+                        textAlign: TextAlign.start,
+                        style: AppTextStyles.body(context).copyWith(
+                          color: AppColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          height: 1.3,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -736,19 +1069,34 @@ class _CourierDetailsSection extends StatelessWidget {
           children: [courierInfo, ratingBadge],
         ),
         const SizedBox(height: 16),
-        Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppColors.border(context),
+        ),
       ],
     );
   }
 }
 
 class _DeliveryAddressSection extends StatelessWidget {
-  const _DeliveryAddressSection({required this.l10n});
+  const _DeliveryAddressSection({
+    required this.order,
+    required this.l10n,
+  });
 
+  final Order? order;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
+    final isSelfPickup = order?.selfPickup == true;
+    final addressText = isSelfPickup
+        ? 'استلام بنفسك من المتجر'
+        : (order?.address?.fullAddress ??
+            order?.address?.name ??
+            l10n.deliveryAddress);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -774,7 +1122,7 @@ class _DeliveryAddressSection extends StatelessWidget {
             const SizedBox(width: 4),
             Expanded(
               child: Text(
-                l10n.deliveryAddress,
+                addressText,
                 textAlign: TextAlign.start,
                 style: AppTextStyles.body(context).copyWith(
                   color: AppColors.paragraph(context),
@@ -787,19 +1135,53 @@ class _DeliveryAddressSection extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppColors.border(context),
+        ),
       ],
     );
   }
 }
 
 class _OrderItemsSection extends StatelessWidget {
-  const _OrderItemsSection({required this.l10n});
+  const _OrderItemsSection({
+    required this.items,
+    required this.l10n,
+  });
 
+  final List<OrderItem> items;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
+    if (items.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.orderItemsTitle,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.heading4(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _OrderItemRow(item: null, l10n: l10n),
+          const SizedBox(height: 16),
+          Divider(
+            height: 1,
+            thickness: 0.5,
+            color: AppColors.border(context),
+          ),
+        ],
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -814,25 +1196,70 @@ class _OrderItemsSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _OrderItemRow(l10n: l10n),
-        const SizedBox(height: 12),
-        Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
-        const SizedBox(height: 12),
-        _OrderItemRow(l10n: l10n),
+        for (var i = 0; i < items.length; i++) ...[
+          _OrderItemRow(item: items[i], l10n: l10n),
+          if (i < items.length - 1) ...[
+            const SizedBox(height: 12),
+            Divider(
+              height: 1,
+              thickness: 0.5,
+              color: AppColors.border(context),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ],
         const SizedBox(height: 16),
-        Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppColors.border(context),
+        ),
       ],
     );
   }
 }
 
 class _OrderItemRow extends StatelessWidget {
-  const _OrderItemRow({required this.l10n});
+  const _OrderItemRow({
+    required this.item,
+    required this.l10n,
+  });
 
+  final OrderItem? item;
   final AppLocalizations l10n;
+
+  String _formatAmount(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.toInt().toString();
+    }
+    return amount.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final name = item?.name ?? l10n.orderProductName;
+    final price = item != null
+        ? '${_formatAmount(item!.lineTotal > 0 ? item!.lineTotal : (item!.unitPrice * item!.quantity))} ج.م'
+        : l10n.orderProductPrice;
+    final quantityText = l10n.orderQuantity(item?.quantity ?? 2);
+    final image = item?.image;
+
+    String? optionsText;
+    if (item != null && item!.selectedOptions.isNotEmpty) {
+      final opts = item!.selectedOptions
+          .map((e) {
+            if (e is Map) {
+              return e['name']?.toString() ?? '';
+            }
+            return e.toString();
+          })
+          .where((s) => s.isNotEmpty)
+          .toList();
+      if (opts.isNotEmpty) {
+        optionsText = opts.join(' • ');
+      }
+    }
+
     final productGroup = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -845,39 +1272,73 @@ class _OrderItemRow extends StatelessWidget {
             border: Border.all(color: AppColors.border(context), width: 0.5),
           ),
           alignment: Alignment.center,
-          child: Image.asset(
-            AppAssets.orderProductImage,
-            width: 46,
-            height: 23,
-            fit: BoxFit.contain,
-          ),
+          child: image != null && image.isNotEmpty
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                    errorWidget: (context, url, error) => Image.asset(
+                      AppAssets.orderProductImage,
+                      width: 46,
+                      height: 23,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                )
+              : Image.asset(
+                  AppAssets.orderProductImage,
+                  width: 46,
+                  height: 23,
+                  fit: BoxFit.contain,
+                ),
         ),
         const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.orderProductName,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.body(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 180),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                textAlign: TextAlign.start,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.body(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  height: 1.3,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              l10n.orderProductPrice,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.body(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                height: 1.3,
+              if (optionsText != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  optionsText,
+                  textAlign: TextAlign.start,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.caption(context).copyWith(
+                    color: AppColors.paragraph(context),
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 8),
+              Text(
+                price,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.body(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  height: 1.3,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -886,9 +1347,9 @@ class _OrderItemRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        productGroup,
+        Expanded(child: productGroup),
         Text(
-          l10n.orderQuantity(2),
+          quantityText,
           style: AppTextStyles.body(context).copyWith(
             color: AppColors.paragraph(context),
             fontSize: 12,
@@ -902,12 +1363,72 @@ class _OrderItemRow extends StatelessWidget {
 }
 
 class _PaymentSummarySection extends StatelessWidget {
-  const _PaymentSummarySection({required this.l10n});
+  const _PaymentSummarySection({
+    required this.order,
+    required this.l10n,
+  });
 
+  final Order? order;
   final AppLocalizations l10n;
+
+  String _formatAmount(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.toInt().toString();
+    }
+    return amount.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (order == null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.paymentSummary,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.heading4(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 12),
+          _SummaryRow(label: l10n.orderSubtotal, value: l10n.orderSubtotalValue),
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: l10n.orderDeliveryFee,
+            value: l10n.orderDeliveryFeeValue,
+          ),
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: l10n.orderDiscount,
+            value: l10n.orderDiscountValue,
+          ),
+          const SizedBox(height: 12),
+          Divider(
+            height: 1,
+            thickness: 0.5,
+            color: AppColors.border(context),
+          ),
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: l10n.orderGrandTotal,
+            value: l10n.orderTotal,
+            emphasized: true,
+          ),
+        ],
+      );
+    }
+
+    final summary = order!.summary;
+    final subtotal = summary.itemsSubtotal > 0
+        ? summary.itemsSubtotal
+        : summary.itemsTotal;
+    final deliveryFee = order!.selfPickup ? 0.0 : summary.delivery;
+    final discount = summary.couponDiscount + summary.offerDiscount;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -922,20 +1443,39 @@ class _PaymentSummarySection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _SummaryRow(label: l10n.orderSubtotal, value: l10n.orderSubtotalValue),
+        _SummaryRow(
+          label: l10n.orderSubtotal,
+          value: '${_formatAmount(subtotal)} ج.م',
+        ),
         const SizedBox(height: 12),
         _SummaryRow(
           label: l10n.orderDeliveryFee,
-          value: l10n.orderDeliveryFeeValue,
+          value: order!.selfPickup ? '0 ج.م' : '${_formatAmount(deliveryFee)} ج.م',
         ),
+        if (discount > 0) ...[
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: l10n.orderDiscount,
+            value: '${_formatAmount(discount)} ج.م',
+          ),
+        ],
+        if (summary.tax > 0) ...[
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: 'الضريبة (${summary.taxPercent.toInt()}%)',
+            value: '${_formatAmount(summary.tax)} ج.م',
+          ),
+        ],
         const SizedBox(height: 12),
-        _SummaryRow(label: l10n.orderDiscount, value: l10n.orderDiscountValue),
-        const SizedBox(height: 12),
-        Divider(height: 1, thickness: 0.5, color: AppColors.border(context)),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppColors.border(context),
+        ),
         const SizedBox(height: 12),
         _SummaryRow(
           label: l10n.orderGrandTotal,
-          value: l10n.orderTotal,
+          value: '${_formatAmount(summary.total)} ج.م',
           emphasized: true,
         ),
       ],
@@ -985,12 +1525,20 @@ class _SummaryRow extends StatelessWidget {
 }
 
 class _CancellationReasonSection extends StatelessWidget {
-  const _CancellationReasonSection({required this.l10n});
+  const _CancellationReasonSection({
+    required this.reason,
+    required this.l10n,
+  });
 
+  final String? reason;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
+    final displayText = reason?.isNotEmpty == true
+        ? reason!
+        : l10n.cancellationReasonSample;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1006,7 +1554,7 @@ class _CancellationReasonSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          l10n.cancellationReasonSample,
+          displayText,
           textAlign: TextAlign.start,
           style: AppTextStyles.footerSecondary(context).copyWith(
             color: AppColors.paragraph(context),
@@ -1021,10 +1569,15 @@ class _CancellationReasonSection extends StatelessWidget {
 }
 
 class _BottomCancelBar extends StatelessWidget {
-  const _BottomCancelBar({required this.label, required this.onTap});
+  const _BottomCancelBar({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -1044,7 +1597,7 @@ class _BottomCancelBar extends StatelessWidget {
       ),
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         child: Container(
           height: 48,
           alignment: Alignment.center,
@@ -1052,15 +1605,24 @@ class _BottomCancelBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: AppColors.primary, width: 0.5),
           ),
-          child: Text(
-            label,
-            style: AppTextStyles.textLink(context).copyWith(
-              color: AppColors.primary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              height: 1.25,
-            ),
-          ),
+          child: isLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primary,
+                  ),
+                )
+              : Text(
+                  label,
+                  style: AppTextStyles.textLink(context).copyWith(
+                    color: AppColors.primary,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                  ),
+                ),
         ),
       ),
     );
@@ -1068,10 +1630,15 @@ class _BottomCancelBar extends StatelessWidget {
 }
 
 class _PrimaryFilledButton extends StatelessWidget {
-  const _PrimaryFilledButton({required this.label, required this.onTap});
+  const _PrimaryFilledButton({
+    required this.label,
+    required this.onTap,
+    this.backgroundColor,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1082,7 +1649,7 @@ class _PrimaryFilledButton extends StatelessWidget {
         height: 48,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: backgroundColor ?? AppColors.primary,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -1099,7 +1666,10 @@ class _PrimaryFilledButton extends StatelessWidget {
 }
 
 class _OrderRatingSheet extends StatefulWidget {
-  const _OrderRatingSheet({required this.onSkip, required this.onSubmit});
+  const _OrderRatingSheet({
+    required this.onSkip,
+    required this.onSubmit,
+  });
 
   final VoidCallback onSkip;
   final VoidCallback onSubmit;

@@ -261,6 +261,7 @@
   "orderAcceptedShort": "Accepted",
   "orderHandedToCourierShort": "Handed to courier",
   "orderYouCancelled": "You cancelled the order",
+  "orderRejectedByStore": "Order was rejected by store",
   "cancellationReasonTitle": "Cancellation reason:",
   "cancellationReasonSample": "Delayed order confirmation",
   "rateOrderTitle": "Rating",

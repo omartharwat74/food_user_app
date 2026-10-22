@@ -12,6 +12,8 @@ import 'package:food_user_app/features/checkout/presentation/widgets/payment_opt
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
@@ -115,13 +117,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     ),
                   );
 
-                  // 4. Navigate directly to "Orders" tab in bottom navigation bar and close checkout
+                  // 4. Update orders list and refresh in background
+                  try {
+                    di.sl<OrderHistoryCubit>().updateOrder(order);
+                    di.sl<OrderHistoryCubit>().refreshOrders();
+                  } catch (_) {}
+
+                  // 5. Switch to Orders tab (index 2) and navigate to Order Details screen for this order
                   MainLayout.globalKey.currentState?.changeIndex(2);
-                  if (context.canPop()) {
-                    context.pop(true);
-                  } else {
-                    context.go(RouteNames.home);
-                  }
+                  context.pushReplacement(
+                    RouteNames.orderDetailFor(order.id.toString()),
+                    extra: order,
+                  );
                 },
                 error: (message) {
                   ScaffoldMessenger.of(context).showSnackBar(

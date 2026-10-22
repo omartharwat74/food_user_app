@@ -260,6 +260,7 @@
   "orderAcceptedShort": "تم القبول",
   "orderHandedToCourierShort": "تسليم للمندوب",
   "orderYouCancelled": "لقد قمت بالغاء الطلب",
+  "orderRejectedByStore": "تم رفض الطلب من المتجر",
   "cancellationReasonTitle": "سبب الالغاء :",
   "cancellationReasonSample": "تأخر تأكيد الطلب",
   "rateOrderTitle": "تقييم",

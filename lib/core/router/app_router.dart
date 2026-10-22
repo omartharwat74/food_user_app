@@ -30,8 +30,10 @@ import '../../features/checkout/presentation/pages/add_edit_address_screen.dart'
 import '../../features/checkout/presentation/pages/map_picker_screen.dart';
 import '../../features/checkout/presentation/pages/payment_method_screen.dart';
 import '../../features/checkout/presentation/pages/order_confirmation_screen.dart';
+import '../../features/order/domain/entities/order.dart';
 import '../../features/order/presentation/pages/order_tracking_screen.dart';
 import '../../features/order/presentation/pages/order_detail_screen.dart';
+import '../../features/order/presentation/utils/order_status_mapper.dart';
 import '../../features/order/presentation/pages/order_history_screen.dart';
 import '../../features/order/presentation/pages/rate_order_screen.dart';
 import '../../features/profile/presentation/pages/profile_screen.dart';
@@ -56,6 +58,7 @@ import '../../features/market/presentation/pages/market_details_screen.dart';
 import '../../features/market/presentation/pages/store_search_screen.dart';
 import '../../features/store/presentation/cubit/store_search/store_search_cubit.dart';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
@@ -300,12 +303,25 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.orderDetail,
-        builder: (c, s) {
+        pageBuilder: (c, s) {
           final orderId = s.pathParameters['id'] ?? '';
-          final status =
-              s.extra as OrderDetailsStatus? ??
-              OrderDetailsStatus.waitingAcceptance;
-          return OrderDetailsScreen(orderId: orderId, status: status);
+          final extra = s.extra;
+          Order? initialOrder;
+          OrderDetailsStatus status = OrderDetailsStatus.waitingAcceptance;
+          if (extra is Order) {
+            initialOrder = extra;
+            status = toOrderDetailsStatus(normalizeOrderStatus(extra.status));
+          } else if (extra is OrderDetailsStatus) {
+            status = extra;
+          }
+          return CupertinoPage<Order?>(
+            key: s.pageKey,
+            child: OrderDetailsScreen(
+              orderId: orderId,
+              initialOrder: initialOrder,
+              status: status,
+            ),
+          );
         },
       ),
       GoRoute(

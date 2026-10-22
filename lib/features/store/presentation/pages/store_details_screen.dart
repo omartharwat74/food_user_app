@@ -201,7 +201,7 @@ class StoreDetailsScreen extends StatelessWidget {
                           Text(
                             store.name,
                             style: AppTextStyles.heading4(context).copyWith(
-                              color: AppColors.surfaceCard(context),
+                              color: Colors.white,
                               fontSize: 18,
                             ),
                           ),

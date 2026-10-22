@@ -1496,6 +1496,12 @@ abstract class AppLocalizations {
   /// **'You cancelled the order'**
   String get orderYouCancelled;
 
+  /// No description provided for @orderRejectedByStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Order was rejected by store'**
+  String get orderRejectedByStore;
+
   /// No description provided for @cancellationReasonTitle.
   ///
   /// In en, this message translates to:

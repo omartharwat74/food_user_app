@@ -1,11 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/features/order/presentation/pages/order_detail_screen.dart';
+import 'package:food_user_app/features/order/domain/entities/order.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_history_state.dart';
+import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OrderHistoryScreen extends StatelessWidget {
@@ -16,39 +23,142 @@ class OrderHistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: di.sl<OrderHistoryCubit>()..loadOrders(),
+      child: const _OrderHistoryView(),
+    );
+  }
+}
+
+class _OrderHistoryView extends StatefulWidget {
+  const _OrderHistoryView();
+
+  @override
+  State<_OrderHistoryView> createState() => _OrderHistoryViewState();
+}
+
+class _OrderHistoryViewState extends State<_OrderHistoryView> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollController.hasClients &&
+        _scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200) {
+      context.read<OrderHistoryCubit>().loadMoreOrders();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final orders = _OrderCardData.samples(l10n);
 
     return ColoredBox(
       color: AppColors.scaffoldBackground(context),
-      child: CustomScrollView(
-        physics: const ClampingScrollPhysics(),
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              _screenPadding,
-              20,
-              _screenPadding,
-              0,
+      child: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          color: AppColors.primary,
+          onRefresh: () => context.read<OrderHistoryCubit>().refreshOrders(),
+          child: CustomScrollView(
+            controller: _scrollController,
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: ClampingScrollPhysics(),
             ),
-            sliver: SliverToBoxAdapter(
-              child: _OrdersHeader(title: l10n.ordersTitle),
-            ),
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsetsDirectional.fromSTEB(
+                  OrderHistoryScreen._screenPadding,
+                  20,
+                  OrderHistoryScreen._screenPadding,
+                  0,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: _OrdersHeader(title: l10n.ordersTitle),
+                ),
+              ),
+              BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
+                builder: (context, state) {
+                  if (state.status == OrderHistoryStatus.loading &&
+                      state.orders.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (state.status == OrderHistoryStatus.error &&
+                      state.orders.isEmpty) {
+                    return SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _OrderHistoryErrorView(
+                        errorMessage: state.errorMessage ?? 'حدث خطأ',
+                        onRetry: () =>
+                            context.read<OrderHistoryCubit>().loadOrders(),
+                      ),
+                    );
+                  }
+
+                  if (state.orders.isEmpty) {
+                    return const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _OrderHistoryEmptyView(),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      OrderHistoryScreen._screenPadding,
+                      20,
+                      OrderHistoryScreen._screenPadding,
+                      24,
+                    ),
+                    sliver: SliverList.separated(
+                      itemCount: state.orders.length +
+                          (state.isLoadingMore ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index >= state.orders.length) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: Center(
+                              child: SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primary,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        return _OrderCard(order: state.orders[index]);
+                      },
+                      separatorBuilder: (_, _) => const SizedBox(height: 16),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          SliverPadding(
-            padding: const EdgeInsetsDirectional.fromSTEB(
-              _screenPadding,
-              20,
-              _screenPadding,
-              24,
-            ),
-            sliver: SliverList.separated(
-              itemCount: orders.length,
-              itemBuilder: (context, index) => _OrderCard(order: orders[index]),
-              separatorBuilder: (_, _) => const SizedBox(height: 16),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -85,11 +195,16 @@ class _OrdersHeader extends StatelessWidget {
 class _OrderCard extends StatelessWidget {
   const _OrderCard({required this.order});
 
-  final _OrderCardData order;
+  final Order order;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final uiModel = OrderStatusUiModel.fromStatus(
+      status: order.status,
+      l10n: l10n,
+      isDetailScreen: false,
+    );
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
@@ -110,16 +225,19 @@ class _OrderCard extends StatelessWidget {
               thickness: 0.5,
               color: AppColors.border(context),
             ),
-            _OrderStatusRow(order: order),
-            if (order.progressStep != null) ...[
+            _OrderStatusRow(uiModel: uiModel),
+            if (uiModel.progressStep != null) ...[
               const SizedBox(height: 16),
-              _OrderProgressBar(activeStep: order.progressStep!),
+              _OrderProgressBar(activeStep: uiModel.progressStep!),
             ],
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _OrderBadge(label: order.badgeLabel, muted: order.isClosed),
+                _OrderBadge(
+                  label: uiModel.badgeLabel,
+                  muted: uiModel.isClosed,
+                ),
                 _PrimaryActionButton(
                   label: l10n.orderDetails,
                   onTap: () => _openOrderDetails(context),
@@ -132,40 +250,74 @@ class _OrderCard extends StatelessWidget {
     );
   }
 
-  void _openOrderDetails(BuildContext context) {
-    context.push(
-      RouteNames.orderDetailFor('design'),
-      extra: order.detailsStatus,
+  void _openOrderDetails(BuildContext context) async {
+    final updated = await context.push<Order?>(
+      RouteNames.orderDetailFor(order.id.toString()),
+      extra: order,
     );
+    if (context.mounted) {
+      if (updated != null) {
+        context.read<OrderHistoryCubit>().updateOrder(updated);
+      }
+      context.read<OrderHistoryCubit>().refreshOrders();
+    }
   }
 }
 
 class _OrderCardTopRow extends StatelessWidget {
   const _OrderCardTopRow({required this.order});
 
-  final _OrderCardData order;
+  final Order order;
+
+  String _formatAmount(double amount) {
+    if (amount == amount.truncateToDouble()) {
+      return amount.toInt().toString();
+    }
+    return amount.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final restaurantName = order.store?.name ?? 'المتجر';
+    final restaurantLogo = order.store?.logo;
+
     final restaurantGroup = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ClipOval(
-          child: Image.asset(
-            AppAssets.orderRestaurantAvatar,
-            width: 20,
-            height: 20,
-            fit: BoxFit.cover,
-          ),
+          child: restaurantLogo != null && restaurantLogo.isNotEmpty
+              ? CachedNetworkImage(
+                  imageUrl: restaurantLogo,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.cover,
+                  errorWidget: (context, url, error) => Image.asset(
+                    AppAssets.orderRestaurantAvatar,
+                    width: 20,
+                    height: 20,
+                    fit: BoxFit.cover,
+                  ),
+                )
+              : Image.asset(
+                  AppAssets.orderRestaurantAvatar,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.cover,
+                ),
         ),
         const SizedBox(width: 4),
-        Text(
-          order.restaurantName,
-          style: AppTextStyles.textLink(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
+        ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 120),
+          child: Text(
+            restaurantName,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.textLink(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              height: 1.25,
+            ),
           ),
         ),
       ],
@@ -175,12 +327,12 @@ class _OrderCardTopRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          order.totalLabel,
-          style: AppTextStyles.body(context).copyWith(
+          '${order.items.length} منتجات',
+          style: AppTextStyles.caption(context).copyWith(
             color: AppColors.onSurface(context),
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-            height: 1.3,
+            fontSize: 10,
+            fontWeight: FontWeight.w400,
+            height: 1.25,
           ),
         ),
         const SizedBox(width: 6),
@@ -194,12 +346,12 @@ class _OrderCardTopRow extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          order.productsLabel,
-          style: AppTextStyles.caption(context).copyWith(
+          '${_formatAmount(order.summary.total)} ج.م',
+          style: AppTextStyles.body(context).copyWith(
             color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+            height: 1.3,
           ),
         ),
       ],
@@ -214,19 +366,20 @@ class _OrderCardTopRow extends StatelessWidget {
 }
 
 class _OrderStatusRow extends StatelessWidget {
-  const _OrderStatusRow({required this.order});
+  const _OrderStatusRow({required this.uiModel});
 
-  final _OrderCardData order;
+  final OrderStatusUiModel uiModel;
 
   @override
   Widget build(BuildContext context) {
-    final showEta = order.progressStep != null;
+    final l10n = AppLocalizations.of(context)!;
+    final showEta = uiModel.showEta;
 
     final statusGroup = Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _OrderStatusIcon(cancelled: order.cancelled),
+        _OrderStatusIcon(iconAsset: uiModel.statusIconAsset),
         const SizedBox(width: 8),
         SizedBox(
           width: 151,
@@ -234,12 +387,12 @@ class _OrderStatusRow extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                order.shortStatusLabel,
+                uiModel.shortStatusLabel,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
                 style: AppTextStyles.caption(context).copyWith(
-                  color: order.statusColor,
+                  color: uiModel.statusColor,
                   fontSize: 10,
                   fontWeight: FontWeight.w400,
                   height: 1.25,
@@ -247,7 +400,7 @@ class _OrderStatusRow extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                order.statusLabel,
+                uiModel.statusLabel,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.start,
@@ -268,7 +421,7 @@ class _OrderStatusRow extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          order.etaTitle,
+          l10n.orderEstimatedArrival,
           style: AppTextStyles.caption(context).copyWith(
             color: AppColors.paragraph(context),
             fontSize: 10,
@@ -278,7 +431,7 @@ class _OrderStatusRow extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          order.etaValue,
+          l10n.orderEstimatedArrivalRange,
           style: AppTextStyles.body(context).copyWith(
             color: AppColors.onSurface(context),
             fontSize: 12,
@@ -300,9 +453,9 @@ class _OrderStatusRow extends StatelessWidget {
 }
 
 class _OrderStatusIcon extends StatelessWidget {
-  const _OrderStatusIcon({required this.cancelled});
+  const _OrderStatusIcon({required this.iconAsset});
 
-  final bool cancelled;
+  final String iconAsset;
 
   @override
   Widget build(BuildContext context) {
@@ -315,9 +468,7 @@ class _OrderStatusIcon extends StatelessWidget {
       ),
       alignment: Alignment.center,
       child: Image.asset(
-        cancelled
-            ? AppAssets.orderTornReceiptIcon
-            : AppAssets.orderReceiptRollIcon,
+        iconAsset,
         width: 30,
         height: 30,
         fit: BoxFit.contain,
@@ -416,108 +567,100 @@ class _OrderBadge extends StatelessWidget {
   }
 }
 
-class _OrderCardData {
-  const _OrderCardData({
-    required this.restaurantName,
-    required this.totalLabel,
-    required this.productsLabel,
-    required this.etaTitle,
-    required this.etaValue,
-    required this.shortStatusLabel,
-    required this.statusLabel,
-    required this.badgeLabel,
-    required this.statusColor,
-    required this.isClosed,
-    required this.detailsStatus,
-    this.progressStep,
-    this.cancelled = false,
+class _OrderHistoryEmptyView extends StatelessWidget {
+  const _OrderHistoryEmptyView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SvgPicture.asset(
+              AppAssets.paymentEmptyIcon,
+              width: 80,
+              height: 80,
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'لا توجد طلبات حتى الآن',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.heading4(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'ستظهر هنا طلباتك السابقة والحالية.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(context).copyWith(
+                color: AppColors.paragraph(context),
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OrderHistoryErrorView extends StatelessWidget {
+  const _OrderHistoryErrorView({
+    required this.errorMessage,
+    required this.onRetry,
   });
 
-  final String restaurantName;
-  final String totalLabel;
-  final String productsLabel;
-  final String etaTitle;
-  final String etaValue;
-  final String shortStatusLabel;
-  final String statusLabel;
-  final String badgeLabel;
-  final Color statusColor;
-  final bool isClosed;
-  final OrderDetailsStatus detailsStatus;
-  final int? progressStep;
-  final bool cancelled;
+  final String errorMessage;
+  final VoidCallback onRetry;
 
-  static List<_OrderCardData> samples(AppLocalizations l10n) {
-    return [
-      _OrderCardData(
-        restaurantName: l10n.orderRestaurantAzAlSham,
-        totalLabel: l10n.orderTotal,
-        productsLabel: l10n.orderProductsCount,
-        etaTitle: l10n.orderEstimatedArrival,
-        etaValue: l10n.orderEstimatedArrivalRange,
-        shortStatusLabel: l10n.orderWaitingAcceptanceShort,
-        statusLabel: l10n.orderWaitingAcceptance,
-        badgeLabel: l10n.reorder,
-        statusColor: AppColors.statusWarning,
-        isClosed: false,
-        detailsStatus: OrderDetailsStatus.waitingAcceptance,
-        progressStep: 0,
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 64,
+              color: AppColors.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              errorMessage,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.body(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: const Text(
+                'إعادة المحاولة',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       ),
-      _OrderCardData(
-        restaurantName: l10n.orderRestaurantAzAlSham,
-        totalLabel: l10n.orderTotal,
-        productsLabel: l10n.orderProductsCount,
-        etaTitle: l10n.orderEstimatedArrival,
-        etaValue: l10n.orderEstimatedArrivalRange,
-        shortStatusLabel: l10n.orderPreparingShort,
-        statusLabel: l10n.orderPreparing,
-        badgeLabel: l10n.reorder,
-        statusColor: AppColors.primary,
-        isClosed: false,
-        detailsStatus: OrderDetailsStatus.preparing,
-        progressStep: 1,
-      ),
-      _OrderCardData(
-        restaurantName: l10n.orderRestaurantAzAlSham,
-        totalLabel: l10n.orderTotal,
-        productsLabel: l10n.orderProductsCount,
-        etaTitle: l10n.orderEstimatedArrival,
-        etaValue: l10n.orderEstimatedArrivalRange,
-        shortStatusLabel: l10n.orderCourierOnWayShort,
-        statusLabel: l10n.orderCourierOnWay,
-        badgeLabel: l10n.reorder,
-        statusColor: AppColors.primary,
-        isClosed: false,
-        detailsStatus: OrderDetailsStatus.courierOnWay,
-        progressStep: 2,
-      ),
-      _OrderCardData(
-        restaurantName: l10n.orderRestaurantAzAlSham,
-        totalLabel: l10n.orderTotal,
-        productsLabel: l10n.orderProductsCount,
-        etaTitle: l10n.orderEstimatedArrival,
-        etaValue: l10n.orderEstimatedArrivalRange,
-        shortStatusLabel: l10n.orderDeliveredShort,
-        statusLabel: l10n.orderDelivered,
-        badgeLabel: l10n.orderDeliveredShort,
-        statusColor: AppColors.statusClosed,
-        isClosed: true,
-        detailsStatus: OrderDetailsStatus.delivered,
-      ),
-      _OrderCardData(
-        restaurantName: l10n.orderRestaurantAzAlSham,
-        totalLabel: l10n.orderTotal,
-        productsLabel: l10n.orderProductsCount,
-        etaTitle: l10n.orderEstimatedArrival,
-        etaValue: l10n.orderEstimatedArrivalRange,
-        shortStatusLabel: l10n.orderCancelledShort,
-        statusLabel: l10n.orderCancelled,
-        badgeLabel: l10n.orderCancelledShort,
-        statusColor: AppColors.error,
-        isClosed: true,
-        detailsStatus: OrderDetailsStatus.cancelled,
-        cancelled: true,
-      ),
-    ];
+    );
   }
 }

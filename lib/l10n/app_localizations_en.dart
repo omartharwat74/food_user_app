@@ -734,6 +734,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderYouCancelled => 'You cancelled the order';
 
   @override
+  String get orderRejectedByStore => 'Order was rejected by store';
+
+  @override
   String get cancellationReasonTitle => 'Cancellation reason:';
 
   @override

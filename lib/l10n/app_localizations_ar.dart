@@ -727,6 +727,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderYouCancelled => 'لقد قمت بالغاء الطلب';
 
   @override
+  String get orderRejectedByStore => 'تم رفض الطلب من المتجر';
+
+  @override
   String get cancellationReasonTitle => 'سبب الالغاء :';
 
   @override

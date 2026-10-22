@@ -231,6 +231,10 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
+  void clearLocalCart() {
+    emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
+  }
+
   Future<void> applyPromoCode(String code) async {
     final currentCart = state.maybeWhen(
       loaded: (cart, promo) => cart,

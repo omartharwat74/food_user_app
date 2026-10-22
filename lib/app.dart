@@ -20,6 +20,7 @@ import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cu
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/payment_method_cubit.dart';
+import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
 
 class App extends StatelessWidget {
   const App({
@@ -62,6 +63,7 @@ class App extends StatelessWidget {
           create: (_) => sl<PaymentMethodCubit>()..fetchSavedCards(),
         ),
         BlocProvider<CheckoutCubit>(create: (_) => sl<CheckoutCubit>()),
+        BlocProvider<WalletCubit>(create: (_) => sl<WalletCubit>()),
       ],
       child: AppLocaleScope(
         notifier: localeController,

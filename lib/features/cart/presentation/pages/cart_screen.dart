@@ -193,11 +193,19 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Future<void> _openCheckout() async {
-    final completed = await context.push<bool>(RouteNames.checkout);
+    final state = context.read<CartCubit>().state;
+    final couponCode = state.maybeWhen(
+      loaded: (_, promo) => promo?.code,
+      orElse: () => null,
+    );
+    final completed = await context.push<bool>(
+      RouteNames.checkout,
+      extra: couponCode,
+    );
     if (!mounted || completed != true) return;
 
-    // Clear cart upon successful checkout
-    context.read<CartCubit>().clearCart();
+    // Clear local cart upon successful checkout
+    context.read<CartCubit>().clearLocalCart();
   }
 }
 

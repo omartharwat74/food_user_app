@@ -507,7 +507,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkoutPaymentMethod => 'اختر طريقة الدفع :';
 
   @override
-  String get checkoutCashOnDelivery => 'الدفع عند الاستلام';
+  String get checkoutCashOnDelivery => 'دفع عند الاستلام';
 
   @override
   String get checkoutCashOnDeliverySubtitle => 'ادفع عند وصول طلبك';

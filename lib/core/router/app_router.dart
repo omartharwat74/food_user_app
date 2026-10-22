@@ -253,7 +253,10 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.checkout,
-        builder: (c, s) => const CheckoutScreen(),
+        builder: (c, s) {
+          final couponCode = s.extra is String ? s.extra as String : null;
+          return CheckoutScreen(couponCode: couponCode);
+        },
       ),
       GoRoute(
         path: RouteNames.addressSelection,

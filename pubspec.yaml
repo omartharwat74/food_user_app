@@ -150,6 +150,8 @@ flutter:
     - assets/images/icons/profile/
     - assets/images/payment/
     - assets/images/icons/payment/
+    - assets/images/icons/payment/2.0x/
+    - assets/images/icons/payment/3.0x/
     - assets/images/support/
     - assets/images/icons/support/
     - assets/images/onboarding_collage/

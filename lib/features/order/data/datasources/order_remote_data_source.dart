@@ -1,5 +1,6 @@
 import 'package:food_user_app/core/network/dio_client.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
+import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/features/order/data/models/order_dto.dart';
 import 'package:food_user_app/features/order/data/models/order_tracking_dto.dart';
 import 'package:food_user_app/features/order/data/models/place_order_request.dart';
@@ -22,7 +23,16 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       ApiEndpoints.orders,
       data: request.toJson(),
     );
-    return OrderDto.fromJson(response.data);
+    final data = response.data;
+    if (data is Map<String, dynamic>) {
+      final msg = data['msg']?.toString();
+      final orderData = data['data'];
+      if (orderData is Map<String, dynamic>) {
+        return OrderDto.fromJson(orderData, message: msg);
+      }
+      return OrderDto.fromJson(data, message: msg);
+    }
+    throw const ServerException('Invalid response format');
   }
 
   @override

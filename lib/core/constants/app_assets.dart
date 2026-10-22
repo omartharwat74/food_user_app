@@ -182,6 +182,8 @@ class AppAssets {
   static const paymentCreditCardIcon =
       'assets/images/icons/payment/credit-card.svg';
   static const paymentCashIcon = 'assets/images/icons/payment/money-04.svg';
+  static const paymentWalletIcon =
+      'assets/images/icons/payment/wallet-02.png';
   static const paymentMoreIcon = 'assets/images/icons/payment/payment_more.svg';
   static const paymentEditIcon = 'assets/images/icons/payment/payment_edit.svg';
   static const paymentDeleteIcon =

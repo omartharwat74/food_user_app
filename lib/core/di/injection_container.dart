@@ -618,12 +618,7 @@ void importOrderDependencies() {
     () => OrderRepositoryImpl(sl<OrderRemoteDataSource>()),
   );
   sl.registerLazySingleton(
-    () => PlaceOrderUseCase(
-      orderRepository: sl<OrderRepository>(),
-      cartRepository: sl<CartRepository>(),
-      paymentRepository: sl<PaymentRepository>(),
-      addressRepository: sl<AddressRepository>(),
-    ),
+    () => PlaceOrderUseCase(repository: sl<OrderRepository>()),
   );
   sl.registerLazySingleton(() => GetOrderDetailUseCase(sl<OrderRepository>()));
   sl.registerLazySingleton(() => GetOrderHistoryUseCase(sl<OrderRepository>()));

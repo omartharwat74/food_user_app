@@ -1,102 +1,263 @@
 import 'package:equatable/equatable.dart';
 
 class Order extends Equatable {
-  final String id;
-  final String customerId;
-  final String branchId;
+  final int id;
+  final String code;
   final String status;
-  final double subtotal;
-  final double deliveryFee;
-  final double total;
-  final double discount;
-  final List<OrderItem> items;
-  final DateTime createdAt;
-  final String restaurantName;
-  final String deliveryAddress;
-  final double? deliveryLat;
-  final double? deliveryLng;
   final String paymentMethod;
-  final int? estimatedMinutes;
-  final String? driverName;
-  final String? driverPhone;
-  final double? driverLat;
-  final double? driverLng;
+  final bool selfPickup;
+  final String? deliveryMode;
+  final OrderStore? store;
+  final List<OrderItem> items;
+  final OrderSummary summary;
+  final OrderCoupon? coupon;
+  final OrderAddress? address;
+  final OrderDelivery? delivery;
+  final String? cancelReason;
+  final DateTime? createdAt;
+  final String? message;
 
   const Order({
     required this.id,
-    required this.customerId,
-    required this.branchId,
+    required this.code,
     required this.status,
-    required this.subtotal,
-    required this.deliveryFee,
-    required this.total,
-    required this.discount,
-    required this.items,
-    required this.createdAt,
-    required this.restaurantName,
-    required this.deliveryAddress,
-    this.deliveryLat,
-    this.deliveryLng,
     required this.paymentMethod,
-    this.estimatedMinutes,
-    this.driverName,
-    this.driverPhone,
-    this.driverLat,
-    this.driverLng,
+    required this.selfPickup,
+    this.deliveryMode,
+    this.store,
+    required this.items,
+    required this.summary,
+    this.coupon,
+    this.address,
+    this.delivery,
+    this.cancelReason,
+    this.createdAt,
+    this.message,
+  });
+
+  // Backwards compatibility getters
+  String get orderId => id.toString();
+  String get restaurantName => store?.name ?? '';
+  String get deliveryAddress => address?.fullAddress ?? address?.name ?? '';
+  double get total => summary.total;
+  double get subtotal => summary.itemsSubtotal;
+  double get deliveryFee => summary.delivery;
+  double get discount => summary.couponDiscount + summary.offerDiscount;
+  String? get driverName => delivery?.name;
+  String? get driverPhone => delivery?.phone;
+  double? get driverLat => null;
+  double? get driverLng => null;
+  double? get deliveryLat => address?.lat;
+  double? get deliveryLng => address?.long;
+  String get customerId => '';
+  String get branchId => store?.id.toString() ?? '';
+  int? get estimatedMinutes => null;
+
+  @override
+  List<Object?> get props => [
+    id,
+    code,
+    status,
+    paymentMethod,
+    selfPickup,
+    deliveryMode,
+    store,
+    items,
+    summary,
+    coupon,
+    address,
+    delivery,
+    cancelReason,
+    createdAt,
+    message,
+  ];
+}
+
+class OrderStore extends Equatable {
+  final int id;
+  final String name;
+  final String? logo;
+  final String? availability;
+  final bool unavailable;
+  final String? unavailableReason;
+  final String? deliveryMode;
+
+  const OrderStore({
+    required this.id,
+    required this.name,
+    this.logo,
+    this.availability,
+    this.unavailable = false,
+    this.unavailableReason,
+    this.deliveryMode,
   });
 
   @override
   List<Object?> get props => [
     id,
-    customerId,
-    branchId,
-    status,
-    subtotal,
-    deliveryFee,
-    total,
-    discount,
-    items,
-    createdAt,
-    restaurantName,
-    deliveryAddress,
-    deliveryLat,
-    deliveryLng,
-    paymentMethod,
-    estimatedMinutes,
-    driverName,
-    driverPhone,
-    driverLat,
-    driverLng,
+    name,
+    logo,
+    availability,
+    unavailable,
+    unavailableReason,
+    deliveryMode,
   ];
 }
 
 class OrderItem extends Equatable {
-  final String menuItemId;
-  final String itemName;
+  final int? id;
+  final int? productId;
+  final String name;
+  final String? image;
   final int quantity;
+  final bool unavailable;
+  final String? unavailableReason;
+  final List<dynamic> selectedOptions;
+  final double? unitPriceBeforeOffer;
   final double unitPrice;
-  final double totalPrice;
-  final List<dynamic>? selectedModifiers;
-  final String? notes;
+  final dynamic offer;
+  final double lineTotal;
 
   const OrderItem({
-    required this.menuItemId,
-    required this.itemName,
+    this.id,
+    this.productId,
+    required this.name,
+    this.image,
     required this.quantity,
+    this.unavailable = false,
+    this.unavailableReason,
+    this.selectedOptions = const [],
+    this.unitPriceBeforeOffer,
     required this.unitPrice,
-    required this.totalPrice,
-    this.selectedModifiers,
-    this.notes,
+    this.offer,
+    required this.lineTotal,
+  });
+
+  // Backwards compatibility getters
+  String get menuItemId => productId?.toString() ?? id?.toString() ?? '';
+  String get itemName => name;
+  double get totalPrice => lineTotal;
+  List<dynamic>? get selectedModifiers => selectedOptions;
+  String? get notes => null;
+
+  @override
+  List<Object?> get props => [
+    id,
+    productId,
+    name,
+    image,
+    quantity,
+    unavailable,
+    unavailableReason,
+    selectedOptions,
+    unitPriceBeforeOffer,
+    unitPrice,
+    offer,
+    lineTotal,
+  ];
+}
+
+class OrderSummary extends Equatable {
+  final double itemsSubtotal;
+  final double offerDiscount;
+  final double itemsTotal;
+  final double taxPercent;
+  final double tax;
+  final double delivery;
+  final double couponDiscount;
+  final double total;
+
+  const OrderSummary({
+    this.itemsSubtotal = 0.0,
+    this.offerDiscount = 0.0,
+    this.itemsTotal = 0.0,
+    this.taxPercent = 0.0,
+    this.tax = 0.0,
+    this.delivery = 0.0,
+    this.couponDiscount = 0.0,
+    this.total = 0.0,
   });
 
   @override
   List<Object?> get props => [
-    menuItemId,
-    itemName,
-    quantity,
-    unitPrice,
-    totalPrice,
-    selectedModifiers,
-    notes,
+    itemsSubtotal,
+    offerDiscount,
+    itemsTotal,
+    taxPercent,
+    tax,
+    delivery,
+    couponDiscount,
+    total,
   ];
+}
+
+class OrderCoupon extends Equatable {
+  final String? code;
+  final String? type;
+  final double? value;
+
+  const OrderCoupon({
+    this.code,
+    this.type,
+    this.value,
+  });
+
+  @override
+  List<Object?> get props => [code, type, value];
+}
+
+class OrderAddress extends Equatable {
+  final int? id;
+  final String? name;
+  final String? fullAddress;
+  final String? buildingNumber;
+  final String? floor;
+  final String? apartment;
+  final double? lat;
+  final double? long;
+  final int? regionId;
+
+  const OrderAddress({
+    this.id,
+    this.name,
+    this.fullAddress,
+    this.buildingNumber,
+    this.floor,
+    this.apartment,
+    this.lat,
+    this.long,
+    this.regionId,
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    fullAddress,
+    buildingNumber,
+    floor,
+    apartment,
+    lat,
+    long,
+    regionId,
+  ];
+}
+
+class OrderDelivery extends Equatable {
+  final int? id;
+  final String? name;
+  final String? phone;
+  final String? image;
+  final String? vehicleType;
+
+  const OrderDelivery({
+    this.id,
+    this.name,
+    this.phone,
+    this.image,
+    this.vehicleType,
+  });
+
+  @override
+  List<Object?> get props => [id, name, phone, image, vehicleType];
 }

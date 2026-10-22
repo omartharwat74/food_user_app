@@ -20,7 +20,15 @@ class OrderRepositoryImpl implements OrderRepository {
       final orderDto = await remoteDataSource.placeOrder(request);
       return Right(orderDto.toEntity());
     } on DioException catch (e) {
-      return Left(ServerFailure(e.message ?? 'Server error'));
+      String errorMessage = 'حدث خطأ في إنشاء الطلب';
+      final resData = e.response?.data;
+      if (resData is Map<String, dynamic>) {
+        errorMessage =
+            (resData['msg'] ?? resData['message'] ?? errorMessage).toString();
+      } else if (e.message != null && e.message!.isNotEmpty) {
+        errorMessage = e.message!;
+      }
+      return Left(ServerFailure(errorMessage));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

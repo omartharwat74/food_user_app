@@ -8,9 +8,13 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/features/checkout/domain/entities/map_picker_result.dart';
-import 'package:food_user_app/features/checkout/presentation/widgets/checkout_payment_sheets.dart';
 import 'package:food_user_app/features/checkout/presentation/widgets/payment_options_section.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
+import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
+import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
@@ -21,7 +25,9 @@ import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key});
+  const CheckoutScreen({super.key, this.couponCode});
+
+  final String? couponCode;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -30,6 +36,27 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   CheckoutPaymentOption _paymentOption = CheckoutPaymentOption.cash;
   MapPickerResult? _selectedAddress;
+
+  String? get _effectiveCouponCode {
+    if (widget.couponCode != null && widget.couponCode!.trim().isNotEmpty) {
+      return widget.couponCode!.trim();
+    }
+    final cartState = context.read<CartCubit>().state;
+    return cartState.maybeWhen(
+      loaded: (_, promo) => promo?.code?.trim(),
+      orElse: () => null,
+    );
+  }
+
+  int? _getCurrentAddressId(SavedAddressesController controller) {
+    final addr = controller.selectedAddress ??
+        controller.addresses.where((a) => a.isDefault).firstOrNull ??
+        controller.addresses.firstOrNull;
+    if (addr?.id != null) {
+      return int.tryParse(addr!.id);
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +67,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         addressesController.loadAddressesIfNeeded();
       });
     }
-    final address = addressesController.selectedAddress;
+    final address = addressesController.selectedAddress ??
+        addressesController.addresses.where((a) => a.isDefault).firstOrNull ??
+        addressesController.addresses.firstOrNull;
     final selectedSavedAddress = (address?.fullAddress?.isNotEmpty == true)
         ? address!.fullAddress
         : (address?.title(Localizations.localeOf(context)).isNotEmpty == true)
@@ -52,13 +81,47 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       body: KeyboardDismissOnTap(
         child: SafeArea(
           bottom: false,
-          child: BlocListener<CheckoutCubit, CheckoutState>(
-            listener: (context, state) {
-              state.maybeWhen(
+          child: BlocConsumer<CheckoutCubit, CheckoutState>(
+            listener: (context, checkoutState) {
+              checkoutState.maybeWhen(
                 success: (order) {
-                  context.pushReplacement(
-                    RouteNames.orderConfirmationFor(order.id),
+                  // 1. Clear cart locally
+                  context.read<CartCubit>().clearLocalCart();
+
+                  // 2. If wallet payment, refresh wallet
+                  if (_paymentOption == CheckoutPaymentOption.wallet ||
+                      order.paymentMethod == 'wallet') {
+                    try {
+                      if (context.mounted) {
+                        context.read<WalletCubit>().loadWallet();
+                      }
+                    } catch (_) {}
+                    try {
+                      if (context.mounted) {
+                        context.read<ProfileBloc>().add(const GetProfileEvent());
+                      }
+                    } catch (_) {}
+                  }
+
+                  // 3. Show success message from server
+                  final isAr = Localizations.localeOf(context).languageCode == 'ar';
+                  final successMsg = order.message?.isNotEmpty == true
+                      ? order.message!
+                      : (isAr ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(successMsg),
+                      backgroundColor: Colors.green,
+                    ),
                   );
+
+                  // 4. Navigate directly to "Orders" tab in bottom navigation bar and close checkout
+                  MainLayout.globalKey.currentState?.changeIndex(2);
+                  if (context.canPop()) {
+                    context.pop(true);
+                  } else {
+                    context.go(RouteNames.home);
+                  }
                 },
                 error: (message) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -71,104 +134,117 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 orElse: () {},
               );
             },
-            child: BlocBuilder<CartCubit, CartState>(
-              builder: (context, cartState) {
-                final cart = cartState.maybeWhen(
-                  loaded: (c, _) => c,
-                  orElse: () => null,
-                );
-                final total = cart?.total.round() ?? 0;
+            builder: (context, checkoutState) {
+              final isPlacingOrder = checkoutState.maybeWhen(
+                loading: () => true,
+                orElse: () => false,
+              );
 
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        20,
-                        16,
-                        0,
-                      ),
-                      child: _CheckoutHeader(title: l10n.checkoutTitle),
-                    ),
-                    const SizedBox(height: 20),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const ClampingScrollPhysics(),
-                        keyboardDismissBehavior:
-                            ScrollViewKeyboardDismissBehavior.onDrag,
+              return BlocBuilder<CartCubit, CartState>(
+                builder: (context, cartState) {
+                  return Column(
+                    children: [
+                      Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
                           16,
-                          0,
+                          20,
                           16,
-                          24,
+                          0,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            _CurrentAddressCard(
-                              address:
-                                  _selectedAddress?.address ??
-                                  selectedSavedAddress ??
-                                  l10n.deliveryAddress,
-                              onChange: _changeAddress,
-                            ),
-                            const SizedBox(height: 16),
-                            PaymentOptionsSection(
-                              selectedOption: _paymentOption,
-                              onChanged: (option) =>
-                                  _handlePaymentOptionSelected(
-                                    option,
-                                    total.round(),
-                                  ),
-                            ),
-                          ],
+                        child: _CheckoutHeader(title: l10n.checkoutTitle),
+                      ),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            16,
+                            0,
+                            16,
+                            24,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              _CurrentAddressCard(
+                                address:
+                                    _selectedAddress?.address ??
+                                    selectedSavedAddress ??
+                                    l10n.deliveryAddress,
+                                onChange: _changeAddress,
+                              ),
+                              const SizedBox(height: 16),
+                              PaymentOptionsSection(
+                                selectedOption: _paymentOption,
+                                onChanged: _handlePaymentOptionSelected,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    _CheckoutBottomBar(
-                      label: l10n.checkoutConfirmOrder,
-                      onTap: () {
-                        context.read<CheckoutCubit>().checkout();
-                      },
-                    ),
-                  ],
-                );
-              },
-            ),
+                      _CheckoutBottomBar(
+                        label: l10n.checkoutConfirmOrder,
+                        isLoading: isPlacingOrder,
+                        onTap: isPlacingOrder
+                            ? null
+                            : () => _submitOrder(addressesController),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Future<void> _handlePaymentOptionSelected(
-    CheckoutPaymentOption option,
-    int total,
-  ) async {
-    if (option == CheckoutPaymentOption.cash) {
-      setState(() => _paymentOption = option);
-      return;
-    }
-
-    if (option == CheckoutPaymentOption.newCard) {
-      setState(() => _paymentOption = option);
-      final added = await showCheckoutAddCardSheet(context);
-      if (!mounted) return;
-      if (added == true) {
-        setState(() => _paymentOption = CheckoutPaymentOption.card);
-      }
+  void _handlePaymentOptionSelected(CheckoutPaymentOption option) {
+    if (option == CheckoutPaymentOption.card ||
+        option == CheckoutPaymentOption.newCard) {
+      final isAr = Localizations.localeOf(context).languageCode == 'ar';
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isAr ? 'قريباً' : 'Coming Soon'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
       return;
     }
 
     setState(() => _paymentOption = option);
-    final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showCheckoutConfirmPaymentSheet(
-      context,
-      total: l10n.cartPrice((total).toFormattedPrice()),
-    );
-    if (!mounted || confirmed != true) return;
+  }
 
-    // Let CheckoutCubit handle the final processing via confirm button tap
+  void _submitOrder(SavedAddressesController addressesController) {
+    final addressId = _getCurrentAddressId(addressesController);
+    if (addressId == null) {
+      final isAr = Localizations.localeOf(context).languageCode == 'ar';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isAr
+                ? 'يرجى تحديد عنوان التوصيل'
+                : 'Please select a delivery address',
+          ),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
+    final paymentMethod =
+        _paymentOption == CheckoutPaymentOption.wallet ? 'wallet' : 'cash';
+
+    context.read<CheckoutCubit>().checkout(
+      paymentMethod: paymentMethod,
+      addressId: addressId,
+      selfPickup: false,
+      couponCode: _effectiveCouponCode,
+    );
   }
 
   Future<void> _changeAddress() async {
@@ -177,6 +253,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (result is MapPickerResult) {
       setState(() => _selectedAddress = result);
     }
+    final addressesController = SavedAddressesScope.of(context);
+    await addressesController.loadAddresses();
+    if (mounted) setState(() {});
   }
 }
 
@@ -349,10 +428,15 @@ class _MapStrip extends StatelessWidget {
 }
 
 class _CheckoutBottomBar extends StatefulWidget {
-  const _CheckoutBottomBar({required this.label, required this.onTap});
+  const _CheckoutBottomBar({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final bool isLoading;
 
   @override
   State<_CheckoutBottomBar> createState() => _CheckoutBottomBarState();
@@ -440,7 +524,7 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                         children: [
                           Text(
                             AppLocalizations.of(context)!.orderSummary,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Color(0xFF1B1B1B),
                               fontSize: 16,
                               fontFamily: 'Expo Arabic',
@@ -497,11 +581,7 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        AppLocalizations.of(context)!.total +
-                            ' ' +
-                            AppLocalizations.of(
-                              context,
-                            )!.priceWithCurrency(total.toFormattedPrice()),
+                        '${AppLocalizations.of(context)!.total} ${AppLocalizations.of(context)!.priceWithCurrency(total.toFormattedPrice())}',
                         style: const TextStyle(
                           color: Color(0xFF1B1B1B),
                           fontSize: 16,
@@ -523,22 +603,35 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
               const SizedBox(height: 16),
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: widget.onTap,
+                onTap: widget.isLoading ? null : widget.onTap,
                 child: Container(
                   height: 48,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: widget.isLoading
+                        ? AppColors.primary.withValues(alpha: 0.6)
+                        : AppColors.primary,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    widget.label,
-                    style: AppTextStyles.primaryButtonLabel.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      height: 1.25,
-                    ),
-                  ),
+                  child: widget.isLoading
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Text(
+                          widget.label,
+                          style: AppTextStyles.primaryButtonLabel.copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            height: 1.25,
+                          ),
+                        ),
                 ),
               ),
             ],

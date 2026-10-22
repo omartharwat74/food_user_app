@@ -168,7 +168,7 @@
   "checkoutDeliveryAddress": "عنوان التوصيل",
   "checkoutChangeAddress": "تغيير العنوان",
   "checkoutPaymentMethod": "اختر طريقة الدفع :",
-  "checkoutCashOnDelivery": "الدفع عند الاستلام",
+  "checkoutCashOnDelivery": "دفع عند الاستلام",
   "checkoutCashOnDeliverySubtitle": "ادفع عند وصول طلبك",
   "checkoutCardPayment": "دفع عن طريق الفيزا",
   "checkoutConfirmOrder": "تنفيذ الطلب",

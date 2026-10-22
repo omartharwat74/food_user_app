@@ -6,7 +6,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
-enum CheckoutPaymentOption { newCard, card, cash }
+enum CheckoutPaymentOption { newCard, card, wallet, cash }
 
 class PaymentOptionsSection extends StatelessWidget {
   const PaymentOptionsSection({
@@ -21,6 +21,7 @@ class PaymentOptionsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -63,7 +64,19 @@ class PaymentOptionsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _PaymentOptionTile(
-          title: l10n.checkoutCashOnDelivery,
+          title: isAr ? 'دفع عن طريق المحفظة' : 'Pay via Wallet',
+          selected: selectedOption == CheckoutPaymentOption.wallet,
+          icon: Image.asset(
+            AppAssets.paymentWalletIcon,
+            width: 20,
+            height: 20,
+            fit: BoxFit.contain,
+          ),
+          onTap: () => onChanged(CheckoutPaymentOption.wallet),
+        ),
+        const SizedBox(height: 12),
+        _PaymentOptionTile(
+          title: isAr ? 'دفع عند الاستلام' : l10n.checkoutCashOnDelivery,
           selected: selectedOption == CheckoutPaymentOption.cash,
           icon: SvgPicture.asset(
             AppAssets.paymentCashIcon,

@@ -1,5 +1,19 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
+/// Prints long text in chunks (<= 800 chars) to prevent Android/iOS/Dart console truncation.
+void printWrapped(String text) {
+  if (text.isEmpty) {
+    debugPrint('');
+    return;
+  }
+  final pattern = RegExp('.{1,800}', dotAll: true);
+  for (final match in pattern.allMatches(text)) {
+    debugPrint(match.group(0));
+  }
+}
 
 /// Debug-only request/response logger.
 ///
@@ -7,8 +21,6 @@ import 'package:flutter/foundation.dart';
 ///   - `Authorization` header is never printed.
 ///   - `password` / `newPassword` / `confirmPassword` fields are masked.
 class LoggingInterceptor extends Interceptor {
-  static const _maxResponseBodyLogLength = 4000;
-
   static const _sensitiveBodyKeys = {
     'password',
     'newPassword',
@@ -24,10 +36,10 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (kDebugMode) {
-      debugPrint('[HTTP →] ${options.method} ${options.uri}');
+      printWrapped('[HTTP →] ${options.method} ${options.uri}');
       final body = _redactBody(options.data);
       if (body != null) {
-        debugPrint('[HTTP →] body: $body');
+        printWrapped('[HTTP → body] ${_stringifyBody(body)}');
       }
     }
     super.onRequest(options, handler);
@@ -36,12 +48,12 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     if (kDebugMode) {
-      debugPrint(
+      printWrapped(
         '[HTTP ←] ${response.statusCode} ${response.requestOptions.method} '
         '${response.requestOptions.uri}',
       );
       if (response.data != null) {
-        debugPrint('[HTTP ← body] ${_stringifyResponseBody(response.data)}');
+        printWrapped('[HTTP ← body] ${_stringifyBody(response.data)}');
       }
     }
     super.onResponse(response, handler);
@@ -50,22 +62,28 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (kDebugMode) {
-      debugPrint(
+      printWrapped(
         '[HTTP ✗] ${err.response?.statusCode ?? '-'} '
         '${err.requestOptions.method} ${err.requestOptions.uri} '
         '| ${err.type} | ${err.message ?? ''}',
       );
+      if (err.response?.data != null) {
+        printWrapped('[HTTP ✗ body] ${_stringifyBody(err.response!.data)}');
+      }
     }
     super.onError(err, handler);
   }
 
-  String _stringifyResponseBody(dynamic data) {
-    final text = data.toString();
-    if (text.length <= _maxResponseBodyLogLength) {
-      return text;
+  String _stringifyBody(dynamic data) {
+    if (data == null) return '';
+    try {
+      if (data is Map || data is List) {
+        return jsonEncode(data);
+      }
+    } catch (_) {
+      // Fallback if data is not JSON-encodable
     }
-    return '${text.substring(0, _maxResponseBodyLogLength)}... '
-        '[truncated ${text.length - _maxResponseBodyLogLength} chars]';
+    return data.toString();
   }
 
   Object? _redactBody(dynamic data) {
@@ -75,10 +93,13 @@ class LoggingInterceptor extends Interceptor {
         if (_sensitiveBodyKeys.contains(key.toString())) {
           redacted[key.toString()] = '***';
         } else {
-          redacted[key.toString()] = value;
+          redacted[key.toString()] = _redactBody(value);
         }
       });
       return redacted;
+    }
+    if (data is List) {
+      return data.map((item) => _redactBody(item)).toList();
     }
     return data;
   }

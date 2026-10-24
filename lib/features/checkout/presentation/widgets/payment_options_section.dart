@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 
 enum CheckoutPaymentOption { newCard, card, wallet, cash }
 
@@ -20,8 +20,9 @@ class PaymentOptionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = context.l10n;
+    final iconColor =
+        Theme.of(context).iconTheme.color ?? AppColors.onSurface(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,7 +44,7 @@ class PaymentOptionsSection extends StatelessWidget {
           icon: Icon(
             Icons.add_circle_outline_rounded,
             size: 20,
-            color: AppColors.onSurface(context),
+            color: iconColor,
           ),
           onTap: () => onChanged(CheckoutPaymentOption.newCard),
         ),
@@ -56,7 +57,7 @@ class PaymentOptionsSection extends StatelessWidget {
             width: 20,
             height: 20,
             colorFilter: ColorFilter.mode(
-              AppColors.onSurface(context),
+              iconColor,
               BlendMode.srcIn,
             ),
           ),
@@ -64,26 +65,27 @@ class PaymentOptionsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _PaymentOptionTile(
-          title: isAr ? 'دفع عن طريق المحفظة' : 'Pay via Wallet',
+          title: l10n.checkoutWalletPayment,
           selected: selectedOption == CheckoutPaymentOption.wallet,
           icon: Image.asset(
             AppAssets.paymentWalletIcon,
             width: 20,
             height: 20,
             fit: BoxFit.contain,
+            color: iconColor,
           ),
           onTap: () => onChanged(CheckoutPaymentOption.wallet),
         ),
         const SizedBox(height: 12),
         _PaymentOptionTile(
-          title: isAr ? 'دفع عند الاستلام' : l10n.checkoutCashOnDelivery,
+          title: l10n.checkoutCashOnDelivery,
           selected: selectedOption == CheckoutPaymentOption.cash,
           icon: SvgPicture.asset(
             AppAssets.paymentCashIcon,
             width: 20,
             height: 20,
             colorFilter: ColorFilter.mode(
-              AppColors.onSurface(context),
+              iconColor,
               BlendMode.srcIn,
             ),
           ),
@@ -116,8 +118,12 @@ class _PaymentOptionTile extends StatelessWidget {
         height: 44,
         padding: const EdgeInsetsDirectional.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surfaceCard(context),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: AppColors.border(context),
+            width: 0.5,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -154,7 +160,8 @@ class _PaymentOptionLabel extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.start,
             style: AppTextStyles.body(context).copyWith(
-              color: AppColors.onSurface(context),
+              color: Theme.of(context).textTheme.bodyLarge?.color ??
+                  AppColors.onSurface(context),
               fontSize: 12,
               fontWeight: FontWeight.w500,
               height: 1.3,
@@ -173,7 +180,8 @@ class _PaymentRadio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = AppColors.onSurface(context);
+    final selectedColor =
+        Theme.of(context).iconTheme.color ?? AppColors.onSurface(context);
 
     return Container(
       width: 20,

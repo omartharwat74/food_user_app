@@ -13,6 +13,7 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_cubit.dart';
@@ -156,7 +157,8 @@ class _OrderDetailsScreenContentState
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                state.errorMessage ?? 'الطلب غير موجود',
+                                state.errorMessage ??
+                                    context.l10n.orderNotFound,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.body(context).copyWith(
                                   color: AppColors.onSurface(context),
@@ -175,9 +177,9 @@ class _OrderDetailsScreenContentState
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                child: const Text(
-                                  'إعادة المحاولة',
-                                  style: TextStyle(color: Colors.white),
+                                child: Text(
+                                  context.l10n.tryAgain,
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                               ),
                             ],
@@ -324,9 +326,9 @@ class _OrderDetailsScreenContentState
     final cubit = parentContext.read<OrderDetailCubit>();
 
     final reasons = [
-      'تأخر تأكيد الطلب',
-      'طلب خاطئ / أريد تعديل الأصناف',
-      'سبب آخر',
+      parentContext.l10n.cancelReasonDelay,
+      parentContext.l10n.cancelReasonWrongOrder,
+      parentContext.l10n.cancelReasonOther,
     ];
     String selectedReason = reasons.first;
     final otherReasonController = TextEditingController();
@@ -341,7 +343,8 @@ class _OrderDetailsScreenContentState
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final isOther = selectedReason == 'سبب آخر';
+            final isOther =
+                selectedReason == context.l10n.cancelReasonOther;
             final keyboardBottom = MediaQuery.of(context).viewInsets.bottom;
 
             return Padding(
@@ -361,7 +364,7 @@ class _OrderDetailsScreenContentState
                       Text(
                         l10n.cancelOrder,
                         style: AppTextStyles.heading4(context).copyWith(
-                          color: const Color(0xFFA3090F),
+                          color: AppColors.primary,
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
@@ -369,16 +372,20 @@ class _OrderDetailsScreenContentState
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => Navigator.of(sheetContext).pop(),
-                        child: const Padding(
-                          padding: EdgeInsets.all(4),
-                          child: Icon(Icons.close, size: 22),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(
+                            Icons.close,
+                            size: 22,
+                            color: AppColors.onSurface(context),
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ يرجى تحديد السبب:',
+                    context.l10n.cancelOrderConfirmation,
                     style: AppTextStyles.body(context).copyWith(
                       color: AppColors.paragraph(context),
                       fontSize: 13,
@@ -398,7 +405,7 @@ class _OrderDetailsScreenContentState
                                   ? Icons.radio_button_checked
                                   : Icons.radio_button_off,
                               color: isSelected
-                                  ? const Color(0xFFA3090F)
+                                  ? AppColors.primary
                                   : AppColors.paragraph(context),
                               size: 20,
                             ),
@@ -421,7 +428,7 @@ class _OrderDetailsScreenContentState
                       controller: otherReasonController,
                       maxLines: 2,
                       decoration: InputDecoration(
-                        hintText: 'اكتب سبب الإلغاء هنا...',
+                        hintText: context.l10n.cancelOrderOtherHint,
                         hintStyle: AppTextStyles.inputHint(context).copyWith(
                           fontSize: 12,
                         ),
@@ -437,7 +444,7 @@ class _OrderDetailsScreenContentState
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(
-                            color: Color(0xFFA3090F),
+                            color: AppColors.primary,
                             width: 1,
                           ),
                         ),
@@ -449,20 +456,20 @@ class _OrderDetailsScreenContentState
                     children: [
                       Expanded(
                         child: _OutlineActionButton(
-                          label: 'تراجع',
+                          label: context.l10n.cancelOrderDismiss,
                           onTap: () => Navigator.of(sheetContext).pop(),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: _PrimaryFilledButton(
-                          label: 'تأكيد الإلغاء',
-                          backgroundColor: const Color(0xFFA3090F),
+                          label: context.l10n.confirmCancel,
+                          backgroundColor: AppColors.primary,
                           onTap: () {
                             final finalReason = isOther
                                 ? (otherReasonController.text.trim().isNotEmpty
                                     ? otherReasonController.text.trim()
-                                    : 'تأخر تأكيد الطلب')
+                                    : context.l10n.cancelReasonDelay)
                                 : selectedReason;
                             Navigator.of(sheetContext).pop();
                             cubit.cancelOrder(
@@ -643,16 +650,16 @@ class _OrderStatusSummaryCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final restaurantName = order?.store?.name ?? l10n.orderRestaurantAzAlSham;
     final totalLabel = order != null
-        ? '${_formatAmount(order!.summary.total)} ج.م'
+        ? context.l10n.priceWithCurrency(_formatAmount(order!.summary.total))
         : l10n.orderTotal;
     final productsCount = order != null
-        ? '${order!.items.length} منتجات'
+        ? context.l10n.orderProductsCountParam(order!.items.length)
         : l10n.orderProductsCount;
 
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.scaffoldBackground(context),
+        color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(OrderDetailsScreen.cardRadius),
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
@@ -1092,7 +1099,7 @@ class _DeliveryAddressSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final isSelfPickup = order?.selfPickup == true;
     final addressText = isSelfPickup
-        ? 'استلام بنفسك من المتجر'
+        ? context.l10n.orderSelfPickupFromStore
         : (order?.address?.fullAddress ??
             order?.address?.name ??
             l10n.deliveryAddress);
@@ -1239,7 +1246,9 @@ class _OrderItemRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = item?.name ?? l10n.orderProductName;
     final price = item != null
-        ? '${_formatAmount(item!.lineTotal > 0 ? item!.lineTotal : (item!.unitPrice * item!.quantity))} ج.م'
+        ? context.l10n.priceWithCurrency(_formatAmount(item!.lineTotal > 0
+            ? item!.lineTotal
+            : (item!.unitPrice * item!.quantity)))
         : l10n.orderProductPrice;
     final quantityText = l10n.orderQuantity(item?.quantity ?? 2);
     final image = item?.image;
@@ -1445,25 +1454,27 @@ class _PaymentSummarySection extends StatelessWidget {
         const SizedBox(height: 12),
         _SummaryRow(
           label: l10n.orderSubtotal,
-          value: '${_formatAmount(subtotal)} ج.م',
+          value: context.l10n.priceWithCurrency(_formatAmount(subtotal)),
         ),
         const SizedBox(height: 12),
         _SummaryRow(
           label: l10n.orderDeliveryFee,
-          value: order!.selfPickup ? '0 ج.م' : '${_formatAmount(deliveryFee)} ج.م',
+          value: order!.selfPickup
+              ? context.l10n.priceWithCurrency('0')
+              : context.l10n.priceWithCurrency(_formatAmount(deliveryFee)),
         ),
         if (discount > 0) ...[
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderDiscount,
-            value: '${_formatAmount(discount)} ج.م',
+            value: context.l10n.priceWithCurrency(_formatAmount(discount)),
           ),
         ],
         if (summary.tax > 0) ...[
           const SizedBox(height: 12),
           _SummaryRow(
-            label: 'الضريبة (${summary.taxPercent.toInt()}%)',
-            value: '${_formatAmount(summary.tax)} ج.م',
+            label: context.l10n.orderTaxWithPercent(summary.taxPercent.toInt()),
+            value: context.l10n.priceWithCurrency(_formatAmount(summary.tax)),
           ),
         ],
         const SizedBox(height: 12),
@@ -1475,7 +1486,7 @@ class _PaymentSummarySection extends StatelessWidget {
         const SizedBox(height: 12),
         _SummaryRow(
           label: l10n.orderGrandTotal,
-          value: '${_formatAmount(summary.total)} ج.م',
+          value: context.l10n.priceWithCurrency(_formatAmount(summary.total)),
           emphasized: true,
         ),
       ],

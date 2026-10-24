@@ -600,5 +600,71 @@
   "deliveryToTitle": "Delivery to :",
   "addressTypeHome": "Home",
   "addressTypeWork": "Work",
-  "addressTypeOffice": "Office"
+  "addressTypeOffice": "Office",
+  "checkoutWalletPayment": "Pay via Wallet",
+  "orderCreatedSuccess": "Order created successfully",
+  "comingSoon": "Coming Soon",
+  "pleaseSelectDeliveryAddress": "Please select a delivery address",
+  "walletErrorLoading": "Failed to load wallet data",
+  "walletPreviousTransactions": "Previous Transactions",
+  "walletCurrentBalance": "Current Balance",
+  "walletReceived": "Received :",
+  "walletPaid": "Paid :",
+  "walletTransactionDate": "Date : {date}",
+  "@walletTransactionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletNoTransactions": "No previous transactions",
+  "walletNoTransactionsSubtitle": "All wallet transactions and balance changes will appear here.",
+  "orderDefaultStore": "Store",
+  "orderProductsCountParam": "{count} products",
+  "@orderProductsCountParam": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ordersEmptyTitle": "No orders yet",
+  "ordersEmptySubtitle": "Your past and current orders will appear here.",
+  "orderNotFound": "Order not found",
+  "cancelReasonDelay": "Order confirmation delayed",
+  "cancelReasonWrongOrder": "Wrong order / want to change items",
+  "cancelReasonOther": "Other reason",
+  "cancelOrderConfirmation": "Are you sure you want to cancel this order? Please select a reason:",
+  "cancelOrderOtherHint": "Write cancellation reason here...",
+  "cancelOrderDismiss": "Go back",
+  "confirmCancel": "Confirm Cancellation",
+  "orderSelfPickupFromStore": "Self-pickup from store",
+  "orderTaxWithPercent": "Tax ({percent}%)",
+  "@orderTaxWithPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "orderThankYou": "Thank You!",
+  "orderPlacedSuccess": "Your order has been placed successfully.\nOrder ID: {orderId}",
+  "@orderPlacedSuccess": {
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      }
+    }
+  },
+  "backToHome": "Back to Home",
+  "orderTimeline": "Timeline",
+  "orderStatusLabel": "Status : {status}",
+  "@orderStatusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  }
 }

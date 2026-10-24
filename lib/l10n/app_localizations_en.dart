@@ -1703,4 +1703,110 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addressTypeOffice => 'Office';
+
+  @override
+  String get checkoutWalletPayment => 'Pay via Wallet';
+
+  @override
+  String get orderCreatedSuccess => 'Order created successfully';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get pleaseSelectDeliveryAddress => 'Please select a delivery address';
+
+  @override
+  String get walletErrorLoading => 'Failed to load wallet data';
+
+  @override
+  String get walletPreviousTransactions => 'Previous Transactions';
+
+  @override
+  String get walletCurrentBalance => 'Current Balance';
+
+  @override
+  String get walletReceived => 'Received :';
+
+  @override
+  String get walletPaid => 'Paid :';
+
+  @override
+  String walletTransactionDate(String date) {
+    return 'Date : $date';
+  }
+
+  @override
+  String get walletNoTransactions => 'No previous transactions';
+
+  @override
+  String get walletNoTransactionsSubtitle =>
+      'All wallet transactions and balance changes will appear here.';
+
+  @override
+  String get orderDefaultStore => 'Store';
+
+  @override
+  String orderProductsCountParam(int count) {
+    return '$count products';
+  }
+
+  @override
+  String get ordersEmptyTitle => 'No orders yet';
+
+  @override
+  String get ordersEmptySubtitle =>
+      'Your past and current orders will appear here.';
+
+  @override
+  String get orderNotFound => 'Order not found';
+
+  @override
+  String get cancelReasonDelay => 'Order confirmation delayed';
+
+  @override
+  String get cancelReasonWrongOrder => 'Wrong order / want to change items';
+
+  @override
+  String get cancelReasonOther => 'Other reason';
+
+  @override
+  String get cancelOrderConfirmation =>
+      'Are you sure you want to cancel this order? Please select a reason:';
+
+  @override
+  String get cancelOrderOtherHint => 'Write cancellation reason here...';
+
+  @override
+  String get cancelOrderDismiss => 'Go back';
+
+  @override
+  String get confirmCancel => 'Confirm Cancellation';
+
+  @override
+  String get orderSelfPickupFromStore => 'Self-pickup from store';
+
+  @override
+  String orderTaxWithPercent(int percent) {
+    return 'Tax ($percent%)';
+  }
+
+  @override
+  String get orderThankYou => 'Thank You!';
+
+  @override
+  String orderPlacedSuccess(String orderId) {
+    return 'Your order has been placed successfully.\nOrder ID: $orderId';
+  }
+
+  @override
+  String get backToHome => 'Back to Home';
+
+  @override
+  String get orderTimeline => 'Timeline';
+
+  @override
+  String orderStatusLabel(String status) {
+    return 'Status : $status';
+  }
 }

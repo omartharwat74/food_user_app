@@ -18,6 +18,10 @@ class PhoneNumberField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textDirection = Directionality.of(context);
+    final phoneTextStyle = AppTextStyles.inputText(context).copyWith(
+      color: Theme.of(context).textTheme.bodyLarge?.color ??
+          AppColors.onSurface(context),
+    );
 
     return Container(
       height: 48,
@@ -44,11 +48,7 @@ class PhoneNumberField extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '+20',
-                    style: AppTextStyles.inputHint(context).copyWith(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? const Color(0xFF999999)
-                          : const Color(0xFF787878),
-                    ),
+                    style: phoneTextStyle,
                   ),
                   const SizedBox(width: 12),
                   Container(
@@ -68,7 +68,7 @@ class PhoneNumberField extends StatelessWidget {
                   textInputAction: TextInputAction.done,
                   textAlign: TextAlign.start,
                   textDirection: TextDirection.ltr,
-                  style: AppTextStyles.inputText(context),
+                  style: phoneTextStyle,
                   cursorColor: AppColors.cursor(context),
                   inputFormatters: [
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),

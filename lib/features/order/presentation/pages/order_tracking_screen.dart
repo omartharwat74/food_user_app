@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_tracking_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_tracking_state.dart';
 import 'package:intl/intl.dart';
-
-import 'package:food_user_app/l10n/app_localizations.dart';
 
 class OrderTrackingScreen extends StatelessWidget {
   final String orderId;
@@ -21,7 +20,13 @@ class OrderTrackingScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.trackOrderTitle),
+          title: Text(
+            context.l10n.trackOrderTitle,
+            style: AppTextStyles.appBarTitle(context).copyWith(
+              color: AppColors.onSurface(context),
+            ),
+          ),
+          iconTheme: IconThemeData(color: AppColors.onSurface(context)),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -45,14 +50,14 @@ class OrderTrackingScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Order #${tracking.orderId}',
+                        context.l10n.orderNumber(tracking.orderId.toString()),
                         style: AppTextStyles.heading4(
                           context,
                         ).copyWith(color: AppColors.onSurface(context)),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Status: ${tracking.status}',
+                        context.l10n.orderStatusLabel(tracking.status),
                         style: AppTextStyles.body(context).copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,
@@ -60,7 +65,7 @@ class OrderTrackingScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       Text(
-                        'Timeline',
+                        context.l10n.orderTimeline,
                         style: AppTextStyles.heading4(
                           context,
                         ).copyWith(color: AppColors.onSurface(context)),
@@ -104,7 +109,10 @@ class OrderTrackingScreen extends StatelessWidget {
                                         entry.status,
                                         style: AppTextStyles.body(
                                           context,
-                                        ).copyWith(fontWeight: FontWeight.w600),
+                                        ).copyWith(
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.onSurface(context),
+                                        ),
                                       ),
                                       if (entry.description != null) ...[
                                         const SizedBox(height: 4),

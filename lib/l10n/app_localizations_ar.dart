@@ -1682,4 +1682,109 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addressTypeOffice => 'المكتب';
+
+  @override
+  String get checkoutWalletPayment => 'دفع عن طريق المحفظة';
+
+  @override
+  String get orderCreatedSuccess => 'تم إنشاء الطلب بنجاح';
+
+  @override
+  String get comingSoon => 'قريباً';
+
+  @override
+  String get pleaseSelectDeliveryAddress => 'يرجى تحديد عنوان التوصيل';
+
+  @override
+  String get walletErrorLoading => 'حدث خطأ أثناء تحميل بيانات المحفظة';
+
+  @override
+  String get walletPreviousTransactions => 'المعاملات السابقة';
+
+  @override
+  String get walletCurrentBalance => 'رصيدك الحالي';
+
+  @override
+  String get walletReceived => 'تم إستلام :';
+
+  @override
+  String get walletPaid => 'تم دفع :';
+
+  @override
+  String walletTransactionDate(String date) {
+    return 'تاريخ العملية : $date';
+  }
+
+  @override
+  String get walletNoTransactions => 'لا توجد معاملات سابقة';
+
+  @override
+  String get walletNoTransactionsSubtitle =>
+      'ستظهر هنا جميع العمليات وحركات الرصيد الخاصة بمحفظتك.';
+
+  @override
+  String get orderDefaultStore => 'المتجر';
+
+  @override
+  String orderProductsCountParam(int count) {
+    return '$count منتجات';
+  }
+
+  @override
+  String get ordersEmptyTitle => 'لا توجد طلبات حتى الآن';
+
+  @override
+  String get ordersEmptySubtitle => 'ستظهر هنا طلباتك السابقة والحالية.';
+
+  @override
+  String get orderNotFound => 'الطلب غير موجود';
+
+  @override
+  String get cancelReasonDelay => 'تأخر تأكيد الطلب';
+
+  @override
+  String get cancelReasonWrongOrder => 'طلب خاطئ / أريد تعديل الأصناف';
+
+  @override
+  String get cancelReasonOther => 'سبب آخر';
+
+  @override
+  String get cancelOrderConfirmation =>
+      'هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ يرجى تحديد السبب:';
+
+  @override
+  String get cancelOrderOtherHint => 'اكتب سبب الإلغاء هنا...';
+
+  @override
+  String get cancelOrderDismiss => 'تراجع';
+
+  @override
+  String get confirmCancel => 'تأكيد الإلغاء';
+
+  @override
+  String get orderSelfPickupFromStore => 'استلام بنفسك من المتجر';
+
+  @override
+  String orderTaxWithPercent(int percent) {
+    return 'الضريبة ($percent%)';
+  }
+
+  @override
+  String get orderThankYou => 'شكراً لك!';
+
+  @override
+  String orderPlacedSuccess(String orderId) {
+    return 'تم تقديم طلبك بنجاح.\nرقم الطلب: $orderId';
+  }
+
+  @override
+  String get backToHome => 'العودة للرئيسية';
+
+  @override
+  String get orderTimeline => 'الجدول الزمني';
+
+  @override
+  String orderStatusLabel(String status) {
+    return 'الحالة : $status';
+  }
 }

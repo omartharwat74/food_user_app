@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 
 class OrderConfirmationScreen extends StatelessWidget {
   final String orderId;
@@ -15,7 +15,7 @@ class OrderConfirmationScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.orderConfirmedTitle),
+        title: Text(context.l10n.orderConfirmedTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
@@ -30,14 +30,14 @@ class OrderConfirmationScreen extends StatelessWidget {
               const Icon(Icons.check_circle, color: Colors.green, size: 100),
               const SizedBox(height: 24),
               Text(
-                'Thank You!',
+                context.l10n.orderThankYou,
                 style: AppTextStyles.heading1(
                   context,
                 ).copyWith(color: AppColors.onSurface(context)),
               ),
               const SizedBox(height: 12),
               Text(
-                'Your order has been placed successfully.\nOrder ID: $orderId',
+                context.l10n.orderPlacedSuccess(orderId),
                 textAlign: TextAlign.center,
                 style: AppTextStyles.body(
                   context,
@@ -58,7 +58,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Track Order',
+                    context.l10n.trackOrder,
                     style: AppTextStyles.primaryButtonLabel,
                   ),
                 ),
@@ -78,7 +78,7 @@ class OrderConfirmationScreen extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Back to Home',
+                    context.l10n.backToHome,
                     style: AppTextStyles.primaryButtonLabel.copyWith(
                       color: AppColors.primary,
                     ),

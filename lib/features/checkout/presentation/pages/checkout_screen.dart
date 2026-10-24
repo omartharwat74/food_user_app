@@ -17,6 +17,7 @@ import 'package:food_user_app/features/order/presentation/cubit/order_history_cu
 import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
@@ -106,10 +107,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   }
 
                   // 3. Show success message from server
-                  final isAr = Localizations.localeOf(context).languageCode == 'ar';
                   final successMsg = order.message?.isNotEmpty == true
                       ? order.message!
-                      : (isAr ? 'تم إنشاء الطلب بنجاح' : 'Order created successfully');
+                      : context.l10n.orderCreatedSuccess;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(successMsg),
@@ -212,11 +212,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _handlePaymentOptionSelected(CheckoutPaymentOption option) {
     if (option == CheckoutPaymentOption.card ||
         option == CheckoutPaymentOption.newCard) {
-      final isAr = Localizations.localeOf(context).languageCode == 'ar';
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(isAr ? 'قريباً' : 'Coming Soon'),
+          content: Text(context.l10n.comingSoon),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -229,14 +228,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   void _submitOrder(SavedAddressesController addressesController) {
     final addressId = _getCurrentAddressId(addressesController);
     if (addressId == null) {
-      final isAr = Localizations.localeOf(context).languageCode == 'ar';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isAr
-                ? 'يرجى تحديد عنوان التوصيل'
-                : 'Please select a delivery address',
-          ),
+          content: Text(context.l10n.pleaseSelectDeliveryAddress),
           backgroundColor: AppColors.error,
         ),
       );
@@ -453,6 +447,9 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
   bool isSummaryExpanded = false;
 
   Widget _buildSummaryRow(BuildContext context, String title, String value) {
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ??
+        AppColors.onSurface(context);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: Row(
@@ -460,8 +457,8 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Color(0xFF1B1B1B),
+            style: TextStyle(
+              color: textColor,
               fontSize: 14,
               fontFamily: 'Expo Arabic',
               fontWeight: FontWeight.w500,
@@ -470,8 +467,8 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
           ),
           Text(
             value,
-            style: const TextStyle(
-              color: Color(0xFF1B1B1B),
+            style: TextStyle(
+              color: textColor,
               fontSize: 14,
               fontFamily: 'Expo Arabic',
               fontWeight: FontWeight.w500,
@@ -486,6 +483,11 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
   @override
   Widget build(BuildContext context) {
     final bottomSafe = MediaQuery.of(context).padding.bottom;
+    final barBgColor = Theme.of(context).bottomSheetTheme.backgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
+    final onSurfaceColor = Theme.of(context).textTheme.bodyLarge?.color ??
+        AppColors.onSurface(context);
+    final l10n = context.l10n;
 
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
@@ -510,7 +512,7 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
             bottomSafe > 0 ? bottomSafe : 16,
           ),
           decoration: BoxDecoration(
-            color: AppColors.surfaceCard(context),
+            color: barBgColor,
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadow.withValues(alpha: 0.08),
@@ -530,9 +532,9 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            AppLocalizations.of(context)!.orderSummary,
-                            style: const TextStyle(
-                              color: Color(0xFF1B1B1B),
+                            l10n.orderSummary,
+                            style: TextStyle(
+                              color: onSurfaceColor,
                               fontSize: 16,
                               fontFamily: 'Expo Arabic',
                               fontWeight: FontWeight.bold,
@@ -541,36 +543,30 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                           const SizedBox(height: 12),
                           _buildSummaryRow(
                             context,
-                            AppLocalizations.of(context)!.orderValue,
-                            AppLocalizations.of(
-                              context,
-                            )!.priceWithCurrency(subtotal.toFormattedPrice()),
+                            l10n.orderValue,
+                            l10n.priceWithCurrency(subtotal.toFormattedPrice()),
                           ),
                           _buildSummaryRow(
                             context,
-                            AppLocalizations.of(context)!.delivery,
-                            AppLocalizations.of(context)!.priceWithCurrency(
+                            l10n.delivery,
+                            l10n.priceWithCurrency(
                               deliveryFee.toFormattedPrice(),
                             ),
                           ),
                           _buildSummaryRow(
                             context,
-                            AppLocalizations.of(context)!.tax,
-                            AppLocalizations.of(
-                              context,
-                            )!.priceWithCurrency(tax.toFormattedPrice()),
+                            l10n.tax,
+                            l10n.priceWithCurrency(tax.toFormattedPrice()),
                           ),
                           _buildSummaryRow(
                             context,
-                            AppLocalizations.of(context)!.discount,
-                            AppLocalizations.of(
-                              context,
-                            )!.priceWithCurrency(discount.toFormattedPrice()),
+                            l10n.discount,
+                            l10n.priceWithCurrency(discount.toFormattedPrice()),
                           ),
-                          const Divider(
-                            color: Color(0xFFE5E5E5),
+                          Divider(
+                            color: AppColors.border(context),
                             thickness: 0.5,
-                            height: 0.5,
+                            height: 16,
                           ),
                         ],
                       )
@@ -588,9 +584,9 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '${AppLocalizations.of(context)!.total} ${AppLocalizations.of(context)!.priceWithCurrency(total.toFormattedPrice())}',
-                        style: const TextStyle(
-                          color: Color(0xFF1B1B1B),
+                        '${l10n.total} ${l10n.priceWithCurrency(total.toFormattedPrice())}',
+                        style: TextStyle(
+                          color: onSurfaceColor,
                           fontSize: 16,
                           fontFamily: 'Expo Arabic',
                           fontWeight: FontWeight.bold,
@@ -600,7 +596,8 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                         isSummaryExpanded
                             ? Icons.keyboard_arrow_down
                             : Icons.keyboard_arrow_up,
-                        color: const Color(0xFF1B1B1B),
+                        color: Theme.of(context).iconTheme.color ??
+                            onSurfaceColor,
                         size: 24,
                       ),
                     ],

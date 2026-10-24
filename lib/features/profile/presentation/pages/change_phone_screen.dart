@@ -335,6 +335,14 @@ class _PhoneNumberField extends StatelessWidget {
 class _EgyptPhonePrefix extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final prefixStyle = AppTextStyles.inputText(context).copyWith(
+      color: Theme.of(context).textTheme.bodyLarge?.color ??
+          AppColors.onSurface(context),
+      fontSize: 12,
+      fontWeight: FontWeight.w400,
+      height: 1.3,
+    );
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -345,14 +353,7 @@ class _EgyptPhonePrefix extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               '+20',
-              style: AppTextStyles.inputText(context).copyWith(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? const Color(0xFF999999)
-                    : const Color(0xFF787878),
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                height: 1.3,
-              ),
+              style: prefixStyle,
             ),
           ],
         ),

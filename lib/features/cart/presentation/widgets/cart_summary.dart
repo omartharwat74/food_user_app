@@ -214,7 +214,7 @@ class _DiscountBoxState extends State<_DiscountBox> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                widget.l10n.addCard,
+                widget.l10n.applyButton,
                 style: AppTextStyles.textLink(context).copyWith(
                   color: AppColors.primary,
                   fontSize: 12,

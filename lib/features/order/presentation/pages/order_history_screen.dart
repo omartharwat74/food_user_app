@@ -9,6 +9,7 @@ import 'package:food_user_app/core/di/injection_container.dart' as di;
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_state.dart';
@@ -109,7 +110,8 @@ class _OrderHistoryViewState extends State<_OrderHistoryView> {
                     return SliverFillRemaining(
                       hasScrollBody: false,
                       child: _OrderHistoryErrorView(
-                        errorMessage: state.errorMessage ?? 'حدث خطأ',
+                        errorMessage:
+                            state.errorMessage ?? context.l10n.errorOccurred,
                         onRetry: () =>
                             context.read<OrderHistoryCubit>().loadOrders(),
                       ),
@@ -212,7 +214,7 @@ class _OrderCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.scaffoldBackground(context),
+          color: AppColors.surfaceCard(context),
           borderRadius: BorderRadius.circular(OrderHistoryScreen._cardRadius),
           border: Border.all(color: AppColors.border(context), width: 0.5),
         ),
@@ -278,7 +280,7 @@ class _OrderCardTopRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final restaurantName = order.store?.name ?? 'المتجر';
+    final restaurantName = order.store?.name ?? context.l10n.orderDefaultStore;
     final restaurantLogo = order.store?.logo;
 
     final restaurantGroup = Row(
@@ -327,7 +329,7 @@ class _OrderCardTopRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${order.items.length} منتجات',
+          context.l10n.orderProductsCountParam(order.items.length),
           style: AppTextStyles.caption(context).copyWith(
             color: AppColors.onSurface(context),
             fontSize: 10,
@@ -346,7 +348,7 @@ class _OrderCardTopRow extends StatelessWidget {
         ),
         const SizedBox(width: 6),
         Text(
-          '${_formatAmount(order.summary.total)} ج.م',
+          context.l10n.priceWithCurrency(_formatAmount(order.summary.total)),
           style: AppTextStyles.body(context).copyWith(
             color: AppColors.onSurface(context),
             fontSize: 12,
@@ -582,10 +584,14 @@ class _OrderHistoryEmptyView extends StatelessWidget {
               AppAssets.paymentEmptyIcon,
               width: 80,
               height: 80,
+              colorFilter: ColorFilter.mode(
+                AppColors.paragraph(context),
+                BlendMode.srcIn,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
-              'لا توجد طلبات حتى الآن',
+              context.l10n.ordersEmptyTitle,
               textAlign: TextAlign.center,
               style: AppTextStyles.heading4(context).copyWith(
                 color: AppColors.onSurface(context),
@@ -596,7 +602,7 @@ class _OrderHistoryEmptyView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'ستظهر هنا طلباتك السابقة والحالية.',
+              context.l10n.ordersEmptySubtitle,
               textAlign: TextAlign.center,
               style: AppTextStyles.body(context).copyWith(
                 color: AppColors.paragraph(context),
@@ -653,9 +659,9 @@ class _OrderHistoryErrorView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              child: const Text(
-                'إعادة المحاولة',
-                style: TextStyle(color: Colors.white),
+              child: Text(
+                context.l10n.tryAgain,
+                style: const TextStyle(color: Colors.white),
               ),
             ),
           ],

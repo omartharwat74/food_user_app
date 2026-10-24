@@ -31,7 +31,12 @@ class AppTheme {
     brightness: Brightness.light,
     fontFamily: fontFamily,
     scaffoldBackgroundColor: AppColors.lightScaffold,
+    cardColor: AppColors.lightSurface,
     hintColor: AppColors.lightHint,
+    iconTheme: const IconThemeData(color: AppColors.lightOnSurface),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: AppColors.lightSurface,
+    ),
     colorScheme: const ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.primary,
@@ -67,7 +72,12 @@ class AppTheme {
     brightness: Brightness.dark,
     fontFamily: fontFamily,
     scaffoldBackgroundColor: AppColors.darkScaffold,
+    cardColor: AppColors.darkSurface,
     hintColor: AppColors.darkHint,
+    iconTheme: const IconThemeData(color: AppColors.text),
+    bottomSheetTheme: const BottomSheetThemeData(
+      backgroundColor: AppColors.darkSurface,
+    ),
     colorScheme: const ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.primary,

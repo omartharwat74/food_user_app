@@ -343,7 +343,15 @@ class _EmptyCardsState extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SvgPicture.asset(AppAssets.paymentEmptyIcon, width: 80, height: 80),
+          SvgPicture.asset(
+            AppAssets.paymentEmptyIcon,
+            width: 80,
+            height: 80,
+            colorFilter: ColorFilter.mode(
+              AppColors.paragraph(context),
+              BlendMode.srcIn,
+            ),
+          ),
           const SizedBox(height: 16),
           Text(
             message,

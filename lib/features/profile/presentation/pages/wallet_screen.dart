@@ -9,6 +9,7 @@ import 'package:food_user_app/core/di/injection_container.dart' as di;
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
+import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/features/wallet/domain/entities/wallet_data.dart';
 import 'package:food_user_app/features/wallet/presentation/cubit/wallet_cubit.dart';
 import 'package:food_user_app/features/wallet/presentation/cubit/wallet_state.dart';
@@ -95,9 +96,7 @@ class _WalletViewState extends State<_WalletView> {
                     if (state.isError) {
                       return _WalletErrorState(
                         message: state.errorMessage ??
-                            (isArabic
-                                ? 'حدث خطأ أثناء تحميل بيانات المحفظة'
-                                : 'Failed to load wallet data'),
+                            context.l10n.walletErrorLoading,
                         onRetry: () => context.read<WalletCubit>().loadWallet(),
                       );
                     }
@@ -129,9 +128,7 @@ class _WalletViewState extends State<_WalletView> {
                             child: Padding(
                               padding: const EdgeInsets.only(bottom: 12),
                               child: Text(
-                                isArabic
-                                    ? 'المعاملات السابقة'
-                                    : 'Previous Transactions',
+                                context.l10n.walletPreviousTransactions,
                                 textAlign: TextAlign.start,
                                 style: TextStyle(
                                   fontFamily: 'ExpoArabic',
@@ -144,9 +141,9 @@ class _WalletViewState extends State<_WalletView> {
                             ),
                           ),
                           if (items.isEmpty)
-                            SliverFillRemaining(
+                            const SliverFillRemaining(
                               hasScrollBody: false,
-                              child: _EmptyTransactionsState(isArabic: isArabic),
+                              child: _EmptyTransactionsState(),
                             )
                           else
                             SliverList(
@@ -263,7 +260,7 @@ class _BalanceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyText = isArabic ? 'ج.م' : currency;
+    final currencyText = isArabic ? context.l10n.currencyEgp : currency;
     final formattedBalance = balance.replaceAll('.', ',');
 
     return Directionality(
@@ -330,7 +327,7 @@ class _BalanceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isArabic ? 'رصيدك الحالي' : 'Current Balance',
+                          context.l10n.walletCurrentBalance,
                           style: TextStyle(
                             fontFamily: 'ExpoArabic',
                             fontSize: 14,
@@ -471,9 +468,8 @@ class _TransactionCard extends StatelessWidget {
     final amountColor =
         isCredit ? const Color(0xFF17B07F) : const Color(0xFFF34E48);
 
-    final statusLabel = isCredit
-        ? (isArabic ? 'تم إستلام :' : 'Received :')
-        : (isArabic ? 'تم دفع :' : 'Paid :');
+    final statusLabel =
+        isCredit ? context.l10n.walletReceived : context.l10n.walletPaid;
 
     final displayCode = item.note.isNotEmpty ? item.note : item.id;
     final formattedDate = _formatDate(item.createdAt);
@@ -539,9 +535,7 @@ class _TransactionCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    isArabic
-                        ? 'تاريخ العملية : $formattedDate'
-                        : 'Date : $formattedDate',
+                    context.l10n.walletTransactionDate(formattedDate),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
@@ -570,7 +564,7 @@ class _TransactionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  '$formattedAmount ${isArabic ? 'ج.م' : 'EGP'}',
+                  context.l10n.priceWithCurrency(formattedAmount),
                   style: TextStyle(
                     fontFamily: 'ExpoArabic',
                     fontSize: 15,
@@ -588,9 +582,7 @@ class _TransactionCard extends StatelessWidget {
 }
 
 class _EmptyTransactionsState extends StatelessWidget {
-  const _EmptyTransactionsState({required this.isArabic});
-
-  final bool isArabic;
+  const _EmptyTransactionsState();
 
   @override
   Widget build(BuildContext context) {
@@ -619,7 +611,7 @@ class _EmptyTransactionsState extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              isArabic ? 'لا توجد معاملات سابقة' : 'No previous transactions',
+              context.l10n.walletNoTransactions,
               style: TextStyle(
                 fontFamily: 'ExpoArabic',
                 fontSize: 16,
@@ -629,9 +621,7 @@ class _EmptyTransactionsState extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              isArabic
-                  ? 'ستظهر هنا جميع العمليات وحركات الرصيد الخاصة بمحفظتك.'
-                  : 'All wallet transactions and balance changes will appear here.',
+              context.l10n.walletNoTransactionsSubtitle,
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'ExpoArabic',
@@ -659,8 +649,6 @@ class _WalletErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -697,7 +685,7 @@ class _WalletErrorState extends StatelessWidget {
                 ),
               ),
               child: Text(
-                isArabic ? 'إعادة المحاولة' : 'Retry',
+                context.l10n.tryAgain,
                 style: const TextStyle(
                   fontFamily: 'ExpoArabic',
                   fontWeight: FontWeight.w600,

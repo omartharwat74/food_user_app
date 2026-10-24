@@ -3373,6 +3373,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Office'**
   String get addressTypeOffice;
+
+  /// No description provided for @checkoutWalletPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay via Wallet'**
+  String get checkoutWalletPayment;
+
+  /// No description provided for @orderCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Order created successfully'**
+  String get orderCreatedSuccess;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// No description provided for @pleaseSelectDeliveryAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a delivery address'**
+  String get pleaseSelectDeliveryAddress;
+
+  /// No description provided for @walletErrorLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load wallet data'**
+  String get walletErrorLoading;
+
+  /// No description provided for @walletPreviousTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Transactions'**
+  String get walletPreviousTransactions;
+
+  /// No description provided for @walletCurrentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Balance'**
+  String get walletCurrentBalance;
+
+  /// No description provided for @walletReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received :'**
+  String get walletReceived;
+
+  /// No description provided for @walletPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid :'**
+  String get walletPaid;
+
+  /// No description provided for @walletTransactionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date : {date}'**
+  String walletTransactionDate(String date);
+
+  /// No description provided for @walletNoTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous transactions'**
+  String get walletNoTransactions;
+
+  /// No description provided for @walletNoTransactionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'All wallet transactions and balance changes will appear here.'**
+  String get walletNoTransactionsSubtitle;
+
+  /// No description provided for @orderDefaultStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get orderDefaultStore;
+
+  /// No description provided for @orderProductsCountParam.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} products'**
+  String orderProductsCountParam(int count);
+
+  /// No description provided for @ordersEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get ordersEmptyTitle;
+
+  /// No description provided for @ordersEmptySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your past and current orders will appear here.'**
+  String get ordersEmptySubtitle;
+
+  /// No description provided for @orderNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Order not found'**
+  String get orderNotFound;
+
+  /// No description provided for @cancelReasonDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Order confirmation delayed'**
+  String get cancelReasonDelay;
+
+  /// No description provided for @cancelReasonWrongOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong order / want to change items'**
+  String get cancelReasonWrongOrder;
+
+  /// No description provided for @cancelReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other reason'**
+  String get cancelReasonOther;
+
+  /// No description provided for @cancelOrderConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this order? Please select a reason:'**
+  String get cancelOrderConfirmation;
+
+  /// No description provided for @cancelOrderOtherHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write cancellation reason here...'**
+  String get cancelOrderOtherHint;
+
+  /// No description provided for @cancelOrderDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get cancelOrderDismiss;
+
+  /// No description provided for @confirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Cancellation'**
+  String get confirmCancel;
+
+  /// No description provided for @orderSelfPickupFromStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-pickup from store'**
+  String get orderSelfPickupFromStore;
+
+  /// No description provided for @orderTaxWithPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Tax ({percent}%)'**
+  String orderTaxWithPercent(int percent);
+
+  /// No description provided for @orderThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank You!'**
+  String get orderThankYou;
+
+  /// No description provided for @orderPlacedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been placed successfully.\nOrder ID: {orderId}'**
+  String orderPlacedSuccess(String orderId);
+
+  /// No description provided for @backToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Home'**
+  String get backToHome;
+
+  /// No description provided for @orderTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get orderTimeline;
+
+  /// No description provided for @orderStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status : {status}'**
+  String orderStatusLabel(String status);
 }
 
 class _AppLocalizationsDelegate

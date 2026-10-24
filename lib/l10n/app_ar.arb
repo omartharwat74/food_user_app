@@ -601,5 +601,71 @@
   "deliveryToTitle": "التوصيل الى :",
   "addressTypeHome": "المنزل",
   "addressTypeWork": "العمل",
-  "addressTypeOffice": "المكتب"
+  "addressTypeOffice": "المكتب",
+  "checkoutWalletPayment": "دفع عن طريق المحفظة",
+  "orderCreatedSuccess": "تم إنشاء الطلب بنجاح",
+  "comingSoon": "قريباً",
+  "pleaseSelectDeliveryAddress": "يرجى تحديد عنوان التوصيل",
+  "walletErrorLoading": "حدث خطأ أثناء تحميل بيانات المحفظة",
+  "walletPreviousTransactions": "المعاملات السابقة",
+  "walletCurrentBalance": "رصيدك الحالي",
+  "walletReceived": "تم إستلام :",
+  "walletPaid": "تم دفع :",
+  "walletTransactionDate": "تاريخ العملية : {date}",
+  "@walletTransactionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "walletNoTransactions": "لا توجد معاملات سابقة",
+  "walletNoTransactionsSubtitle": "ستظهر هنا جميع العمليات وحركات الرصيد الخاصة بمحفظتك.",
+  "orderDefaultStore": "المتجر",
+  "orderProductsCountParam": "{count} منتجات",
+  "@orderProductsCountParam": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ordersEmptyTitle": "لا توجد طلبات حتى الآن",
+  "ordersEmptySubtitle": "ستظهر هنا طلباتك السابقة والحالية.",
+  "orderNotFound": "الطلب غير موجود",
+  "cancelReasonDelay": "تأخر تأكيد الطلب",
+  "cancelReasonWrongOrder": "طلب خاطئ / أريد تعديل الأصناف",
+  "cancelReasonOther": "سبب آخر",
+  "cancelOrderConfirmation": "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟ يرجى تحديد السبب:",
+  "cancelOrderOtherHint": "اكتب سبب الإلغاء هنا...",
+  "cancelOrderDismiss": "تراجع",
+  "confirmCancel": "تأكيد الإلغاء",
+  "orderSelfPickupFromStore": "استلام بنفسك من المتجر",
+  "orderTaxWithPercent": "الضريبة ({percent}%)",
+  "@orderTaxWithPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "orderThankYou": "شكراً لك!",
+  "orderPlacedSuccess": "تم تقديم طلبك بنجاح.\nرقم الطلب: {orderId}",
+  "@orderPlacedSuccess": {
+    "placeholders": {
+      "orderId": {
+        "type": "String"
+      }
+    }
+  },
+  "backToHome": "العودة للرئيسية",
+  "orderTimeline": "الجدول الزمني",
+  "orderStatusLabel": "الحالة : {status}",
+  "@orderStatusLabel": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  }
 }

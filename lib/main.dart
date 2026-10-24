@@ -30,6 +30,9 @@ void main() async {
 
         final localeController = LocaleController(prefs);
         localeController.hydrate();
+        if (!di.sl.isRegistered<LocaleController>()) {
+          di.sl.registerSingleton<LocaleController>(localeController);
+        }
 
         final themeController = ThemeController(prefs);
         themeController.hydrate();

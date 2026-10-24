@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:intl/intl.dart';
 
 import '../../constants/api_endpoints.dart';
 import '../../storage/token_storage.dart';
@@ -128,6 +129,8 @@ class AuthInterceptor extends Interceptor {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'Accept-Language': Intl.defaultLocale ?? 'ar',
+          'local': Intl.defaultLocale ?? 'ar',
         },
       ),
     );

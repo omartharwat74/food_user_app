@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:food_user_app/core/router/app_router.dart';
+import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class SnackbarService {
@@ -25,6 +26,20 @@ class SnackbarService {
   void showError(String message) => showMessage(message, isError: true);
 
   void showSuccess(String message) => showMessage(message, isError: false);
+
+  void showTopError(String message) {
+    final context = AppRouter.scaffoldMessengerKey.currentContext;
+    if (context != null) {
+      showTopSnackBar(context, message, isError: true);
+    }
+  }
+
+  void showTopSuccess(String message) {
+    final context = AppRouter.scaffoldMessengerKey.currentContext;
+    if (context != null) {
+      showTopSnackBar(context, message, isError: false);
+    }
+  }
 
   void handleDioError(DioException error) {
     final context = AppRouter.scaffoldMessengerKey.currentContext;

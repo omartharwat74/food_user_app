@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 
@@ -842,26 +843,11 @@ class _CardFormSheetState extends State<_CardFormSheet> {
   }
 
   void _showValidationError(String message) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            message,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
+    showTopSnackBar(
+      context,
+      message,
+      isError: true,
+    );
   }
 
   @override

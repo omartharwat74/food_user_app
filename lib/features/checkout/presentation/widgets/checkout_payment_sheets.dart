@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 Future<bool?> showCheckoutAddCardSheet(BuildContext context) {
@@ -127,6 +128,24 @@ class _AddCardSheetState extends State<_AddCardSheet> {
                   label: l10n.addCard,
                   bottomPadding: bottomSafe + 20,
                   onTap: () {
+                    final num =
+                        _numberController.text.trim().replaceAll(' ', '');
+                    final exp = _expiryController.text.trim();
+                    final cvv = _cvvController.text.trim();
+
+                    if (num.length < 15 || num.length > 19) {
+                      showTopSnackBar(context, l10n.invalidCardNumber);
+                      return;
+                    }
+                    if (!RegExp(r'^\d{2}/\d{2}$').hasMatch(exp)) {
+                      showTopSnackBar(context, l10n.invalidExpiryDate);
+                      return;
+                    }
+                    if (cvv.length < 3 || cvv.length > 4) {
+                      showTopSnackBar(context, l10n.invalidCvv);
+                      return;
+                    }
+
                     FocusManager.instance.primaryFocus?.unfocus();
                     Navigator.of(context).pop(true);
                   },

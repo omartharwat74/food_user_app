@@ -1,5 +1,5 @@
-import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageInterceptor extends Interceptor {
@@ -9,18 +9,33 @@ class LanguageInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    String language = 'ar';
+
     final saved = prefs.getString('app_locale');
-    final String language;
     if (saved == 'ar' || saved == 'en') {
       language = saved!;
+    } else if (Intl.defaultLocale != null &&
+        (Intl.defaultLocale!.startsWith('ar') ||
+            Intl.defaultLocale!.startsWith('en'))) {
+      language = Intl.defaultLocale!.startsWith('ar') ? 'ar' : 'en';
     } else {
-      final code = ui.PlatformDispatcher.instance.locale.languageCode
-          .toLowerCase();
-      language = code == 'ar' ? 'ar' : 'en';
+      try {
+        final current = Intl.getCurrentLocale();
+        if (current.toLowerCase().startsWith('en')) {
+          language = 'en';
+        } else {
+          language = 'ar';
+        }
+      } catch (_) {
+        language = 'ar';
+      }
     }
 
-    options.headers['local'] = language;
+    // Set standard Accept-Language and backend alias headers
     options.headers['Accept-Language'] = language;
+    options.headers['local'] = language;
+    options.headers['locale'] = language;
+
     super.onRequest(options, handler);
   }
 }

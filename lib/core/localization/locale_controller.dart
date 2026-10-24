@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const _kPrefsLocaleCode = 'app_locale';
@@ -12,7 +13,7 @@ class LocaleController extends ChangeNotifier {
 
   final SharedPreferences _prefs;
 
-  Locale _locale = const Locale('en');
+  Locale _locale = const Locale('ar');
 
   Locale get locale => _locale;
 
@@ -25,14 +26,16 @@ class LocaleController extends ChangeNotifier {
       _locale = const Locale('en');
     } else {
       _locale = _localeFromPlatform();
+      _prefs.setString(_kPrefsLocaleCode, _locale.languageCode);
     }
+    Intl.defaultLocale = _locale.languageCode;
     notifyListeners();
   }
 
   static Locale _localeFromPlatform() {
     final code = ui.PlatformDispatcher.instance.locale.languageCode
         .toLowerCase();
-    if (code == 'ar') {
+    if (code.startsWith('ar')) {
       return const Locale('ar');
     }
     return const Locale('en');
@@ -44,6 +47,7 @@ class LocaleController extends ChangeNotifier {
       return;
     }
     _locale = Locale(code);
+    Intl.defaultLocale = code;
     notifyListeners();
     await _prefs.setString(_kPrefsLocaleCode, code);
   }

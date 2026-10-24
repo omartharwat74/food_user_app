@@ -281,18 +281,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Product Image
-                    if (product.imageUrl.isNotEmpty)
-                      AppNetworkImage(
-                        product.imageUrl,
-                        width: double.infinity,
-                        height: 180,
-                        fit: BoxFit.contain,
-                      )
-                    else
-                      _HeroProductImage(
-                        imageAsset: AppAssets.productBurgerCombo,
-                      ),
+                    // Product Image with wavy background stripes
+                    _HeroProductImage(
+                      imageAsset: product.imageUrl.isNotEmpty
+                          ? product.imageUrl
+                          : AppAssets.productBurgerCombo,
+                    ),
 
                     // Loading Indicator
                     if (isLoading)
@@ -686,32 +680,47 @@ class _HeroProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trimmed = imageAsset.trim();
+    final isNetwork =
+        trimmed.startsWith('http://') || trimmed.startsWith('https://');
+    final isLocalAsset = trimmed.isNotEmpty && !isNetwork;
+
     return SizedBox(
-      height: 120,
+      height: 160,
       width: double.infinity,
       child: Stack(
         alignment: Alignment.center,
         children: [
+          // 1. Wavy red stripes background (Bottom layer / First child in Stack)
           Positioned.fill(
-            top: 10,
             child: Image.asset(
               AppAssets.productDetailsStripes,
               fit: BoxFit.contain,
+              width: double.infinity,
             ),
           ),
-          imageAsset.startsWith('http')
-              ? Image.network(
-                  imageAsset,
-                  width: 233,
-                  height: 120,
-                  fit: BoxFit.contain,
-                )
-              : Image.asset(
-                  imageAsset,
-                  width: 233,
-                  height: 120,
-                  fit: BoxFit.contain,
-                ),
+          // 2. Main Product Image (Foreground)
+          if (isNetwork)
+            AppNetworkImage(
+              trimmed,
+              width: double.infinity,
+              height: 160,
+              fit: BoxFit.contain,
+            )
+          else if (isLocalAsset)
+            Image.asset(
+              trimmed,
+              width: 233,
+              height: 140,
+              fit: BoxFit.contain,
+            )
+          else
+            Image.asset(
+              AppAssets.productBurgerCombo,
+              width: 233,
+              height: 140,
+              fit: BoxFit.contain,
+            ),
         ],
       ),
     );

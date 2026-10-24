@@ -158,7 +158,7 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
                 chatWidgets.add(
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: _ChatMessageBubble(
+                    child: ChatMessageBubble(
                       message: msgs[i],
                       text: _resolveMessageText(msgs[i]),
                     ),
@@ -379,7 +379,7 @@ class _SupportMessageGroup extends StatelessWidget {
                 for (final message in messages)
                   Padding(
                     padding: const EdgeInsets.only(bottom: 4),
-                    child: _ChatMessageBubble(
+                    child: ChatMessageBubble(
                       message: message,
                       text: resolveText(message),
                     ),
@@ -394,8 +394,8 @@ class _SupportMessageGroup extends StatelessWidget {
   }
 }
 
-class _ChatMessageBubble extends StatelessWidget {
-  const _ChatMessageBubble({required this.message, required this.text});
+class ChatMessageBubble extends StatelessWidget {
+  const ChatMessageBubble({super.key, required this.message, required this.text});
 
   final SupportChatMessage message;
   final String text;
@@ -465,6 +465,8 @@ class _MessageContent extends StatelessWidget {
         .firstOrNull;
 
     if (validImageUrl != null) {
+      final heroTag = 'support_chat_image_${message.id}_$validImageUrl';
+
       return ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 220),
         child: Column(
@@ -473,11 +475,12 @@ class _MessageContent extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: AppNetworkImage(
-                validImageUrl,
-                width: double.infinity,
-                height: 200,
-                fit: BoxFit.cover,
+              child: GestureDetector(
+                onTap: () => _openImageDialog(context, validImageUrl, heroTag),
+                child: Hero(
+                  tag: heroTag,
+                  child: _buildThumbnail(validImageUrl),
+                ),
               ),
             ),
             if (text.trim().isNotEmpty) _TextMessageContent(text: text),
@@ -486,6 +489,138 @@ class _MessageContent extends StatelessWidget {
       );
     }
     return _TextMessageContent(text: text);
+  }
+
+  Widget _buildThumbnail(String url) {
+    final trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return AppNetworkImage(
+        trimmed,
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+      );
+    }
+    final file = File(trimmed);
+    if (file.existsSync()) {
+      return Image.file(
+        file,
+        width: double.infinity,
+        height: 200,
+        fit: BoxFit.cover,
+      );
+    }
+    return AppNetworkImage(
+      trimmed,
+      width: double.infinity,
+      height: 200,
+      fit: BoxFit.cover,
+    );
+  }
+
+  void _openImageDialog(BuildContext context, String imageUrl, String heroTag) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      barrierDismissible: true,
+      builder: (dialogContext) => ChatImageViewerDialog(
+        imageUrl: imageUrl,
+        heroTag: heroTag,
+      ),
+    );
+  }
+}
+
+class ChatImageViewerDialog extends StatelessWidget {
+  const ChatImageViewerDialog({
+    super.key,
+    required this.imageUrl,
+    required this.heroTag,
+  });
+
+  final String imageUrl;
+  final String heroTag;
+
+  Widget _buildFullImage(String url) {
+    final trimmed = url.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return AppNetworkImage(
+        trimmed,
+        fit: BoxFit.contain,
+      );
+    }
+    final file = File(trimmed);
+    if (file.existsSync()) {
+      return Image.file(
+        file,
+        fit: BoxFit.contain,
+      );
+    }
+    return AppNetworkImage(
+      trimmed,
+      fit: BoxFit.contain,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.sizeOf(context);
+
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: EdgeInsets.zero,
+      elevation: 0,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Dismiss on tapping the backdrop
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => Navigator.of(context).pop(),
+            child: const SizedBox.expand(),
+          ),
+          // Interactive zoomable image in the center
+          Center(
+            child: InteractiveViewer(
+              minScale: 0.8,
+              maxScale: 4.0,
+              child: SizedBox(
+                width: size.width,
+                height: size.height * 0.85,
+                child: Center(
+                  child: Hero(
+                    tag: heroTag,
+                    child: _buildFullImage(imageUrl),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Close button at top corner
+          SafeArea(
+            child: Align(
+              alignment: AlignmentDirectional.topEnd,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                  tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                  style: IconButton.styleFrom(
+                    backgroundColor: Colors.black45,
+                    shape: const CircleBorder(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

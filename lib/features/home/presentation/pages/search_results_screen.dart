@@ -5,6 +5,7 @@ import 'package:food_user_app/features/search/presentation/cubit/search_cubit.da
 import 'package:food_user_app/features/search/presentation/cubit/search_state.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
+import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
@@ -16,7 +17,17 @@ class SearchResultsScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.searchResultsTitle),
+        title: Text(
+          l10n.searchResultsTitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextStyles.appBarTitle(context).copyWith(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),

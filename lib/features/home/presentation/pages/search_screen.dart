@@ -503,9 +503,12 @@ class _SearchHeader extends StatelessWidget {
           title,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.heading4(
-            context,
-          ).copyWith(fontSize: 16, height: 1.4),
+          style: AppTextStyles.appBarTitle(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
         ),
       ],
     );

@@ -203,10 +203,13 @@ class _UnifiedResultsScreenState extends State<UnifiedResultsScreen> {
           const SizedBox(width: 4),
           Text(
             title,
-            style: AppTextStyles.heading4(context).copyWith(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.appBarTitle(context).copyWith(
               color: AppColors.onSurface(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
             ),
           ),
         ],

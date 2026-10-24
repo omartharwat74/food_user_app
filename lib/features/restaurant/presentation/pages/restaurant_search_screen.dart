@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
@@ -47,7 +48,30 @@ class _RestaurantSearchScreenState extends State<RestaurantSearchScreen> {
       child: Scaffold(
         backgroundColor: AppColors.scaffoldBackground(context),
         appBar: AppBar(
-          title: Text(l10n.searchTitle),
+          leading: IconButton(
+            onPressed: () => context.pop(),
+            style: IconButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              minimumSize: const Size(28, 28),
+              padding: EdgeInsets.zero,
+            ),
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              size: 20,
+              color: AppColors.onSurface(context),
+            ),
+          ),
+          title: Text(
+            l10n.searchTitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.appBarTitle(context).copyWith(
+              color: AppColors.onSurface(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
+            ),
+          ),
           centerTitle: false,
           titleSpacing: 0,
           backgroundColor: Colors.transparent,

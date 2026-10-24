@@ -143,10 +143,13 @@ class _StoreSearchScreenState extends State<StoreSearchScreen> {
           const SizedBox(width: 4),
           Text(
             AppLocalizations.of(context)!.search,
-            style: AppTextStyles.heading4(context).copyWith(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.appBarTitle(context).copyWith(
               color: AppColors.onSurface(context),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              height: 1.4,
             ),
           ),
         ],

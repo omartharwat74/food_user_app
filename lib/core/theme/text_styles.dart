@@ -195,9 +195,10 @@ class AppTextStyles {
   );
 
   static TextStyle appBarTitle(BuildContext context) => TextStyle(
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: FontWeight.w600,
     color: AppColors.onSurface(context),
+    height: 1.4,
   );
 
   static TextStyle termsBody(BuildContext context) => TextStyle(

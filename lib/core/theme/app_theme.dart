@@ -34,6 +34,19 @@ class AppTheme {
     cardColor: AppColors.lightSurface,
     hintColor: AppColors.lightHint,
     iconTheme: const IconThemeData(color: AppColors.lightOnSurface),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.lightOnSurface,
+        height: 1.4,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.lightOnSurface),
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.lightSurface,
     ),
@@ -75,6 +88,19 @@ class AppTheme {
     cardColor: AppColors.darkSurface,
     hintColor: AppColors.darkHint,
     iconTheme: const IconThemeData(color: AppColors.text),
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      titleTextStyle: TextStyle(
+        fontFamily: fontFamily,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        color: AppColors.text,
+        height: 1.4,
+      ),
+      iconTheme: const IconThemeData(color: AppColors.text),
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: AppColors.darkSurface,
     ),

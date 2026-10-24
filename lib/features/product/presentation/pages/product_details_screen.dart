@@ -91,7 +91,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           listenWhen: (previous, current) => previous != current,
           listener: (context, cartState) {
             cartState.maybeWhen(
-              loaded: (cart, promo) {
+              loaded: (cart, promo, _) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(

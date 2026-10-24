@@ -1,13 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
+import 'package:food_user_app/core/services/snackbar_service.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
-
+import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/get_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/remove_from_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/update_cart_item_usecase.dart';
 import 'package:food_user_app/features/checkout/domain/usecases/apply_promo_usecase.dart';
-import 'package:food_user_app/core/usecases/usecase.dart';
+
 import 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
@@ -17,6 +20,7 @@ class CartCubit extends Cubit<CartState> {
   final RemoveFromCartUseCase removeFromCartUseCase;
   final ClearCartUseCase clearCartUseCase;
   final ApplyPromoUseCase applyPromoUseCase;
+  final SnackbarService _snackbarService;
 
   CartCubit({
     required this.getCartUseCase,
@@ -25,7 +29,9 @@ class CartCubit extends Cubit<CartState> {
     required this.removeFromCartUseCase,
     required this.clearCartUseCase,
     required this.applyPromoUseCase,
-  }) : super(const CartState.initial());
+    SnackbarService? snackbarService,
+  })  : _snackbarService = snackbarService ?? sl<SnackbarService>(),
+        super(const CartState.initial());
 
   Future<void> loadCart() async {
     emit(const CartState.loading());
@@ -45,12 +51,12 @@ class CartCubit extends Cubit<CartState> {
     required List<int> optionValueIds,
   }) async {
     final currentCart = state.maybeWhen(
-      loaded: (cart, promo) => cart,
+      loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
       orElse: () => const Cart.empty(),
     );
     final currentPromo = state.maybeWhen(
-      loaded: (cart, promo) => promo,
+      loaded: (cart, promo, _) => promo,
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );
@@ -115,12 +121,12 @@ class CartCubit extends Cubit<CartState> {
     String? notes,
   }) async {
     final currentCart = state.maybeWhen(
-      loaded: (cart, promo) => cart,
+      loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
       orElse: () => const Cart.empty(),
     );
     final currentPromo = state.maybeWhen(
-      loaded: (cart, promo) => promo,
+      loaded: (cart, promo, _) => promo,
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );
@@ -163,19 +169,41 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  Future<void> updateItemQuantity(String itemId, int newQuantity) async {
+  Future<void> updateItemQuantity(
+    String itemId,
+    int newQuantity, {
+    int? productId,
+  }) async {
     final currentCart = state.maybeWhen(
-      loaded: (cart, promo) => cart,
+      loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
       orElse: () => const Cart.empty(),
     );
     final currentPromo = state.maybeWhen(
-      loaded: (cart, promo) => promo,
+      loaded: (cart, promo, _) => promo,
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );
 
-    emit(const CartState.loading());
+    final resolvedProductId = productId ??
+        int.tryParse(
+          currentCart.items
+              .firstWhere(
+                (item) => item.id == itemId,
+                orElse: () => const CartItem(id: '', name: '', price: 0),
+              )
+              .menuItemId,
+        ) ??
+        int.tryParse(itemId);
+
+    // Targeted soft loading: retain current cart and mark this product as updating
+    emit(
+      CartState.loaded(
+        cart: currentCart,
+        appliedPromo: currentPromo,
+        updatingProductId: resolvedProductId,
+      ),
+    );
 
     final result = newQuantity <= 0
         ? await removeFromCartUseCase(itemId)
@@ -186,30 +214,38 @@ class CartCubit extends Cubit<CartState> {
     if (isClosed) return;
 
     result.fold(
-      (failure) => emit(
-        CartState.error(
-          cart: currentCart,
+      (failure) {
+        _snackbarService.showTopError(failure.message);
+        emit(
+          CartState.loaded(
+            cart: currentCart,
+            appliedPromo: currentPromo,
+            updatingProductId: null,
+          ),
+        );
+      },
+      (serverCart) => emit(
+        CartState.loaded(
+          cart: serverCart,
           appliedPromo: currentPromo,
-          message: failure.message,
+          updatingProductId: null,
         ),
       ),
-      (serverCart) =>
-          emit(CartState.loaded(cart: serverCart, appliedPromo: currentPromo)),
     );
   }
 
-  Future<void> removeItem(String itemId) async {
-    await updateItemQuantity(itemId, 0);
+  Future<void> removeItem(String itemId, {int? productId}) async {
+    await updateItemQuantity(itemId, 0, productId: productId);
   }
 
   Future<void> clearCart() async {
     final currentCart = state.maybeWhen(
-      loaded: (cart, promo) => cart,
+      loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
       orElse: () => const Cart.empty(),
     );
     final currentPromo = state.maybeWhen(
-      loaded: (cart, promo) => promo,
+      loaded: (cart, promo, _) => promo,
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );
@@ -237,12 +273,12 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> applyPromoCode(String code) async {
     final currentCart = state.maybeWhen(
-      loaded: (cart, promo) => cart,
+      loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
       orElse: () => const Cart.empty(),
     );
     final currentPromo = state.maybeWhen(
-      loaded: (cart, promo) => promo,
+      loaded: (cart, promo, _) => promo,
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );

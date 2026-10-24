@@ -95,7 +95,7 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
         body: BlocListener<CartCubit, CartState>(
           listener: (context, state) {
             state.maybeWhen(
-              loaded: (cart, promo) {
+              loaded: (cart, promo, _) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(

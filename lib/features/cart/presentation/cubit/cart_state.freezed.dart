@@ -131,12 +131,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult Function( Cart cart,  Promo? appliedPromo,  String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Cart cart,  Promo? appliedPromo,  int? updatingProductId)?  loaded,TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult Function( Cart cart,  Promo? appliedPromo,  String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.cart,_that.appliedPromo);case _Conflict() when conflict != null:
+return loaded(_that.cart,_that.appliedPromo,_that.updatingProductId);case _Conflict() when conflict != null:
 return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error() when error != null:
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   return orElse();
@@ -156,12 +156,12 @@ return error(_that.cart,_that.appliedPromo,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Cart cart,  Promo? appliedPromo)  loaded,required TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)  conflict,required TResult Function( Cart cart,  Promo? appliedPromo,  String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Cart cart,  Promo? appliedPromo,  int? updatingProductId)  loaded,required TResult Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)  conflict,required TResult Function( Cart cart,  Promo? appliedPromo,  String message)  error,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _Loading():
 return loading();case _Loaded():
-return loaded(_that.cart,_that.appliedPromo);case _Conflict():
+return loaded(_that.cart,_that.appliedPromo,_that.updatingProductId);case _Conflict():
 return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error():
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   throw StateError('Unexpected subclass');
@@ -180,12 +180,12 @@ return error(_that.cart,_that.appliedPromo,_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Cart cart,  Promo? appliedPromo)?  loaded,TResult? Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult? Function( Cart cart,  Promo? appliedPromo,  String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Cart cart,  Promo? appliedPromo,  int? updatingProductId)?  loaded,TResult? Function( Cart cart,  String newRestaurantId,  String menuItemId,  String name,  int price,  int quantity,  List<Map<String, dynamic>>? selectedModifiers,  String? notes)?  conflict,TResult? Function( Cart cart,  Promo? appliedPromo,  String message)?  error,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _Loading() when loading != null:
 return loading();case _Loaded() when loaded != null:
-return loaded(_that.cart,_that.appliedPromo);case _Conflict() when conflict != null:
+return loaded(_that.cart,_that.appliedPromo,_that.updatingProductId);case _Conflict() when conflict != null:
 return conflict(_that.cart,_that.newRestaurantId,_that.menuItemId,_that.name,_that.price,_that.quantity,_that.selectedModifiers,_that.notes);case _Error() when error != null:
 return error(_that.cart,_that.appliedPromo,_that.message);case _:
   return null;
@@ -263,11 +263,12 @@ String toString() {
 
 
 class _Loaded implements CartState {
-  const _Loaded({required this.cart, this.appliedPromo});
+  const _Loaded({required this.cart, this.appliedPromo, this.updatingProductId});
   
 
  final  Cart cart;
  final  Promo? appliedPromo;
+ final  int? updatingProductId;
 
 /// Create a copy of CartState
 /// with the given fields replaced by the non-null parameter values.
@@ -279,16 +280,16 @@ _$LoadedCopyWith<_Loaded> get copyWith => __$LoadedCopyWithImpl<_Loaded>(this, _
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.cart, cart) || other.cart == cart)&&(identical(other.appliedPromo, appliedPromo) || other.appliedPromo == appliedPromo));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loaded&&(identical(other.cart, cart) || other.cart == cart)&&(identical(other.appliedPromo, appliedPromo) || other.appliedPromo == appliedPromo)&&(identical(other.updatingProductId, updatingProductId) || other.updatingProductId == updatingProductId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,cart,appliedPromo);
+int get hashCode => Object.hash(runtimeType,cart,appliedPromo,updatingProductId);
 
 @override
 String toString() {
-  return 'CartState.loaded(cart: $cart, appliedPromo: $appliedPromo)';
+  return 'CartState.loaded(cart: $cart, appliedPromo: $appliedPromo, updatingProductId: $updatingProductId)';
 }
 
 
@@ -299,7 +300,7 @@ abstract mixin class _$LoadedCopyWith<$Res> implements $CartStateCopyWith<$Res> 
   factory _$LoadedCopyWith(_Loaded value, $Res Function(_Loaded) _then) = __$LoadedCopyWithImpl;
 @useResult
 $Res call({
- Cart cart, Promo? appliedPromo
+ Cart cart, Promo? appliedPromo, int? updatingProductId
 });
 
 
@@ -316,11 +317,12 @@ class __$LoadedCopyWithImpl<$Res>
 
 /// Create a copy of CartState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? cart = null,Object? appliedPromo = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? cart = null,Object? appliedPromo = freezed,Object? updatingProductId = freezed,}) {
   return _then(_Loaded(
 cart: null == cart ? _self.cart : cart // ignore: cast_nullable_to_non_nullable
 as Cart,appliedPromo: freezed == appliedPromo ? _self.appliedPromo : appliedPromo // ignore: cast_nullable_to_non_nullable
-as Promo?,
+as Promo?,updatingProductId: freezed == updatingProductId ? _self.updatingProductId : updatingProductId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

@@ -17,6 +17,7 @@ class CartSummary extends StatelessWidget {
     required this.onCheckout,
     required this.onAddMore,
     this.onApplyPromo,
+    this.isUpdating = false,
     super.key,
   });
 
@@ -28,6 +29,7 @@ class CartSummary extends StatelessWidget {
   final VoidCallback onCheckout;
   final VoidCallback onAddMore;
   final ValueChanged<String>? onApplyPromo;
+  final bool isUpdating;
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +97,7 @@ class CartSummary extends StatelessWidget {
                 child: _PrimaryButton(
                   label: l10n.cartCheckout,
                   onTap: onCheckout,
+                  isLoading: isUpdating,
                 ),
               ),
             ],
@@ -260,32 +263,48 @@ class _SummaryRow extends StatelessWidget {
 }
 
 class _PrimaryButton extends StatelessWidget {
-  const _PrimaryButton({required this.label, required this.onTap});
+  const _PrimaryButton({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         height: 48,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: AppColors.primary,
+          color: isLoading
+              ? AppColors.primary.withValues(alpha: 0.6)
+              : AppColors.primary,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
-          label,
-          style: AppTextStyles.buttonHeading(context).copyWith(
-            color: AppColors.text,
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
-          ),
-        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.text),
+                ),
+              )
+            : Text(
+                label,
+                style: AppTextStyles.buttonHeading(context).copyWith(
+                  color: AppColors.text,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.25,
+                ),
+              ),
       ),
     );
   }

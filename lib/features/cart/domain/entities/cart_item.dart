@@ -29,6 +29,8 @@ class CartItem extends Equatable {
     this.notes,
   });
 
+  int? get productId => int.tryParse(menuItemId) ?? int.tryParse(id);
+
   CartItem copyWith({
     String? id,
     String? menuItemId,

@@ -8,8 +8,11 @@ part 'cart_state.freezed.dart';
 class CartState with _$CartState {
   const factory CartState.initial() = _Initial;
   const factory CartState.loading() = _Loading;
-  const factory CartState.loaded({required Cart cart, Promo? appliedPromo}) =
-      _Loaded;
+  const factory CartState.loaded({
+    required Cart cart,
+    Promo? appliedPromo,
+    int? updatingProductId,
+  }) = _Loaded;
   const factory CartState.conflict({
     required Cart cart,
     required String newRestaurantId,
@@ -25,4 +28,13 @@ class CartState with _$CartState {
     Promo? appliedPromo,
     required String message,
   }) = _Error;
+}
+
+extension CartStateX on CartState {
+  int? get updatingProductId => maybeWhen(
+        loaded: (_, _, updatingProductId) => updatingProductId,
+        orElse: () => null,
+      );
+
+  bool get isUpdating => updatingProductId != null;
 }

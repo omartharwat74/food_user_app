@@ -46,7 +46,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
     final cartState = context.read<CartCubit>().state;
     return cartState.maybeWhen(
-      loaded: (_, promo) => promo?.code?.trim(),
+      loaded: (_, promo, _) => promo?.code?.trim(),
       orElse: () => null,
     );
   }
@@ -492,7 +492,7 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         final cart = state.maybeWhen(
-          loaded: (cart, promo) => cart,
+          loaded: (cart, promo, _) => cart,
           error: (cart, promo, message) => cart,
           orElse: () => null,
         );

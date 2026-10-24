@@ -17,7 +17,8 @@ class CartFloatingBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        final cart = state.maybeWhen(loaded: (c, _) => c, orElse: () => null);
+        final cart =
+            state.maybeWhen(loaded: (c, _, _) => c, orElse: () => null);
 
         if (cart != null &&
             cart.items.isNotEmpty &&

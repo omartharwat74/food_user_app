@@ -494,6 +494,7 @@ Future<void> init({SharedPreferences? prefs}) async {
       removeFromCartUseCase: sl<RemoveFromCartUseCase>(),
       clearCartUseCase: sl<ClearCartUseCase>(),
       applyPromoUseCase: sl<ApplyPromoUseCase>(),
+      snackbarService: sl<SnackbarService>(),
     ),
   );
 

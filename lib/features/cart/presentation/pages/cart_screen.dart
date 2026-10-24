@@ -7,6 +7,7 @@ import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_item_tile.dart';
@@ -57,12 +58,7 @@ class _CartScreenState extends State<CartScreen> {
             listener: (context, state) {
               state.maybeWhen(
                 error: (cart, promo, message) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(message),
-                      backgroundColor: AppColors.error,
-                    ),
-                  );
+                  showTopSnackBar(context, message, isError: true);
                 },
                 orElse: () {},
               );
@@ -75,9 +71,14 @@ class _CartScreenState extends State<CartScreen> {
                 );
 
                 final cart = state.maybeWhen(
-                  loaded: (c, promo) => c,
+                  loaded: (c, promo, _) => c,
                   error: (c, promo, message) => c,
                   orElse: () => const Cart.empty(),
+                );
+
+                final isUpdating = state.maybeWhen(
+                  loaded: (_, _, updatingId) => updatingId != null,
+                  orElse: () => false,
                 );
 
                 if (isLoading && cart.items.isEmpty) {
@@ -134,6 +135,7 @@ class _CartScreenState extends State<CartScreen> {
                                         .updateItemQuantity(
                                           item.id,
                                           item.quantity + 1,
+                                          productId: item.productId,
                                         );
                                   },
                                   onDecrement: () {
@@ -142,6 +144,7 @@ class _CartScreenState extends State<CartScreen> {
                                         .updateItemQuantity(
                                           item.id,
                                           item.quantity - 1,
+                                          productId: item.productId,
                                         );
                                   },
                                 );
@@ -161,6 +164,7 @@ class _CartScreenState extends State<CartScreen> {
                           tax: tax,
                           discount: discount,
                           total: total,
+                          isUpdating: isUpdating,
                           onCheckout: _openCheckout,
                           onAddMore: () {
                             if (cart.restaurantId != null) {
@@ -194,8 +198,14 @@ class _CartScreenState extends State<CartScreen> {
 
   Future<void> _openCheckout() async {
     final state = context.read<CartCubit>().state;
+    final isUpdating = state.maybeWhen(
+      loaded: (_, _, updatingId) => updatingId != null,
+      orElse: () => false,
+    );
+    if (isUpdating) return;
+
     final couponCode = state.maybeWhen(
-      loaded: (_, promo) => promo?.code,
+      loaded: (_, promo, _) => promo?.code,
       orElse: () => null,
     );
     final completed = await context.push<bool>(

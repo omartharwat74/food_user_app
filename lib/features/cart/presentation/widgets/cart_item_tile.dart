@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
-import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
+import 'package:food_user_app/l10n/app_localizations.dart';
 
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
@@ -14,6 +17,7 @@ class CartItemTile extends StatelessWidget {
     required this.onEdit,
     required this.onIncrement,
     required this.onDecrement,
+    this.isUpdating,
     super.key,
   });
 
@@ -21,6 +25,18 @@ class CartItemTile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
+  final bool? isUpdating;
+
+  bool _isItemUpdating(CartState state) {
+    return state.maybeWhen(
+      loaded: (_, _, id) =>
+          id != null &&
+          (id == item.productId ||
+              id.toString() == item.id ||
+              id.toString() == item.menuItemId),
+      orElse: () => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -121,15 +137,54 @@ class CartItemTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              _QuantityControl(
-                quantity: item.quantity,
-                onIncrement: onIncrement,
-                onDecrement: onDecrement,
-              ),
+              if (isUpdating != null)
+                _buildQuantityControl(context, isUpdating!)
+              else
+                BlocBuilder<CartCubit, CartState>(
+                  buildWhen: (previous, current) {
+                    final prevUpdating = _isItemUpdating(previous);
+                    final currUpdating = _isItemUpdating(current);
+                    return prevUpdating != currUpdating;
+                  },
+                  builder: (context, state) {
+                    return _buildQuantityControl(
+                      context,
+                      _isItemUpdating(state),
+                    );
+                  },
+                ),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildQuantityControl(BuildContext context, bool updating) {
+    if (updating) {
+      return Container(
+        height: 38,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.border(context), width: 0.5),
+        ),
+        alignment: Alignment.center,
+        child: const SizedBox(
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
+        ),
+      );
+    }
+
+    return _QuantityControl(
+      quantity: item.quantity,
+      onIncrement: onIncrement,
+      onDecrement: onDecrement,
     );
   }
 }

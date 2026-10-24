@@ -252,6 +252,7 @@ class _OrderDetailsScreenContentState
                                   ),
                                   _OrderStatusSummaryCard(
                                     order: order,
+                                    orderId: widget.orderId,
                                     uiModel: uiModel,
                                   ),
                                   const SizedBox(height: 16),
@@ -632,10 +633,12 @@ class _OrderDetailsHeader extends StatelessWidget {
 class _OrderStatusSummaryCard extends StatelessWidget {
   const _OrderStatusSummaryCard({
     required this.order,
+    this.orderId,
     required this.uiModel,
   });
 
   final Order? order;
+  final String? orderId;
   final OrderStatusUiModel uiModel;
 
   String _formatAmount(double amount) {
@@ -668,6 +671,7 @@ class _OrderStatusSummaryCard extends StatelessWidget {
         children: [
           _RestaurantPriceRow(
             order: order,
+            orderId: orderId,
             restaurantName: restaurantName,
             totalLabel: totalLabel,
             productsLabel: productsCount,
@@ -691,12 +695,14 @@ class _OrderStatusSummaryCard extends StatelessWidget {
 class _RestaurantPriceRow extends StatelessWidget {
   const _RestaurantPriceRow({
     required this.order,
+    this.orderId,
     required this.restaurantName,
     required this.totalLabel,
     required this.productsLabel,
   });
 
   final Order? order;
+  final String? orderId;
   final String restaurantName;
   final String totalLabel;
   final String productsLabel;
@@ -704,6 +710,27 @@ class _RestaurantPriceRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final logo = order?.store?.logo;
+
+    final rawCode = order?.code.isNotEmpty == true
+        ? order!.code
+        : (order != null && order!.id > 0
+            ? order!.id.toString()
+            : (orderId ?? ''));
+    final orderCode = rawCode.isNotEmpty
+        ? (rawCode.startsWith('#') ? rawCode : '#$rawCode')
+        : '';
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final dotColor = isDark
+        ? (Colors.grey[600] ?? Theme.of(context).dividerColor)
+        : const Color(0xFFB6B6B6);
+
+    final productsCountStyle = AppTextStyles.caption(context).copyWith(
+      color: AppColors.onSurface(context),
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+      height: 1.25,
+    );
 
     final restaurantGroup = Row(
       mainAxisSize: MainAxisSize.min,
@@ -730,8 +757,7 @@ class _RestaurantPriceRow extends StatelessWidget {
                 ),
         ),
         const SizedBox(width: 4),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 120),
+        Flexible(
           child: Text(
             restaurantName,
             maxLines: 1,
@@ -744,6 +770,24 @@ class _RestaurantPriceRow extends StatelessWidget {
             ),
           ),
         ),
+        if (orderCode.isNotEmpty) ...[
+          const SizedBox(width: 6),
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            orderCode,
+            maxLines: 1,
+            textDirection: TextDirection.ltr,
+            style: productsCountStyle,
+          ),
+        ],
       ],
     );
 
@@ -752,12 +796,7 @@ class _RestaurantPriceRow extends StatelessWidget {
       children: [
         Text(
           productsLabel,
-          style: AppTextStyles.caption(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
-          ),
+          style: productsCountStyle,
         ),
         const SizedBox(width: 6),
         Container(
@@ -782,8 +821,12 @@ class _RestaurantPriceRow extends StatelessWidget {
     );
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [restaurantGroup, priceGroup],
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(child: restaurantGroup),
+        const SizedBox(width: 8),
+        priceGroup,
+      ],
     );
   }
 }

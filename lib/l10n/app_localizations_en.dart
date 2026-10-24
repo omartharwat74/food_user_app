@@ -1809,4 +1809,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String orderStatusLabel(String status) {
     return 'Status : $status';
   }
+
+  @override
+  String get invalidCardNumber => 'Invalid card number';
+
+  @override
+  String get invalidExpiryDate => 'Invalid expiry date';
+
+  @override
+  String get invalidCvv => 'Invalid CVV';
 }

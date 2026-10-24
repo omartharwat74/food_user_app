@@ -3559,6 +3559,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status : {status}'**
   String orderStatusLabel(String status);
+
+  /// No description provided for @invalidCardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid card number'**
+  String get invalidCardNumber;
+
+  /// No description provided for @invalidExpiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid expiry date'**
+  String get invalidExpiryDate;
+
+  /// No description provided for @invalidCvv.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid CVV'**
+  String get invalidCvv;
 }
 
 class _AppLocalizationsDelegate

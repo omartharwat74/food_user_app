@@ -1787,4 +1787,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String orderStatusLabel(String status) {
     return 'الحالة : $status';
   }
+
+  @override
+  String get invalidCardNumber => 'رقم البطاقة غير صالح';
+
+  @override
+  String get invalidExpiryDate => 'تاريخ الانتهاء غير صالح';
+
+  @override
+  String get invalidCvv => 'رمز الأمان (CVV) غير صالح';
 }

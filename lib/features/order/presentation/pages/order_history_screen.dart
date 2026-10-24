@@ -283,6 +283,25 @@ class _OrderCardTopRow extends StatelessWidget {
     final restaurantName = order.store?.name ?? context.l10n.orderDefaultStore;
     final restaurantLogo = order.store?.logo;
 
+    final rawCode = order.code.isNotEmpty
+        ? order.code
+        : (order.id > 0 ? order.id.toString() : '');
+    final orderCode = rawCode.isNotEmpty
+        ? (rawCode.startsWith('#') ? rawCode : '#$rawCode')
+        : '';
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final dotColor = isDark
+        ? (Colors.grey[600] ?? Theme.of(context).dividerColor)
+        : const Color(0xFFB6B6B6);
+
+    final productsCountStyle = AppTextStyles.caption(context).copyWith(
+      color: AppColors.onSurface(context),
+      fontSize: 10,
+      fontWeight: FontWeight.w400,
+      height: 1.25,
+    );
+
     final restaurantGroup = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -308,8 +327,7 @@ class _OrderCardTopRow extends StatelessWidget {
                 ),
         ),
         const SizedBox(width: 4),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 120),
+        Flexible(
           child: Text(
             restaurantName,
             maxLines: 1,
@@ -322,6 +340,24 @@ class _OrderCardTopRow extends StatelessWidget {
             ),
           ),
         ),
+        if (orderCode.isNotEmpty) ...[
+          const SizedBox(width: 6),
+          Container(
+            width: 4,
+            height: 4,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            orderCode,
+            maxLines: 1,
+            textDirection: TextDirection.ltr,
+            style: productsCountStyle,
+          ),
+        ],
       ],
     );
 
@@ -330,12 +366,7 @@ class _OrderCardTopRow extends StatelessWidget {
       children: [
         Text(
           context.l10n.orderProductsCountParam(order.items.length),
-          style: AppTextStyles.caption(context).copyWith(
-            color: AppColors.onSurface(context),
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            height: 1.25,
-          ),
+          style: productsCountStyle,
         ),
         const SizedBox(width: 6),
         Container(
@@ -360,9 +391,12 @@ class _OrderCardTopRow extends StatelessWidget {
     );
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
-      children: [restaurantGroup, priceGroup],
+      children: [
+        Expanded(child: restaurantGroup),
+        const SizedBox(width: 8),
+        priceGroup,
+      ],
     );
   }
 }

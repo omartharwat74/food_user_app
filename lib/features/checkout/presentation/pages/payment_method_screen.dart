@@ -781,7 +781,6 @@ class _CardFormSheet extends StatefulWidget {
 }
 
 class _CardFormSheetState extends State<_CardFormSheet> {
-  String? _errorText;
   late final TextEditingController _numberController;
   late final TextEditingController _expiryController;
   late final TextEditingController _cvvController;
@@ -840,6 +839,29 @@ class _CardFormSheetState extends State<_CardFormSheet> {
     if (year == currentYear && month < currentMonth) return false;
 
     return true;
+  }
+
+  void _showValidationError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            message,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
   }
 
   @override
@@ -922,23 +944,7 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                     ],
                   ),
                 ),
-                if (_errorText != null) ...[
-                  Padding(
-                    padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: Text(
-                      _errorText!,
-                      style: AppTextStyles.inputText(context).copyWith(
-                        color: AppColors.fieldError(context),
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                ] else
-                  const SizedBox(height: 20),
+                const SizedBox(height: 20),
                 _SheetBottomBar(
                   label: widget.isEdit ? l10n.updateCard : l10n.addCard,
                   bottomPadding: bottomSafe + 20,
@@ -952,21 +958,19 @@ class _CardFormSheetState extends State<_CardFormSheet> {
                     if (rawNum.length < 15 ||
                         rawNum.length > 19 ||
                         !_passesLuhn(rawNum)) {
-                      setState(() => _errorText = 'Invalid card number');
+                      _showValidationError(l10n.invalidCardNumber);
                       return;
                     }
 
                     if (!_isValidExpiry(exp)) {
-                      setState(() => _errorText = 'Invalid expiry date');
+                      _showValidationError(l10n.invalidExpiryDate);
                       return;
                     }
 
                     if (cvv.length < 3 || cvv.length > 4) {
-                      setState(() => _errorText = 'Invalid CVV');
+                      _showValidationError(l10n.invalidCvv);
                       return;
                     }
-
-                    setState(() => _errorText = null);
 
                     if (!mounted) return;
 

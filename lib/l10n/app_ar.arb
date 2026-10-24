@@ -667,5 +667,8 @@
         "type": "String"
       }
     }
-  }
+  },
+  "invalidCardNumber": "رقم البطاقة غير صالح",
+  "invalidExpiryDate": "تاريخ الانتهاء غير صالح",
+  "invalidCvv": "رمز الأمان (CVV) غير صالح"
 }

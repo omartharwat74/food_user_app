@@ -74,9 +74,9 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
     ),
     textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.textSelectionHandle,
+      cursorColor: AppColors.primary,
       selectionColor: AppColors.textSelectionHighlight,
-      selectionHandleColor: AppColors.textSelectionHandle,
+      selectionHandleColor: AppColors.primary,
     ),
   );
 
@@ -128,9 +128,9 @@ class AppTheme {
       behavior: SnackBarBehavior.floating,
     ),
     textSelectionTheme: const TextSelectionThemeData(
-      cursorColor: AppColors.textSelectionHandle,
-      selectionColor: AppColors.textSelectionHighlight,
-      selectionHandleColor: AppColors.textSelectionHandle,
+      cursorColor: AppColors.primary,
+      selectionColor: AppColors.textSelectionHighlightDark,
+      selectionHandleColor: AppColors.primary,
     ),
   );
 }

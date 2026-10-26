@@ -49,17 +49,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_didSetInitialProfileData) return;
     final profile = context.read<ProfileBloc>().state.profile;
     if (profile != null) {
-      final formattedName = profile.fullName.isNotEmpty
-          ? profile.fullName
-          : '${profile.firstName} ${profile.lastName}'.trim();
-      _nameController.text = formattedName;
-      _emailController.text = profile.email;
-      _phoneController.text = profile.phone;
-      _didSetInitialProfileData = true;
-    } else {
+      if (!_didSetInitialProfileData) {
+        final formattedName = profile.fullName.isNotEmpty
+            ? profile.fullName
+            : '${profile.firstName} ${profile.lastName}'.trim();
+        _nameController.text = formattedName;
+        _didSetInitialProfileData = true;
+      }
+      if (profile.email.isNotEmpty) {
+        _emailController.text = profile.email;
+      }
+      if (profile.phone.isNotEmpty) {
+        _phoneController.text = profile.phone;
+      }
+    } else if (!_didSetInitialProfileData) {
       final authState = context.read<AuthBloc>().state;
       if (authState is Authenticated) {
         final u = authState.user;
@@ -111,6 +116,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             curr.updateProfileSuccess != prev.updateProfileSuccess ||
             curr.errorMessage != prev.errorMessage ||
             curr.sendCurrentOtpSuccess != prev.sendCurrentOtpSuccess ||
+            curr.changePhoneSuccess != prev.changePhoneSuccess ||
             curr.profile != prev.profile,
         listener: (context, state) {
           if (state.updateProfileSuccess) {
@@ -131,7 +137,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 phoneNumber: state.profile?.phone ?? '',
                 isCurrentPhone: true,
               ),
-            );
+            ).then((_) {
+              if (!context.mounted) return;
+              final p = context.read<ProfileBloc>().state.profile;
+              if (p != null && p.phone.isNotEmpty) {
+                _phoneController.text = p.phone;
+              }
+            });
           }
           if (state.errorMessage != null) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -151,10 +163,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             if (_nameController.text.isEmpty && formattedName.isNotEmpty) {
               _nameController.text = formattedName;
             }
-            if (_emailController.text.isEmpty && profile.email.isNotEmpty) {
+            if (profile.email.isNotEmpty) {
               _emailController.text = profile.email;
             }
-            if (_phoneController.text.isEmpty && profile.phone.isNotEmpty) {
+            if (profile.phone.isNotEmpty) {
               _phoneController.text = profile.phone;
             }
           }

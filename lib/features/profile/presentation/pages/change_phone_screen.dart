@@ -258,8 +258,6 @@ class _PhoneNumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -295,7 +293,7 @@ class _PhoneNumberField extends StatelessWidget {
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     textDirection: TextDirection.ltr,
-                    textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                    textAlign: TextAlign.left,
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                     ],

@@ -17,7 +17,6 @@ class PhoneNumberField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textDirection = Directionality.of(context);
     final phoneTextStyle = AppTextStyles.inputText(context).copyWith(
       color: Theme.of(context).textTheme.bodyLarge?.color ??
           AppColors.onSurface(context),
@@ -60,33 +59,30 @@ class PhoneNumberField extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: Directionality(
-                textDirection: textDirection,
-                child: TextField(
-                  controller: controller,
-                  keyboardType: TextInputType.phone,
-                  textInputAction: TextInputAction.done,
-                  textAlign: TextAlign.start,
-                  textDirection: TextDirection.ltr,
-                  style: phoneTextStyle,
-                  cursorColor: AppColors.cursor(context),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                  ],
-                  onTapOutside: (_) =>
-                      FocusManager.instance.primaryFocus?.unfocus(),
-                  decoration: InputDecoration(
-                    hintText: hintText,
-                    hintStyle: AppTextStyles.inputHint(context),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                      8,
-                      14,
-                      16,
-                      14,
-                    ),
+              child: TextField(
+                controller: controller,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                textAlign: TextAlign.left,
+                textDirection: TextDirection.ltr,
+                style: phoneTextStyle,
+                cursorColor: AppColors.cursor(context),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                ],
+                onTapOutside: (_) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
+                decoration: InputDecoration(
+                  hintText: hintText,
+                  hintStyle: AppTextStyles.inputHint(context),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: const EdgeInsetsDirectional.fromSTEB(
+                    8,
+                    14,
+                    16,
+                    14,
                   ),
                 ),
               ),

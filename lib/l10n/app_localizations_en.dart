@@ -1818,4 +1818,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get invalidCvv => 'Invalid CVV';
+
+  @override
+  String get orderNotesTitle => 'Your notes:';
+
+  @override
+  String get productNotesDialogTitle => 'Your notes on the product:';
 }

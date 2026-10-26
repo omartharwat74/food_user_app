@@ -1796,4 +1796,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get invalidCvv => 'رمز الأمان (CVV) غير صالح';
+
+  @override
+  String get orderNotesTitle => 'ملاحظاتك :';
+
+  @override
+  String get productNotesDialogTitle => 'ملاحظاتك على المنتج :';
 }

@@ -20,6 +20,7 @@ import 'package:food_user_app/features/order/presentation/cubit/order_detail_cub
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_state.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
+import 'package:food_user_app/features/order/presentation/widgets/order_item_tile.dart';
 import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
@@ -272,6 +273,15 @@ class _OrderDetailsScreenContentState
                                     items: order?.items ?? const [],
                                     l10n: l10n,
                                   ),
+                                  if (order != null &&
+                                      order.notes != null &&
+                                      order.notes!.trim().isNotEmpty) ...[
+                                    const SizedBox(height: 16),
+                                    _OrderNotesSection(
+                                      notes: order.notes!,
+                                      l10n: l10n,
+                                    ),
+                                  ],
                                   const SizedBox(height: 16),
                                   _PaymentSummarySection(
                                     order: order,
@@ -1221,7 +1231,7 @@ class _OrderItemsSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          _OrderItemRow(item: null, l10n: l10n),
+          OrderItemTile(item: null, l10n: l10n),
           const SizedBox(height: 16),
           Divider(
             height: 1,
@@ -1247,7 +1257,7 @@ class _OrderItemsSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         for (var i = 0; i < items.length; i++) ...[
-          _OrderItemRow(item: items[i], l10n: l10n),
+          OrderItemTile(item: items[i], l10n: l10n),
           if (i < items.length - 1) ...[
             const SizedBox(height: 12),
             Divider(
@@ -1269,145 +1279,50 @@ class _OrderItemsSection extends StatelessWidget {
   }
 }
 
-class _OrderItemRow extends StatelessWidget {
-  const _OrderItemRow({
-    required this.item,
+class _OrderNotesSection extends StatelessWidget {
+  const _OrderNotesSection({
+    required this.notes,
     required this.l10n,
   });
 
-  final OrderItem? item;
+  final String notes;
   final AppLocalizations l10n;
-
-  String _formatAmount(double amount) {
-    if (amount == amount.truncateToDouble()) {
-      return amount.toInt().toString();
-    }
-    return amount.toStringAsFixed(2);
-  }
 
   @override
   Widget build(BuildContext context) {
-    final name = item?.name ?? l10n.orderProductName;
-    final price = item != null
-        ? context.l10n.priceWithCurrency(_formatAmount(item!.lineTotal > 0
-            ? item!.lineTotal
-            : (item!.unitPrice * item!.quantity)))
-        : l10n.orderProductPrice;
-    final quantityText = l10n.orderQuantity(item?.quantity ?? 2);
-    final image = item?.image;
-
-    String? optionsText;
-    if (item != null && item!.selectedOptions.isNotEmpty) {
-      final opts = item!.selectedOptions
-          .map((e) {
-            if (e is Map) {
-              return e['name']?.toString() ?? '';
-            }
-            return e.toString();
-          })
-          .where((s) => s.isNotEmpty)
-          .toList();
-      if (opts.isNotEmpty) {
-        optionsText = opts.join(' • ');
-      }
-    }
-
-    final productGroup = Row(
-      mainAxisSize: MainAxisSize.min,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceCard(context),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border(context), width: 0.5),
-          ),
-          alignment: Alignment.center,
-          child: image != null && image.isNotEmpty
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: CachedNetworkImage(
-                    imageUrl: image,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                    errorWidget: (context, url, error) => Image.asset(
-                      AppAssets.orderProductImage,
-                      width: 46,
-                      height: 23,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                )
-              : Image.asset(
-                  AppAssets.orderProductImage,
-                  width: 46,
-                  height: 23,
-                  fit: BoxFit.contain,
-                ),
-        ),
-        const SizedBox(width: 8),
-        ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 180),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                textAlign: TextAlign.start,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.onSurface(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.3,
-                ),
-              ),
-              if (optionsText != null) ...[
-                const SizedBox(height: 2),
-                Text(
-                  optionsText,
-                  textAlign: TextAlign.start,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.caption(context).copyWith(
-                    color: AppColors.paragraph(context),
-                    fontSize: 10,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 8),
-              Text(
-                price,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.onSurface(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  height: 1.3,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(child: productGroup),
         Text(
-          quantityText,
-          style: AppTextStyles.body(context).copyWith(
-            color: AppColors.paragraph(context),
+          l10n.orderNotesTitle,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontFamily: 'Expo Arabic',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            height: 21.0 / 15.0,
+            color: AppColors.onSurface(context),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          notes,
+          textAlign: TextAlign.start,
+          style: TextStyle(
+            fontFamily: 'Expo Arabic',
             fontSize: 12,
             fontWeight: FontWeight.w400,
-            height: 1.3,
+            height: 15.6 / 12.0,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? AppColors.paragraph(context)
+                : const Color(0xFF474747),
           ),
+        ),
+        const SizedBox(height: 16),
+        Divider(
+          height: 1,
+          thickness: 0.5,
+          color: AppColors.border(context),
         ),
       ],
     );

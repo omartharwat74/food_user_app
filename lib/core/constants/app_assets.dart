@@ -105,6 +105,12 @@ class AppAssets {
       'assets/images/icons/orders/order_rating_star.svg';
   static const orderRatingStarOutlineIcon =
       'assets/images/icons/orders/order_star.svg';
+  static const orderSpicyChiliIcon =
+      'assets/images/icons/orders/spicy_chili.svg';
+  static const orderNoteEditIcon =
+      'assets/images/icons/orders/order_note_edit.svg';
+  static const orderDialogCloseIcon =
+      'assets/images/icons/orders/dialog_close.svg';
 
   static const favoriteRestaurantAzAlSham =
       'assets/images/favorites/az_al_sham.jpg';

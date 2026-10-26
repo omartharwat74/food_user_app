@@ -6,7 +6,7 @@
       "command": ["npx", "-y", "@anthropic/figma-developer-mcp"],
       "enabled": true,
       "env": {
-        "FIGMA_ACCESS_TOKEN": "figd_xveRbMgir1YDfdum44DjpaHyyyrEgOQrDJbuHyvK"
+        "FIGMA_ACCESS_TOKEN": "figd_NRlj6xTE1K49Z54f48tdyglYXei5i2sqsrb2XG_3"
       }
     }
   }

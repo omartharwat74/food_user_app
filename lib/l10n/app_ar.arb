@@ -670,5 +670,7 @@
   },
   "invalidCardNumber": "رقم البطاقة غير صالح",
   "invalidExpiryDate": "تاريخ الانتهاء غير صالح",
-  "invalidCvv": "رمز الأمان (CVV) غير صالح"
+  "invalidCvv": "رمز الأمان (CVV) غير صالح",
+  "orderNotesTitle": "ملاحظاتك :",
+  "productNotesDialogTitle": "ملاحظاتك على المنتج :"
 }

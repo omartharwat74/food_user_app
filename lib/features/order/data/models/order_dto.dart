@@ -40,6 +40,7 @@ class OrderDto {
   final String? cancelReason;
   final DateTime? createdAt;
   final String? message;
+  final String? notes;
 
   const OrderDto({
     required this.id,
@@ -57,6 +58,7 @@ class OrderDto {
     this.cancelReason,
     this.createdAt,
     this.message,
+    this.notes,
   });
 
   factory OrderDto.fromJson(Map<String, dynamic> json, {String? message}) {
@@ -108,6 +110,7 @@ class OrderDto {
       cancelReason: data['cancel_reason']?.toString(),
       createdAt: parsedCreatedAt,
       message: msg,
+      notes: data['notes']?.toString() ?? data['note']?.toString(),
     );
   }
 
@@ -128,6 +131,7 @@ class OrderDto {
       cancelReason: cancelReason,
       createdAt: createdAt,
       message: message,
+      notes: notes,
     );
   }
 }
@@ -187,6 +191,7 @@ class OrderItemDto {
   final double unitPrice;
   final dynamic offer;
   final double lineTotal;
+  final String? notes;
 
   const OrderItemDto({
     this.id,
@@ -201,6 +206,7 @@ class OrderItemDto {
     required this.unitPrice,
     this.offer,
     required this.lineTotal,
+    this.notes,
   });
 
   factory OrderItemDto.fromJson(Map<String, dynamic> json) {
@@ -220,6 +226,7 @@ class OrderItemDto {
       unitPrice: _parseDouble(json['unit_price']),
       offer: json['offer'],
       lineTotal: _parseDouble(json['line_total']),
+      notes: json['notes']?.toString() ?? json['note']?.toString(),
     );
   }
 
@@ -236,6 +243,7 @@ class OrderItemDto {
     unitPrice: unitPrice,
     offer: offer,
     lineTotal: lineTotal,
+    notes: notes,
   );
 }
 

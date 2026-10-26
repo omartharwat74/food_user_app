@@ -3577,6 +3577,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invalid CVV'**
   String get invalidCvv;
+
+  /// No description provided for @orderNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your notes:'**
+  String get orderNotesTitle;
+
+  /// No description provided for @productNotesDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your notes on the product:'**
+  String get productNotesDialogTitle;
 }
 
 class _AppLocalizationsDelegate

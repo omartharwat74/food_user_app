@@ -16,6 +16,7 @@ class Order extends Equatable {
   final String? cancelReason;
   final DateTime? createdAt;
   final String? message;
+  final String? notes;
 
   const Order({
     required this.id,
@@ -33,6 +34,7 @@ class Order extends Equatable {
     this.cancelReason,
     this.createdAt,
     this.message,
+    this.notes,
   });
 
   // Backwards compatibility getters
@@ -70,6 +72,7 @@ class Order extends Equatable {
     cancelReason,
     createdAt,
     message,
+    notes,
   ];
 }
 
@@ -117,6 +120,7 @@ class OrderItem extends Equatable {
   final double unitPrice;
   final dynamic offer;
   final double lineTotal;
+  final String? notes;
 
   const OrderItem({
     this.id,
@@ -131,6 +135,7 @@ class OrderItem extends Equatable {
     required this.unitPrice,
     this.offer,
     required this.lineTotal,
+    this.notes,
   });
 
   // Backwards compatibility getters
@@ -138,7 +143,6 @@ class OrderItem extends Equatable {
   String get itemName => name;
   double get totalPrice => lineTotal;
   List<dynamic>? get selectedModifiers => selectedOptions;
-  String? get notes => null;
 
   @override
   List<Object?> get props => [
@@ -154,6 +158,7 @@ class OrderItem extends Equatable {
     unitPrice,
     offer,
     lineTotal,
+    notes,
   ];
 }
 

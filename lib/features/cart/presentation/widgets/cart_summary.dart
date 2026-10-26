@@ -18,6 +18,9 @@ class CartSummary extends StatelessWidget {
     required this.onAddMore,
     this.onApplyPromo,
     this.isUpdating = false,
+    this.isSelfPickup = false,
+    this.onToggleSelfPickup,
+    this.appliedPromoCode,
     super.key,
   });
 
@@ -30,6 +33,9 @@ class CartSummary extends StatelessWidget {
   final VoidCallback onAddMore;
   final ValueChanged<String>? onApplyPromo;
   final bool isUpdating;
+  final bool isSelfPickup;
+  final ValueChanged<bool>? onToggleSelfPickup;
+  final String? appliedPromoCode;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +49,11 @@ class CartSummary extends StatelessWidget {
         children: [
           _NotesBox(hint: l10n.cartNotesHint),
           const SizedBox(height: 16),
-          _DiscountBox(l10n: l10n, onApply: onApplyPromo),
+          _DiscountBox(
+            l10n: l10n,
+            initialCode: appliedPromoCode,
+            onApply: onApplyPromo,
+          ),
           const SizedBox(height: 18),
           Text(
             l10n.paymentSummary,
@@ -63,7 +73,9 @@ class CartSummary extends StatelessWidget {
           const SizedBox(height: 12),
           _SummaryRow(
             label: l10n.orderDeliveryFee,
-            value: l10n.cartPrice((delivery).toFormattedPrice()),
+            value: isSelfPickup
+                ? l10n.cartPrice((0.0).toFormattedPrice())
+                : l10n.cartPrice((delivery).toFormattedPrice()),
           ),
           const SizedBox(height: 12),
           _SummaryRow(
@@ -146,9 +158,14 @@ class _NotesBox extends StatelessWidget {
 }
 
 class _DiscountBox extends StatefulWidget {
-  const _DiscountBox({required this.l10n, this.onApply});
+  const _DiscountBox({
+    required this.l10n,
+    this.initialCode,
+    this.onApply,
+  });
 
   final AppLocalizations l10n;
+  final String? initialCode;
   final ValueChanged<String>? onApply;
 
   @override
@@ -156,7 +173,22 @@ class _DiscountBox extends StatefulWidget {
 }
 
 class _DiscountBoxState extends State<_DiscountBox> {
-  final _controller = TextEditingController();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialCode ?? '');
+  }
+
+  @override
+  void didUpdateWidget(covariant _DiscountBox oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialCode != oldWidget.initialCode &&
+        widget.initialCode != null) {
+      _controller.text = widget.initialCode!;
+    }
+  }
 
   @override
   void dispose() {

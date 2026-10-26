@@ -20,6 +20,8 @@ class CartResponseDto {
 
   factory CartResponseDto.fromJson(Map<String, dynamic> json) =>
       _$CartResponseDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartResponseDtoToJson(this);
 }
 
 @JsonSerializable()
@@ -45,6 +47,8 @@ class CartSummaryDetailsDto {
 
   factory CartSummaryDetailsDto.fromJson(Map<String, dynamic> json) =>
       _$CartSummaryDetailsDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartSummaryDetailsDtoToJson(this);
 }
 
 @JsonSerializable()
@@ -77,6 +81,8 @@ class CartSummaryDto {
 
   factory CartSummaryDto.fromJson(Map<String, dynamic> json) =>
       _$CartSummaryDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartSummaryDtoToJson(this);
 }
 
 @JsonSerializable()
@@ -112,6 +118,8 @@ class CartItemDto {
 
   factory CartItemDto.fromJson(Map<String, dynamic> json) =>
       _$CartItemDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartItemDtoToJson(this);
 }
 
 @JsonSerializable()
@@ -134,6 +142,8 @@ class CartStoreBriefDto {
 
   factory CartStoreBriefDto.fromJson(Map<String, dynamic> json) =>
       _$CartStoreBriefDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartStoreBriefDtoToJson(this);
 }
 
 extension CartResponseDtoMapper on CartResponseDto {

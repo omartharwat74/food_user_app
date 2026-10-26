@@ -14,6 +14,7 @@ import 'package:food_user_app/features/search/presentation/models/results_config
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 import 'package:food_user_app/features/store/presentation/cubit/store_detail_state.dart';
+import 'package:food_user_app/features/store/presentation/widgets/store_banner_slider.dart';
 import 'package:food_user_app/core/utils/category_icon_helper.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
@@ -116,8 +117,9 @@ class StoreDetailsScreen extends StatelessWidget {
                         child: _buildCustomHeader(context, store),
                       ),
                       const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                      SliverToBoxAdapter(child: _PromoBanners(store: store)),
-                      const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                      SliverToBoxAdapter(
+                        child: StoreBannerSlider(storeId: store.id),
+                      ),
                       _buildSectionTitle(
                         context,
                         AppLocalizations.of(context)!.shopByCategories,
@@ -433,79 +435,4 @@ class StoreDetailsScreen extends StatelessWidget {
   }
 }
 
-class _PromoBanners extends StatefulWidget {
-  final Restaurant store;
-  const _PromoBanners({required this.store});
 
-  @override
-  State<_PromoBanners> createState() => _PromoBannersState();
-}
-
-class _PromoBannersState extends State<_PromoBanners> {
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> apiImages = [];
-    if (widget.store.coverImageUrl.isNotEmpty) {
-      apiImages.add(widget.store.coverImageUrl);
-    } else if (widget.store.logoUrl.isNotEmpty) {
-      apiImages.add(widget.store.logoUrl);
-    }
-
-    if (apiImages.isEmpty) return const SizedBox.shrink();
-
-    final displayImages = apiImages.length == 1
-        ? [apiImages[0], apiImages[0], apiImages[0]]
-        : apiImages;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          height: 140, // Approximate promo banner height
-          child: PageView.builder(
-            itemCount: displayImages.length, // Placeholder
-            onPageChanged: (index) => setState(() => _currentIndex = index),
-            itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    color: Colors.red.shade900, // Fallback if image fails
-                    child: Image.network(
-                      displayImages[index],
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          const ColoredBox(color: Colors.grey),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            displayImages.length,
-            (index) => AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentIndex == index ? 24 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: _currentIndex == index
-                    ? AppColors.primary
-                    : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}

@@ -232,6 +232,8 @@ class AppAssets {
   static const homeCategoryStrokeBottom =
       'assets/images/home/home_category_stroke_bottom.png';
   static const homePromoBanner = 'assets/images/home/home_promo_banner.png';
+  static const promoBannerBg = 'assets/images/home/promo_banner_bg.png';
+  static const bannerArrow = 'assets/images/home/banner_arrow.svg';
   static const homeOfferProduct = 'assets/images/home/home_offer_product.png';
   static const homeRestaurantCover =
       'assets/images/home/home_restaurant_cover.png';

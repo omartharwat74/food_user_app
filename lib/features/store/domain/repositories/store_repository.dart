@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/features/home/domain/entities/banner.dart';
 import 'package:food_user_app/features/store/data/models/hyper_categories_response.dart';
 import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
 import 'package:food_user_app/features/store/data/models/store_search_response.dart';
@@ -18,4 +19,5 @@ abstract class StoreRepository {
     int page = 1,
     int perPage = 10,
   });
+  Future<Either<Failure, List<BannerItem>>> getStoreBanners(String storeId);
 }

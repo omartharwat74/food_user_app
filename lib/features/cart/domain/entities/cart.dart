@@ -35,6 +35,30 @@ class Cart extends Equatable {
       discount = 0.0,
       total = 0.0;
 
+  Cart copyWith({
+    String? id,
+    String? restaurantId,
+    String? restaurantName,
+    List<CartItem>? items,
+    double? subtotal,
+    double? deliveryFee,
+    double? tax,
+    double? discount,
+    double? total,
+  }) {
+    return Cart(
+      id: id ?? this.id,
+      restaurantId: restaurantId ?? this.restaurantId,
+      restaurantName: restaurantName ?? this.restaurantName,
+      items: items ?? this.items,
+      subtotal: subtotal ?? this.subtotal,
+      deliveryFee: deliveryFee ?? this.deliveryFee,
+      tax: tax ?? this.tax,
+      discount: discount ?? this.discount,
+      total: total ?? this.total,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

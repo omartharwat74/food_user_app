@@ -1,20 +1,26 @@
+import 'package:dartz/dartz.dart' hide Order;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
 import 'package:food_user_app/features/order/domain/usecases/cancel_order_usecase.dart';
 import 'package:food_user_app/features/order/domain/usecases/get_order_detail_usecase.dart';
+import 'package:food_user_app/features/order/domain/usecases/rate_order_usecase.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'order_detail_state.dart';
 
 class OrderDetailCubit extends Cubit<OrderDetailState> {
   final GetOrderDetailUseCase _getOrderDetailUseCase;
   final CancelOrderUseCase _cancelOrderUseCase;
+  final RateOrderUseCase? _rateOrderUseCase;
 
   OrderDetailCubit({
     required GetOrderDetailUseCase getOrderDetailUseCase,
     required CancelOrderUseCase cancelOrderUseCase,
+    RateOrderUseCase? rateOrderUseCase,
   })  : _getOrderDetailUseCase = getOrderDetailUseCase,
         _cancelOrderUseCase = cancelOrderUseCase,
+        _rateOrderUseCase = rateOrderUseCase,
         super(const OrderDetailState());
 
   Future<void> loadOrderDetails(String orderId, {Order? initialOrder}) async {
@@ -88,5 +94,10 @@ class OrderDetailCubit extends Cubit<OrderDetailState> {
         } catch (_) {}
       },
     );
+  }
+
+  Future<Either<Failure, void>> submitRating(RateOrderParams params) async {
+    final useCase = _rateOrderUseCase ?? di.sl<RateOrderUseCase>();
+    return await useCase(params);
   }
 }

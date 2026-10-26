@@ -5,6 +5,7 @@ import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_client.dart';
 import 'package:food_user_app/features/order/data/datasources/order_remote_data_source.dart';
+import 'package:food_user_app/features/order/data/models/order_dto.dart';
 import 'package:food_user_app/features/order/data/models/orders_paginated_dto.dart';
 import 'package:food_user_app/features/order/data/repositories/order_repository_impl.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
@@ -13,6 +14,7 @@ import 'package:food_user_app/features/order/domain/repositories/order_repositor
 import 'package:food_user_app/features/order/domain/usecases/cancel_order_usecase.dart';
 import 'package:food_user_app/features/order/domain/usecases/get_order_detail_usecase.dart';
 import 'package:food_user_app/features/order/domain/usecases/get_order_history_usecase.dart';
+import 'package:food_user_app/features/order/domain/usecases/rate_order_usecase.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_state.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
@@ -36,10 +38,13 @@ class MockGetOrderDetailUseCase extends Mock implements GetOrderDetailUseCase {}
 
 class MockCancelOrderUseCase extends Mock implements CancelOrderUseCase {}
 
+class MockRateOrderUseCase extends Mock implements RateOrderUseCase {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(const GetOrderHistoryParams());
     registerFallbackValue(const CancelOrderParams(orderId: '1', reason: 'r'));
+    registerFallbackValue(const RateOrderParams(storeId: 1, rating: 5));
   });
 
   group('OrderStatus normalization & UI Model mapping', () {
@@ -143,6 +148,24 @@ void main() {
       expect(entity.items.length, 2);
       expect(entity.items[0].id, 1);
       expect(entity.items[1].delivery?.phone, '01011111111');
+      expect(entity.items[1].delivery?.rating, isNull);
+    });
+
+    test('parses OrderDeliveryDto with backend rating correctly', () {
+      final jsonWithRating = {
+        'id': 10,
+        'name': 'محمود',
+        'phone': '01099998888',
+        'vehicle_type': 'motorcycle',
+        'rating': 4.8,
+      };
+
+      final dto = OrderDeliveryDto.fromJson(jsonWithRating);
+      expect(dto.name, 'محمود');
+      expect(dto.rating, 4.8);
+
+      final entity = dto.toEntity();
+      expect(entity.rating, 4.8);
     });
   });
 
@@ -242,6 +265,46 @@ void main() {
             data: {'reason': 'غيرت رأيي'},
           )).called(1);
     });
+
+    test('submitReview calls POST /api/v1/reviews with expected payload', () async {
+      when(() => mockDio.post(
+            ApiEndpoints.reviews,
+            data: {
+              'store_id': 1,
+              'rating': 5,
+              'comment': 'الأكل ممتاز',
+              'delivery_id': 2,
+              'delivery_rating': 4,
+              'delivery_comment': 'المندوب سريع',
+            },
+          )).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(path: ApiEndpoints.reviews),
+          data: {'status': 200, 'msg': 'تم إضافة التقييم بنجاح'},
+        ),
+      );
+
+      await dataSource.submitReview(
+        storeId: 1,
+        rating: 5,
+        comment: 'الأكل ممتاز',
+        deliveryId: 2,
+        deliveryRating: 4,
+        deliveryComment: 'المندوب سريع',
+      );
+
+      verify(() => mockDio.post(
+            ApiEndpoints.reviews,
+            data: {
+              'store_id': 1,
+              'rating': 5,
+              'comment': 'الأكل ممتاز',
+              'delivery_id': 2,
+              'delivery_rating': 4,
+              'delivery_comment': 'المندوب سريع',
+            },
+          )).called(1);
+    });
   });
 
   group('OrderRepositoryImpl', () {
@@ -274,6 +337,61 @@ void main() {
       result.fold(
         (failure) => expect(failure.message, 'لا يمكن إلغاء الطلب بعد موافقة المتجر'),
         (_) => fail('Should have failed'),
+      );
+    });
+
+    test('submitReview returns Right(null) when remote dataSource succeeds', () async {
+      when(() => mockRemote.submitReview(
+            storeId: 1,
+            rating: 5,
+            comment: 'الأكل ممتاز',
+            deliveryId: 2,
+            deliveryRating: 4,
+            deliveryComment: 'المندوب سريع',
+          )).thenAnswer((_) async {});
+
+      final result = await repository.submitReview(
+        storeId: 1,
+        rating: 5,
+        comment: 'الأكل ممتاز',
+        deliveryId: 2,
+        deliveryRating: 4,
+        deliveryComment: 'المندوب سريع',
+      );
+
+      expect(result.isRight(), isTrue);
+    });
+
+    test('submitReview returns ServerFailure when remote throws DioException', () async {
+      when(() => mockRemote.submitReview(
+            storeId: 1,
+            rating: 5,
+            comment: null,
+            deliveryId: null,
+            deliveryRating: null,
+            deliveryComment: null,
+          )).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ApiEndpoints.reviews),
+          response: Response(
+            requestOptions: RequestOptions(path: ApiEndpoints.reviews),
+            statusCode: 422,
+            data: {
+              'msg': 'يرجى تحديد التقييم',
+            },
+          ),
+        ),
+      );
+
+      final result = await repository.submitReview(
+        storeId: 1,
+        rating: 5,
+      );
+
+      expect(result.isLeft(), isTrue);
+      result.fold(
+        (failure) => expect(failure.message, 'يرجى تحديد التقييم'),
+        (_) => fail('Should fail'),
       );
     });
   });
@@ -353,14 +471,17 @@ void main() {
   group('OrderDetailCubit', () {
     late MockGetOrderDetailUseCase mockGetDetail;
     late MockCancelOrderUseCase mockCancel;
+    late MockRateOrderUseCase mockRateOrder;
     late OrderDetailCubit cubit;
 
     setUp(() {
       mockGetDetail = MockGetOrderDetailUseCase();
       mockCancel = MockCancelOrderUseCase();
+      mockRateOrder = MockRateOrderUseCase();
       cubit = OrderDetailCubit(
         getOrderDetailUseCase: mockGetDetail,
         cancelOrderUseCase: mockCancel,
+        rateOrderUseCase: mockRateOrder,
       );
     });
 
@@ -423,6 +544,15 @@ void main() {
       await cubit.cancelOrder(orderId: '10', reason: 'غيرت رأيي');
       expect(cubit.state.errorMessage, 'لا يمكن إلغاء الطلب بعد موافقة المتجر');
       verify(() => mockGetDetail('10')).called(1);
+    });
+
+    test('submitRating calls RateOrderUseCase and returns result', () async {
+      const params = RateOrderParams(storeId: 1, rating: 5);
+      when(() => mockRateOrder(params)).thenAnswer((_) async => const Right(null));
+
+      final result = await cubit.submitRating(params);
+      expect(result.isRight(), isTrue);
+      verify(() => mockRateOrder(params)).called(1);
     });
   });
 }

@@ -14,7 +14,7 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
     required this.item,
-    required this.onEdit,
+    this.onEdit,
     required this.onIncrement,
     required this.onDecrement,
     this.isUpdating,
@@ -22,7 +22,7 @@ class CartItemTile extends StatelessWidget {
   });
 
   final CartItem item;
-  final VoidCallback onEdit;
+  final VoidCallback? onEdit;
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final bool? isUpdating;
@@ -42,7 +42,7 @@ class CartItemTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
           width: 80,
@@ -73,6 +73,7 @@ class CartItemTile extends StatelessWidget {
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 item.name,
@@ -86,7 +87,7 @@ class CartItemTile extends StatelessWidget {
                   height: 1.35,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               Text(
                 l10n.cartPrice((item.price).toFormattedPrice()),
                 maxLines: 1,
@@ -105,42 +106,9 @@ class CartItemTile extends StatelessWidget {
         const SizedBox(width: 10),
         SizedBox(
           width: 108,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: onEdit,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    SvgPicture.asset(
-                      AppAssets.cartEditIcon,
-                      width: 14,
-                      height: 14,
-                    ),
-                    const SizedBox(width: 4),
-                    Flexible(
-                      child: Text(
-                        l10n.edit,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.textLink(context).copyWith(
-                          color: AppColors.onSurface(context),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w500,
-                          height: 1.25,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              if (isUpdating != null)
-                _buildQuantityControl(context, isUpdating!)
-              else
-                BlocBuilder<CartCubit, CartState>(
+          child: isUpdating != null
+              ? _buildQuantityControl(context, isUpdating!)
+              : BlocBuilder<CartCubit, CartState>(
                   buildWhen: (previous, current) {
                     final prevUpdating = _isItemUpdating(previous);
                     final currUpdating = _isItemUpdating(current);
@@ -153,8 +121,6 @@ class CartItemTile extends StatelessWidget {
                     );
                   },
                 ),
-            ],
-          ),
         ),
       ],
     );

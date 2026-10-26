@@ -11,7 +11,6 @@ part of 'restaurant_dto.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$RestaurantDto {
 
@@ -22,8 +21,6 @@ mixin _$RestaurantDto {
 @pragma('vm:prefer-inline')
 $RestaurantDtoCopyWith<RestaurantDto> get copyWith => _$RestaurantDtoCopyWithImpl<RestaurantDto>(this as RestaurantDto, _$identity);
 
-  /// Serializes this RestaurantDto to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -31,7 +28,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other.ratingDistribution, ratingDistribution)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.reviewsHasMore, reviewsHasMore) || other.reviewsHasMore == reviewsHasMore));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hashAll([runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor,address,const DeepCollectionEquality().hash(ratingDistribution),const DeepCollectionEquality().hash(reviews),reviewsHasMore]);
 
@@ -226,11 +223,11 @@ return $default(_that.id,_that.name,_that.cuisineType,_that.coverImageUrl,_that.
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _RestaurantDto implements RestaurantDto {
   const _RestaurantDto({@JsonKey(fromJson: _idFromJson) this.id = '', this.name, this.cuisineType, this.coverImageUrl, this.rating, @JsonKey(name: 'rating_avg') this.ratingAvg, @JsonKey(name: 'rating_count') this.ratingCount, @JsonKey(name: 'prep_time_from') this.deliveryTimeMin, @JsonKey(name: 'prep_time_to') this.deliveryTimeMax, @JsonKey(name: 'delivery_fee') this.deliveryFee, @IntBoolConverter()@JsonKey(name: 'is_favorited') this.isFavorited, @JsonKey(name: 'logo') this.logoUrl, @JsonKey(name: 'cover') this.coverUrl, this.description, @IntBoolConverter()@JsonKey(name: 'is_available') this.isAvailable, @IntBoolConverter()@JsonKey(name: 'is_open') this.isOpen, @IntBoolConverter()@JsonKey(name: 'is_major') this.isMajor, this.address, @JsonKey(name: 'rating_distribution') final  Map<String, dynamic>? ratingDistribution, final  List<ReviewDto> reviews = const [], @IntBoolConverter()@JsonKey(name: 'reviews_has_more') this.reviewsHasMore}): _ratingDistribution = ratingDistribution,_reviews = reviews;
-  factory _RestaurantDto.fromJson(Map<String, dynamic> json) => _$RestaurantDtoFromJson(json);
+  
 
 @override@JsonKey(fromJson: _idFromJson) final  String id;
 @override final  String? name;
@@ -274,17 +271,14 @@ class _RestaurantDto implements RestaurantDto {
 @pragma('vm:prefer-inline')
 _$RestaurantDtoCopyWith<_RestaurantDto> get copyWith => __$RestaurantDtoCopyWithImpl<_RestaurantDto>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$RestaurantDtoToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _RestaurantDto&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.cuisineType, cuisineType) || other.cuisineType == cuisineType)&&(identical(other.coverImageUrl, coverImageUrl) || other.coverImageUrl == coverImageUrl)&&(identical(other.rating, rating) || other.rating == rating)&&const DeepCollectionEquality().equals(other.ratingAvg, ratingAvg)&&(identical(other.ratingCount, ratingCount) || other.ratingCount == ratingCount)&&(identical(other.deliveryTimeMin, deliveryTimeMin) || other.deliveryTimeMin == deliveryTimeMin)&&(identical(other.deliveryTimeMax, deliveryTimeMax) || other.deliveryTimeMax == deliveryTimeMax)&&(identical(other.deliveryFee, deliveryFee) || other.deliveryFee == deliveryFee)&&(identical(other.isFavorited, isFavorited) || other.isFavorited == isFavorited)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.description, description) || other.description == description)&&(identical(other.isAvailable, isAvailable) || other.isAvailable == isAvailable)&&(identical(other.isOpen, isOpen) || other.isOpen == isOpen)&&(identical(other.isMajor, isMajor) || other.isMajor == isMajor)&&(identical(other.address, address) || other.address == address)&&const DeepCollectionEquality().equals(other._ratingDistribution, _ratingDistribution)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.reviewsHasMore, reviewsHasMore) || other.reviewsHasMore == reviewsHasMore));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hashAll([runtimeType,id,name,cuisineType,coverImageUrl,rating,const DeepCollectionEquality().hash(ratingAvg),ratingCount,deliveryTimeMin,deliveryTimeMax,deliveryFee,isFavorited,logoUrl,coverUrl,description,isAvailable,isOpen,isMajor,address,const DeepCollectionEquality().hash(_ratingDistribution),const DeepCollectionEquality().hash(_reviews),reviewsHasMore]);
 

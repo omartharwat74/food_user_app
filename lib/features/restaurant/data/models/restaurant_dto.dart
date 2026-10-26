@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
@@ -39,8 +41,30 @@ abstract class RestaurantDto with _$RestaurantDto {
     @IntBoolConverter() @JsonKey(name: 'reviews_has_more') bool? reviewsHasMore,
   }) = _RestaurantDto;
 
-  factory RestaurantDto.fromJson(Map<String, dynamic> json) =>
-      _$RestaurantDtoFromJson(json);
+  factory RestaurantDto.fromJson(Map<String, dynamic> json) {
+    final map = Map<String, dynamic>.from(json);
+    if (!map.containsKey('is_favorited') && map.containsKey('is_fav')) {
+      map['is_favorited'] = map['is_fav'];
+    }
+    if ((map['cuisineType'] == null ||
+            map['cuisineType'].toString().trim().isEmpty) &&
+        map['tags'] is List) {
+      final tags = (map['tags'] as List)
+          .map((t) => t is Map ? t['name']?.toString() : null)
+          .whereType<String>()
+          .where((name) => name.trim().isNotEmpty)
+          .join(' • ');
+      if (tags.isNotEmpty) {
+        map['cuisineType'] = tags;
+      }
+    }
+    if (map['availability'] != null) {
+      final avail = map['availability'].toString().toLowerCase();
+      map['is_open'] ??= (avail == 'open');
+      map['is_available'] ??= (avail == 'open');
+    }
+    return _$RestaurantDtoFromJson(map);
+  }
 }
 
 extension RestaurantDtoMapper on RestaurantDto {

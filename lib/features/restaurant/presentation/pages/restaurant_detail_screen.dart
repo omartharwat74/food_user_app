@@ -1,4 +1,3 @@
-import 'package:food_user_app/features/restaurant/presentation/widgets/menu_item_tile.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/product_card.dart';
 

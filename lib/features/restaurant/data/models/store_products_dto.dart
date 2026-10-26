@@ -72,7 +72,9 @@ class StoreProductsDto {
               (p['price'] as num?)?.toDouble() ??
               0.0,
           imageUrl: p['main_image'] as String? ?? p['image'] as String? ?? '',
-          available: p['is_available'] as bool? ?? true,
+          available: p['is_available'] == false || p['is_available'] == 0
+              ? false
+              : true,
           discountValue: discountValue,
           discountType: discountType,
         );

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
+import 'package:food_user_app/features/home/data/models/banner_model.dart';
 import 'package:food_user_app/features/store/data/models/hyper_categories_response.dart';
 import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
 import 'package:food_user_app/features/store/data/models/store_search_response.dart';
@@ -17,6 +18,7 @@ abstract class StoreRemoteDataSource {
     int page = 1,
     int perPage = 10,
   });
+  Future<List<BannerModel>> getStoreBanners(String storeId);
 }
 
 class StoreRemoteDataSourceImpl implements StoreRemoteDataSource {
@@ -83,6 +85,31 @@ class StoreRemoteDataSourceImpl implements StoreRemoteDataSource {
         throw const FormatException('Expected a JSON object');
       }
       return StoreSearchResponse.fromJson(raw);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<List<BannerModel>> getStoreBanners(String storeId) async {
+    try {
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.storeBanners,
+        queryParameters: {'store_id': storeId},
+      );
+      final raw = response.data;
+      List<dynamic>? list;
+      if (raw is Map<String, dynamic>) {
+        final data = raw['data'];
+        if (data is List) list = data;
+      } else if (raw is List) {
+        list = raw;
+      }
+      if (list == null) return [];
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(BannerModel.fromJson)
+          .toList();
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

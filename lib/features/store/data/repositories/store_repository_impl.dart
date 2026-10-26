@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/features/home/domain/entities/banner.dart';
 import 'package:food_user_app/features/store/data/datasources/store_remote_data_source.dart';
 import 'package:food_user_app/features/store/data/models/hyper_categories_response.dart';
 import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
@@ -70,6 +71,18 @@ class StoreRepositoryImpl implements StoreRepository {
         page: page,
         perPage: perPage,
       );
+      return Right(response);
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<BannerItem>>> getStoreBanners(
+    String storeId,
+  ) async {
+    try {
+      final response = await remoteDataSource.getStoreBanners(storeId);
       return Right(response);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));

@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/promo.dart';
 
@@ -19,5 +20,10 @@ abstract class CartRepository {
   Future<Either<Failure, Promo>> applyPromo({
     required String code,
     required double subtotal,
+  });
+  Future<Either<Failure, CartCouponResponseDto>> applyCoupon({
+    required String code,
+    required bool selfPickup,
+    int? addressId,
   });
 }

@@ -754,6 +754,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ratingSubmittedDesignOnly => 'تم إرسال التقييم بنجاح';
 
   @override
+  String get rateStoreRequired => 'يرجى تحديد تقييم المتجر';
+
+  @override
+  String get rateCourierRequired => 'يرجى تحديد تقييم المندوب';
+
+  @override
+  String get couponAppliedSuccess => 'تم تطبيق الكوبون بنجاح';
+
+  @override
   String get orderDetailsDesignOnly => 'تم التحديث بنجاح';
 
   @override
@@ -1802,4 +1811,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get productNotesDialogTitle => 'ملاحظاتك على المنتج :';
+
+  @override
+  String get specialOffer => 'عرض خاص';
 }

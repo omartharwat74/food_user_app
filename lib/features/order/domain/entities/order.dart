@@ -254,6 +254,7 @@ class OrderDelivery extends Equatable {
   final String? phone;
   final String? image;
   final String? vehicleType;
+  final double? rating;
 
   const OrderDelivery({
     this.id,
@@ -261,8 +262,9 @@ class OrderDelivery extends Equatable {
     this.phone,
     this.image,
     this.vehicleType,
+    this.rating,
   });
 
   @override
-  List<Object?> get props => [id, name, phone, image, vehicleType];
+  List<Object?> get props => [id, name, phone, image, vehicleType, rating];
 }

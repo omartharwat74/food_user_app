@@ -1,13 +1,51 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/errors/failures.dart';
-import '../../../../core/usecases/usecase.dart';
+import 'package:equatable/equatable.dart';
+import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/core/usecases/usecase.dart';
+import '../repositories/order_repository.dart';
 
-class RateOrderUseCase extends UseCase<bool, NoParams> {
-  // TODO: inject repository
+class RateOrderParams extends Equatable {
+  final int storeId;
+  final int rating;
+  final String? comment;
+  final int? deliveryId;
+  final int? deliveryRating;
+  final String? deliveryComment;
+
+  const RateOrderParams({
+    required this.storeId,
+    required this.rating,
+    this.comment,
+    this.deliveryId,
+    this.deliveryRating,
+    this.deliveryComment,
+  });
 
   @override
-  Future<Either<Failure, bool>> call(NoParams params) {
-    // TODO: implement
-    throw UnimplementedError();
+  List<Object?> get props => [
+        storeId,
+        rating,
+        comment,
+        deliveryId,
+        deliveryRating,
+        deliveryComment,
+      ];
+}
+
+class RateOrderUseCase extends UseCase<void, RateOrderParams> {
+  final OrderRepository repository;
+
+  RateOrderUseCase(this.repository);
+
+  @override
+  Future<Either<Failure, void>> call(RateOrderParams params) {
+    return repository.submitReview(
+      storeId: params.storeId,
+      rating: params.rating,
+      comment: params.comment,
+      deliveryId: params.deliveryId,
+      deliveryRating: params.deliveryRating,
+      deliveryComment: params.deliveryComment,
+    );
   }
 }

@@ -12,10 +12,11 @@ import 'package:food_user_app/core/services/snackbar_service.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
-import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
+import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/features/main/presentation/pages/main_layout.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
+import 'package:food_user_app/features/order/domain/usecases/rate_order_usecase.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_state.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
@@ -83,6 +84,8 @@ class _OrderDetailsScreenContent extends StatefulWidget {
 
 class _OrderDetailsScreenContentState
     extends State<_OrderDetailsScreenContent> {
+  bool _hasRated = false;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -300,11 +303,12 @@ class _OrderDetailsScreenContentState
                                       l10n: l10n,
                                     ),
                                   ],
-                                  if (uiModel.showRateAction) ...[
+                                  if (uiModel.showRateAction && !_hasRated) ...[
                                     const SizedBox(height: 24),
                                     _PrimaryFilledButton(
                                       label: l10n.rateOrder,
-                                      onTap: () => _showRatingSheet(context),
+                                      onTap: () =>
+                                          _showRatingSheet(context, order),
                                     ),
                                   ],
                                 ],
@@ -501,25 +505,32 @@ class _OrderDetailsScreenContentState
     );
   }
 
-  void _showRatingSheet(BuildContext context) {
+  void _showRatingSheet(BuildContext context, Order? order) {
+    final cubit = context.read<OrderDetailCubit>();
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: AppColors.scaffoldBackground(context),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.sizeOf(context).height,
+        maxHeight: MediaQuery.sizeOf(context).height * 0.9,
       ),
       builder: (sheetContext) => _OrderRatingSheet(
+        order: order,
+        cubit: cubit,
         onSkip: () => Navigator.of(sheetContext).pop(),
-        onSubmit: () {
+        onSubmitSuccess: () {
           Navigator.of(sheetContext).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.ratingSubmittedDesignOnly,
-              ),
-            ),
+          if (mounted) {
+            setState(() => _hasRated = true);
+          }
+          showTopSnackBar(
+            context,
+            AppLocalizations.of(context)!.ratingSubmittedDesignOnly,
+            isError: false,
           );
         },
       ),
@@ -1064,11 +1075,10 @@ class _CourierDetailsSection extends StatelessWidget {
                         courierPhone,
                         textAlign: TextAlign.start,
                         style: AppTextStyles.body(context).copyWith(
-                          color: AppColors.primary,
+                          color: AppColors.onSurface(context),
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           height: 1.3,
-                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
@@ -1081,33 +1091,36 @@ class _CourierDetailsSection extends StatelessWidget {
       ],
     );
 
-    final ratingBadge = Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.border(context).withValues(alpha: 0.55),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            l10n.orderCourierRating,
-            style: AppTextStyles.caption(context).copyWith(
-              color: AppColors.onSurface(context),
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              height: 1.25,
+    final courierRating = delivery.rating;
+    final ratingBadge = (courierRating != null && courierRating > 0)
+        ? Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: AppColors.border(context).withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(4),
             ),
-          ),
-          const SizedBox(width: 2),
-          SvgPicture.asset(
-            AppAssets.orderRatingStarIcon,
-            width: 14,
-            height: 14,
-          ),
-        ],
-      ),
-    );
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  courierRating.toStringAsFixed(1),
+                  style: AppTextStyles.caption(context).copyWith(
+                    color: AppColors.onSurface(context),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                  ),
+                ),
+                const SizedBox(width: 2),
+                SvgPicture.asset(
+                  AppAssets.orderRatingStarIcon,
+                  width: 14,
+                  height: 14,
+                ),
+              ],
+            ),
+          )
+        : null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1126,7 +1139,10 @@ class _CourierDetailsSection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [courierInfo, ratingBadge],
+          children: [
+            courierInfo,
+            ?ratingBadge,
+          ],
         ),
         const SizedBox(height: 16),
         Divider(
@@ -1431,7 +1447,7 @@ class _PaymentSummarySection extends StatelessWidget {
         if (summary.tax > 0) ...[
           const SizedBox(height: 12),
           _SummaryRow(
-            label: context.l10n.orderTaxWithPercent(summary.taxPercent.toInt()),
+            label: l10n.tax,
             value: context.l10n.priceWithCurrency(_formatAmount(summary.tax)),
           ),
         ],
@@ -1603,17 +1619,19 @@ class _PrimaryFilledButton extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.backgroundColor,
+    this.isLoading = false,
   });
 
   final String label;
   final VoidCallback onTap;
   final Color? backgroundColor;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: onTap,
+      onTap: isLoading ? null : onTap,
       child: Container(
         height: 48,
         alignment: Alignment.center,
@@ -1621,14 +1639,23 @@ class _PrimaryFilledButton extends StatelessWidget {
           color: backgroundColor ?? AppColors.primary,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: Text(
-          label,
-          style: AppTextStyles.primaryButtonLabel.copyWith(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            height: 1.25,
-          ),
-        ),
+        child: isLoading
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                label,
+                style: AppTextStyles.primaryButtonLabel.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.25,
+                ),
+              ),
       ),
     );
   }
@@ -1636,12 +1663,16 @@ class _PrimaryFilledButton extends StatelessWidget {
 
 class _OrderRatingSheet extends StatefulWidget {
   const _OrderRatingSheet({
+    required this.order,
+    required this.cubit,
     required this.onSkip,
-    required this.onSubmit,
+    required this.onSubmitSuccess,
   });
 
+  final Order? order;
+  final OrderDetailCubit cubit;
   final VoidCallback onSkip;
-  final VoidCallback onSubmit;
+  final VoidCallback onSubmitSuccess;
 
   @override
   State<_OrderRatingSheet> createState() => _OrderRatingSheetState();
@@ -1650,49 +1681,14 @@ class _OrderRatingSheet extends StatefulWidget {
 class _OrderRatingSheetState extends State<_OrderRatingSheet> {
   int _restaurantRating = 0;
   int _courierRating = 0;
-  final _ratingScrollController = ScrollController();
+  bool _isSubmitting = false;
   final _restaurantFeedbackController = TextEditingController();
   final _courierFeedbackController = TextEditingController();
   final _restaurantFeedbackFocusNode = FocusNode();
   final _courierFeedbackFocusNode = FocusNode();
-  final _restaurantFeedbackKey = GlobalKey();
-  final _courierFeedbackKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-
-    _restaurantFeedbackFocusNode.addListener(() {
-      if (_restaurantFeedbackFocusNode.hasFocus) {
-        _scrollFocusedFieldIntoView(_restaurantFeedbackKey);
-      }
-    });
-
-    _courierFeedbackFocusNode.addListener(() {
-      if (_courierFeedbackFocusNode.hasFocus) {
-        _scrollFocusedFieldIntoView(_courierFeedbackKey);
-      }
-    });
-  }
-
-  void _scrollFocusedFieldIntoView(GlobalKey key) {
-    Future.delayed(const Duration(milliseconds: 550), () {
-      final fieldContext = key.currentContext;
-      if (fieldContext == null || !fieldContext.mounted || !mounted) return;
-
-      Scrollable.ensureVisible(
-        fieldContext,
-        duration: const Duration(milliseconds: 260),
-        curve: Curves.easeOut,
-        alignment: 0.35,
-        alignmentPolicy: ScrollPositionAlignmentPolicy.explicit,
-      );
-    });
-  }
 
   @override
   void dispose() {
-    _ratingScrollController.dispose();
     _restaurantFeedbackController.dispose();
     _courierFeedbackController.dispose();
     _restaurantFeedbackFocusNode.dispose();
@@ -1700,29 +1696,90 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
     super.dispose();
   }
 
+  Future<void> _submitRating() async {
+    final l10n = AppLocalizations.of(context)!;
+    final order = widget.order;
+    final hasCourier = order?.delivery != null;
+
+    if (_restaurantRating == 0) {
+      showTopSnackBar(context, l10n.rateStoreRequired, isError: true);
+      return;
+    }
+
+    if (hasCourier && _courierRating == 0) {
+      showTopSnackBar(context, l10n.rateCourierRequired, isError: true);
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    setState(() => _isSubmitting = true);
+
+    final storeId =
+        order?.store?.id ?? int.tryParse(order?.branchId ?? '') ?? 1;
+    final deliveryId = order?.delivery?.id;
+
+    final params = RateOrderParams(
+      storeId: storeId,
+      rating: _restaurantRating,
+      comment: _restaurantFeedbackController.text.trim().isNotEmpty
+          ? _restaurantFeedbackController.text.trim()
+          : null,
+      deliveryId: deliveryId,
+      deliveryRating: hasCourier ? _courierRating : null,
+      deliveryComment: hasCourier &&
+              _courierFeedbackController.text.trim().isNotEmpty
+          ? _courierFeedbackController.text.trim()
+          : null,
+    );
+
+    final result = await widget.cubit.submitRating(params);
+
+    if (!mounted) return;
+
+    setState(() => _isSubmitting = false);
+
+    result.fold(
+      (failure) {
+        showTopSnackBar(context, failure.message, isError: true);
+      },
+      (_) {
+        widget.onSubmitSuccess();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final mediaQuery = MediaQuery.of(context);
-    final bottomSafe = mediaQuery.padding.bottom;
-    final keyboardBottom = mediaQuery.viewInsets.bottom;
-    final isKeyboardOpen = keyboardBottom > 0;
+    final bottomSafe = MediaQuery.paddingOf(context).bottom;
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
+    final order = widget.order;
+    final hasCourier = order?.delivery != null;
 
-    return KeyboardDismissOnTap(
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              controller: _ratingScrollController,
-              physics: const ClampingScrollPhysics(),
-              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(
-                  16,
-                  20,
-                  16,
-                  isKeyboardOpen ? keyboardBottom + 160 : 120 + bottomSafe,
-                ),
+    final storeName = (order?.store?.name.isNotEmpty == true)
+        ? order!.store!.name
+        : l10n.orderRestaurantAzAlSham;
+    final storeLogo = order?.store?.logo;
+
+    final courierName = (order?.delivery?.name?.isNotEmpty == true)
+        ? order!.delivery!.name!
+        : l10n.orderCourierName;
+    final courierImage = order?.delivery?.image;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: keyboardInset),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(
+              child: SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 20),
                 child: Column(
                   children: [
                     Text(
@@ -1742,83 +1799,82 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
                     ),
                     const SizedBox(height: 16),
                     _RatingTargetSection(
-                      imageAsset: AppAssets.orderRestaurantAvatar,
-                      name: l10n.orderRestaurantAzAlSham,
+                      imageUrl: storeLogo,
+                      fallbackAsset: AppAssets.orderRestaurantAvatar,
+                      name: storeName,
                       rating: _restaurantRating,
                       feedbackController: _restaurantFeedbackController,
                       feedbackFocusNode: _restaurantFeedbackFocusNode,
-                      feedbackFieldKey: _restaurantFeedbackKey,
                       feedbackLabel: l10n.yourRating,
                       feedbackHint: l10n.ratingFeedbackHint,
-                      onFeedbackTap: () =>
-                          _scrollFocusedFieldIntoView(_restaurantFeedbackKey),
                       onRatingChanged: (value) =>
                           setState(() => _restaurantRating = value),
                       circularImage: true,
                     ),
-                    const SizedBox(height: 16),
-                    Divider(
-                      height: 1,
-                      thickness: 0.5,
-                      color: AppColors.border(context),
-                    ),
-                    const SizedBox(height: 16),
-                    _RatingTargetSection(
-                      imageAsset: AppAssets.orderCourierAvatar,
-                      name: l10n.orderCourierName,
-                      rating: _courierRating,
-                      feedbackController: _courierFeedbackController,
-                      feedbackFocusNode: _courierFeedbackFocusNode,
-                      feedbackFieldKey: _courierFeedbackKey,
-                      feedbackLabel: l10n.yourRating,
-                      feedbackHint: l10n.ratingFeedbackHint,
-                      onFeedbackTap: () =>
-                          _scrollFocusedFieldIntoView(_courierFeedbackKey),
-                      onRatingChanged: (value) =>
-                          setState(() => _courierRating = value),
-                      circularImage: false,
-                    ),
+                    if (hasCourier) ...[
+                      const SizedBox(height: 16),
+                      Divider(
+                        height: 1,
+                        thickness: 0.5,
+                        color: AppColors.border(context),
+                      ),
+                      const SizedBox(height: 16),
+                      _RatingTargetSection(
+                        imageUrl: courierImage,
+                        fallbackAsset: AppAssets.orderCourierAvatar,
+                        name: courierName,
+                        rating: _courierRating,
+                        feedbackController: _courierFeedbackController,
+                        feedbackFocusNode: _courierFeedbackFocusNode,
+                        feedbackLabel: l10n.yourRating,
+                        feedbackHint: l10n.ratingFeedbackHint,
+                        onRatingChanged: (value) =>
+                            setState(() => _courierRating = value),
+                        circularImage: false,
+                      ),
+                    ],
                   ],
                 ),
               ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsetsDirectional.fromSTEB(
-              16,
-              20,
-              16,
-              20 + bottomSafe,
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceCard(context),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.shadow.withValues(alpha: 0.08),
-                  blurRadius: 4,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _OutlineActionButton(
-                    label: l10n.skipRating,
-                    onTap: widget.onSkip,
+            Container(
+              width: double.infinity,
+              padding: EdgeInsetsDirectional.fromSTEB(
+                16,
+                16,
+                16,
+                16 + bottomSafe,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceCard(context),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.shadow.withValues(alpha: 0.08),
+                    blurRadius: 4,
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _PrimaryFilledButton(
-                    label: l10n.submitRating,
-                    onTap: widget.onSubmit,
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _OutlineActionButton(
+                      label: l10n.skipRating,
+                      onTap: _isSubmitting ? () {} : widget.onSkip,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _PrimaryFilledButton(
+                      label: l10n.submitRating,
+                      isLoading: _isSubmitting,
+                      onTap: _isSubmitting ? () {} : _submitRating,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1826,38 +1882,55 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
 
 class _RatingTargetSection extends StatelessWidget {
   const _RatingTargetSection({
-    required this.imageAsset,
+    this.imageUrl,
+    required this.fallbackAsset,
     required this.name,
     required this.rating,
     required this.feedbackController,
     required this.feedbackFocusNode,
-    required this.feedbackFieldKey,
     required this.feedbackLabel,
     required this.feedbackHint,
-    required this.onFeedbackTap,
     required this.onRatingChanged,
     required this.circularImage,
   });
 
-  final String imageAsset;
+  final String? imageUrl;
+  final String fallbackAsset;
   final String name;
   final int rating;
   final TextEditingController feedbackController;
   final FocusNode feedbackFocusNode;
-  final GlobalKey feedbackFieldKey;
   final String feedbackLabel;
   final String feedbackHint;
-  final VoidCallback onFeedbackTap;
   final ValueChanged<int> onRatingChanged;
   final bool circularImage;
+
+  Widget _buildAvatar() {
+    if (imageUrl != null && imageUrl!.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: imageUrl!,
+        width: 60,
+        height: 60,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => _buildFallbackImage(),
+        errorWidget: (context, url, error) => _buildFallbackImage(),
+      );
+    }
+    return _buildFallbackImage();
+  }
+
+  Widget _buildFallbackImage() {
+    if (fallbackAsset == AppAssets.orderCourierAvatar) {
+      return _buildCourierAvatar();
+    }
+    return Image.asset(fallbackAsset, width: 60, height: 60, fit: BoxFit.cover);
+  }
 
   @override
   Widget build(BuildContext context) {
     final image = ClipRRect(
       borderRadius: BorderRadius.circular(circularImage ? 30 : 12),
-      child: imageAsset == AppAssets.orderCourierAvatar
-          ? _buildCourierAvatar()
-          : Image.asset(imageAsset, width: 60, height: 60, fit: BoxFit.cover),
+      child: _buildAvatar(),
     );
 
     return Column(
@@ -1914,50 +1987,46 @@ class _RatingTargetSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          key: feedbackFieldKey,
-          child: TextField(
-            controller: feedbackController,
-            focusNode: feedbackFocusNode,
-            minLines: 3,
-            maxLines: 4,
-            textAlign: TextAlign.start,
-            cursorColor: AppColors.cursor(context),
-            style: AppTextStyles.inputText(context).copyWith(fontSize: 12),
-            onTap: onFeedbackTap,
-            decoration: InputDecoration(
-              hintText: feedbackHint,
-              hintStyle: AppTextStyles.inputHint(
-                context,
-              ).copyWith(color: AppColors.hint(context), fontSize: 12),
-              filled: true,
-              fillColor: AppColors.surfaceCard(context),
-              contentPadding: const EdgeInsetsDirectional.fromSTEB(
-                16,
-                16,
-                16,
-                60,
+        TextField(
+          controller: feedbackController,
+          focusNode: feedbackFocusNode,
+          minLines: 3,
+          maxLines: 4,
+          textAlign: TextAlign.start,
+          cursorColor: AppColors.cursor(context),
+          style: AppTextStyles.inputText(context).copyWith(fontSize: 12),
+          decoration: InputDecoration(
+            hintText: feedbackHint,
+            hintStyle: AppTextStyles.inputHint(
+              context,
+            ).copyWith(color: AppColors.hint(context), fontSize: 12),
+            filled: true,
+            fillColor: AppColors.surfaceCard(context),
+            contentPadding: const EdgeInsetsDirectional.fromSTEB(
+              16,
+              16,
+              16,
+              16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: AppColors.border(context),
+                width: 0.5,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppColors.border(context),
-                  width: 0.5,
-                ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: AppColors.border(context),
+                width: 0.5,
               ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppColors.border(context),
-                  width: 0.5,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(
-                  color: AppColors.fieldFocusBorder(context),
-                  width: 0.5,
-                ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(
+                color: AppColors.fieldFocusBorder(context),
+                width: 0.5,
               ),
             ),
           ),

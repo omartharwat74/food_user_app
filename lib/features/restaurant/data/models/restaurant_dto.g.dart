@@ -37,6 +37,7 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       ),
     );
 
+// ignore: unused_element
 Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
     <String, dynamic>{
       'id': instance.id,

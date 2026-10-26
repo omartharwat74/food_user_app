@@ -1550,6 +1550,24 @@ abstract class AppLocalizations {
   /// **'Rating submitted successfully'**
   String get ratingSubmittedDesignOnly;
 
+  /// No description provided for @rateStoreRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate the store'**
+  String get rateStoreRequired;
+
+  /// No description provided for @rateCourierRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate the delivery driver'**
+  String get rateCourierRequired;
+
+  /// No description provided for @couponAppliedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Coupon applied successfully'**
+  String get couponAppliedSuccess;
+
   /// No description provided for @orderDetailsDesignOnly.
   ///
   /// In en, this message translates to:
@@ -3589,6 +3607,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your notes on the product:'**
   String get productNotesDialogTitle;
+
+  /// No description provided for @specialOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Special offer'**
+  String get specialOffer;
 }
 
 class _AppLocalizationsDelegate

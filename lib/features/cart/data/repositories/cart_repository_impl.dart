@@ -4,6 +4,7 @@ import 'package:food_user_app/core/errors/exceptions.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/cart/data/datasources/cart_remote_data_source.dart';
+import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
@@ -90,6 +91,24 @@ class CartRepositoryImpl implements CartRepository {
         subtotal: subtotal,
       );
       return Right(dto.toEntity(code));
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CartCouponResponseDto>> applyCoupon({
+    required String code,
+    required bool selfPickup,
+    int? addressId,
+  }) async {
+    try {
+      final dto = await remoteDataSource.applyCoupon(
+        code: code,
+        selfPickup: selfPickup,
+        addressId: addressId,
+      );
+      return Right(dto);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

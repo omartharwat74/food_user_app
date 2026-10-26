@@ -86,6 +86,7 @@ class ApiEndpoints {
   // ── Cart ──────────────────────────────────────────────────────────────────
   static const String cart = '/api/v1/cart';
   static const String cartItems = '/api/v1/cart/items';
+  static const String cartCoupon = '/api/v1/cart/coupon';
   static const String applyPromo = '/cart/promo';
 
   // ── Payment & Checkout ────────────────────────────────────────────────────
@@ -105,6 +106,10 @@ class ApiEndpoints {
   static String orderDetail(String id) => '$orders/$id';
   static String orderTracking(String id) => '$orders/$id/tracking';
   static String cancelOrder(String id) => '$orders/$id/cancel';
+
+  // ── Reviews ───────────────────────────────────────────────────────────────
+  /// `POST /api/v1/reviews` — submit store & delivery reviews
+  static const String reviews = '/api/v1/reviews';
 
   // ── Notifications ──────────────────────────────────────────────────────────
   static const String notifications = '/notifications';
@@ -137,6 +142,9 @@ class ApiEndpoints {
 
   /// `GET /api/v1/stores/show?id={storeId}` — full store details.
   static const String storeShow = '/api/v1/stores/show';
+
+  /// `GET /api/v1/stores/banners?store_id={store_id}`
+  static const String storeBanners = '/api/v1/stores/banners';
 
   /// `GET /api/v1/stores/products/all?store_id={storeId}` — menu sections.
   static const String storeProducts = '/api/v1/stores/products/all';

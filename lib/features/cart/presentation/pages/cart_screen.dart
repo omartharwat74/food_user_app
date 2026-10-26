@@ -9,13 +9,13 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
-import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_item_tile.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_summary.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key, this.isActive = true});
@@ -27,12 +27,17 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
+  bool _isSelfPickup = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.isActive) {
         context.read<CartCubit>().loadCart();
+        try {
+          SavedAddressesScope.of(context).loadAddressesIfNeeded();
+        } catch (_) {}
       }
     });
   }
@@ -128,7 +133,6 @@ class _CartScreenState extends State<CartScreen> {
                                 final item = cart.items[index];
                                 return CartItemTile(
                                   item: item,
-                                  onEdit: () => _openProductDetails(item),
                                   onIncrement: () {
                                     context
                                         .read<CartCubit>()
@@ -165,6 +169,15 @@ class _CartScreenState extends State<CartScreen> {
                           discount: discount,
                           total: total,
                           isUpdating: isUpdating,
+                          isSelfPickup: _isSelfPickup,
+                          appliedPromoCode: state.maybeWhen(
+                            loaded: (_, promo, _) => promo?.code,
+                            orElse: () => null,
+                          ),
+                          onToggleSelfPickup: (selfPickup) {
+                            setState(() => _isSelfPickup = selfPickup);
+                            context.read<CartCubit>().setSelfPickup(selfPickup);
+                          },
                           onCheckout: _openCheckout,
                           onAddMore: () {
                             if (cart.restaurantId != null) {
@@ -177,9 +190,7 @@ class _CartScreenState extends State<CartScreen> {
                               context.pop();
                             }
                           },
-                          onApplyPromo: (code) {
-                            context.read<CartCubit>().applyPromoCode(code);
-                          },
+                          onApplyPromo: (code) => _handleApplyCoupon(code),
                         ),
                       ),
                   ],
@@ -192,8 +203,47 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  void _openProductDetails(CartItem item) {
-    context.push(RouteNames.productDetails, extra: item);
+  Future<void> _handleApplyCoupon(String code) async {
+    final l10n = AppLocalizations.of(context)!;
+    int? addressId;
+
+    if (!_isSelfPickup) {
+      try {
+        final addressesController = SavedAddressesScope.of(context);
+        final selected = addressesController.selectedAddress ??
+            (addressesController.addresses.isNotEmpty
+                ? addressesController.addresses.first
+                : null);
+        if (selected != null) {
+          addressId = int.tryParse(selected.id);
+        }
+      } catch (_) {}
+
+      if (addressId == null) {
+        showTopSnackBar(
+          context,
+          l10n.pleaseSelectDeliveryAddress,
+          isError: true,
+        );
+        return;
+      }
+    }
+
+    final success = await context.read<CartCubit>().applyPromoCode(
+          code,
+          selfPickup: _isSelfPickup,
+          addressId: _isSelfPickup ? null : addressId,
+        );
+
+    if (!mounted) return;
+
+    if (success) {
+      showTopSnackBar(
+        context,
+        l10n.couponAppliedSuccess,
+        isError: false,
+      );
+    }
   }
 
   Future<void> _openCheckout() async {

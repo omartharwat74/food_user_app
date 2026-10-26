@@ -15,11 +15,15 @@ import 'package:equatable/equatable.dart';
 /// ```
 class BannerItem extends Equatable {
   final int id;
+  final String? type;
   final String? title;
   final String? imageUrl;
 
   /// External link to open when the banner is tapped.
   final String? link;
+  final int? storeId;
+  final int? productId;
+  final int? menuCategoryId;
 
   /// `1` = active, `0` = inactive.
   final int status;
@@ -33,9 +37,13 @@ class BannerItem extends Equatable {
 
   const BannerItem({
     required this.id,
+    this.type,
     this.title,
     this.imageUrl,
     this.link,
+    this.storeId,
+    this.productId,
+    this.menuCategoryId,
     this.status = 1,
     this.sortOrder = 0,
     this.subtitle = '',
@@ -47,5 +55,16 @@ class BannerItem extends Equatable {
   bool get isActive => status == 1;
 
   @override
-  List<Object?> get props => [id, title, imageUrl, link, status, sortOrder];
+  List<Object?> get props => [
+    id,
+    type,
+    title,
+    imageUrl,
+    link,
+    storeId,
+    productId,
+    menuCategoryId,
+    status,
+    sortOrder,
+  ];
 }

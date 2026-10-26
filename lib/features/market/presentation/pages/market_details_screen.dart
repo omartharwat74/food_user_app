@@ -16,6 +16,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/features/market/presentation/cubit/market_details_cubit.dart';
 import 'package:food_user_app/features/market/presentation/cubit/market_details_state.dart';
 import 'package:food_user_app/features/store/presentation/cubit/hypermarket/hypermarket_cubit.dart';
+import 'package:food_user_app/features/store/presentation/widgets/store_banner_slider.dart';
 import 'package:food_user_app/features/store/data/models/hyper_categories_response.dart';
 import 'package:food_user_app/features/store/data/models/hyper_sections_response.dart';
 import 'package:food_user_app/core/utils/category_icon_helper.dart';
@@ -185,8 +186,9 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
                       child: _buildCustomHeader(context, store),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 24)),
-                    SliverToBoxAdapter(child: _PromoBanners(store: store)),
-                    const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                    SliverToBoxAdapter(
+                      child: StoreBannerSlider(storeId: store.id),
+                    ),
 
                     _buildSectionTitle(
                       context,
@@ -558,83 +560,4 @@ class _MarketDetailsScreenState extends State<MarketDetailsScreen> {
   }
 }
 
-class _PromoBanners extends StatefulWidget {
-  final Market
-  store; // Note: Change 'Market' to your exact entity name if different
-  const _PromoBanners({required this.store});
 
-  @override
-  State<_PromoBanners> createState() => _PromoBannersState();
-}
-
-class _PromoBannersState extends State<_PromoBanners> {
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
-    List<String> apiImages = [];
-
-    // Fallback: Cover Image -> Logo Image
-    if (widget.store.coverImage != null &&
-        widget.store.coverImage!.isNotEmpty) {
-      apiImages.add(widget.store.coverImage!);
-    } else if (widget.store.logoImage != null &&
-        widget.store.logoImage!.isNotEmpty) {
-      apiImages.add(widget.store.logoImage!);
-    }
-
-    if (apiImages.isEmpty) return const SizedBox.shrink();
-
-    // Force swipeability: if only 1 image exists, duplicate it to 3 slides so the user can swipe and see dots.
-    final displayImages = apiImages.length == 1
-        ? [apiImages[0], apiImages[0], apiImages[0]]
-        : apiImages;
-
-    return Column(
-      children: [
-        SizedBox(
-          height: 140,
-          child: PageView.builder(
-            itemCount: displayImages.length,
-            onPageChanged: (index) => setState(() => _currentIndex = index),
-            itemBuilder: (context, index) {
-              return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Image.network(
-                  displayImages[index],
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  errorBuilder: (context, error, stackTrace) =>
-                      const ColoredBox(color: Colors.grey),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(
-            displayImages.length,
-            (index) => AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: _currentIndex == index ? 24 : 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: _currentIndex == index
-                    ? AppColors.primary
-                    : Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}

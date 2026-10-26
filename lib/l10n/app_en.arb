@@ -270,6 +270,9 @@
   "skipRating": "Skip",
   "submitRating": "Send",
   "ratingSubmittedDesignOnly": "Rating submitted successfully",
+  "rateStoreRequired": "Please rate the store",
+  "rateCourierRequired": "Please rate the delivery driver",
+  "couponAppliedSuccess": "Coupon applied successfully",
   "orderDetailsDesignOnly": "Updated successfully",
   "rateOrder": "Rate order",
   "currentOrders": "Current",
@@ -671,5 +674,6 @@
   "invalidExpiryDate": "Invalid expiry date",
   "invalidCvv": "Invalid CVV",
   "orderNotesTitle": "Your notes:",
-  "productNotesDialogTitle": "Your notes on the product:"
+  "productNotesDialogTitle": "Your notes on the product:",
+  "specialOffer": "Special offer"
 }

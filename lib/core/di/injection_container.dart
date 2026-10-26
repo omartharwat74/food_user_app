@@ -144,6 +144,7 @@ import 'package:food_user_app/features/order/domain/usecases/cancel_order_usecas
 import 'package:food_user_app/features/order/domain/usecases/get_order_detail_usecase.dart';
 import 'package:food_user_app/features/order/domain/usecases/get_order_history_usecase.dart';
 import 'package:food_user_app/features/order/domain/usecases/get_order_tracking_usecase.dart';
+import 'package:food_user_app/features/order/domain/usecases/rate_order_usecase.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_detail_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/order/presentation/cubit/order_tracking_cubit.dart';
@@ -632,6 +633,9 @@ void importOrderDependencies() {
   sl.registerLazySingleton(
     () => CancelOrderUseCase(sl<OrderRepository>()),
   );
+  sl.registerLazySingleton(
+    () => RateOrderUseCase(sl<OrderRepository>()),
+  );
 
   sl.registerLazySingleton<OrderHistoryCubit>(
     () => OrderHistoryCubit(sl<GetOrderHistoryUseCase>()),
@@ -640,6 +644,7 @@ void importOrderDependencies() {
     () => OrderDetailCubit(
       getOrderDetailUseCase: sl<GetOrderDetailUseCase>(),
       cancelOrderUseCase: sl<CancelOrderUseCase>(),
+      rateOrderUseCase: sl<RateOrderUseCase>(),
     ),
   );
   sl.registerFactory<OrderTrackingCubit>(

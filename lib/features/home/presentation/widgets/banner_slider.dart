@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
-import 'package:food_user_app/core/widgets/app_media.dart';
-import 'package:food_user_app/features/home/domain/entities/banner.dart';
+import 'package:food_user_app/core/widgets/promo_banner_card.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_state.dart';
 
@@ -41,7 +43,7 @@ class _BannerSliderState extends State<BannerSlider> {
             return Column(
               children: [
                 SizedBox(
-                  height: 155,
+                  height: 125,
                   child: PageView.builder(
                     controller: _controller,
                     onPageChanged: (page) =>
@@ -53,7 +55,36 @@ class _BannerSliderState extends State<BannerSlider> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.md,
                         ),
-                        child: _PromoBanner(banner: banner),
+                        child: PromoBannerCard(
+                          banner: banner,
+                          onTap: () async {
+                            if (banner.type == 'store' ||
+                                (banner.storeId != null &&
+                                    banner.storeId! > 0)) {
+                              if (banner.storeId != null &&
+                                  banner.storeId! > 0) {
+                                context.push(
+                                  RouteNames.restaurantDetailFor(
+                                    banner.storeId.toString(),
+                                  ),
+                                );
+                              }
+                            } else if (banner.type == 'link' ||
+                                (banner.link != null &&
+                                    banner.link!.isNotEmpty)) {
+                              if (banner.link != null &&
+                                  banner.link!.isNotEmpty) {
+                                final uri = Uri.tryParse(banner.link!);
+                                if (uri != null && await canLaunchUrl(uri)) {
+                                  await launchUrl(
+                                    uri,
+                                    mode: LaunchMode.externalApplication,
+                                  );
+                                }
+                              }
+                            }
+                          },
+                        ),
                       );
                     },
                   ),
@@ -68,36 +99,12 @@ class _BannerSliderState extends State<BannerSlider> {
           },
           orElse: () {
             return const SizedBox(
-              height: 155,
+              height: 125,
               child: Center(child: CircularProgressIndicator()),
             );
           },
         );
       },
-    );
-  }
-}
-
-class _PromoBanner extends StatelessWidget {
-  const _PromoBanner({required this.banner});
-
-  final BannerItem banner;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(16)),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          AppNetworkImage(
-            banner.imageUrl ?? '',
-            width: double.infinity,
-            height: double.infinity,
-            fit: BoxFit.cover,
-          ),
-        ],
-      ),
     );
   }
 }

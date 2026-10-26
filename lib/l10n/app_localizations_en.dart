@@ -762,6 +762,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ratingSubmittedDesignOnly => 'Rating submitted successfully';
 
   @override
+  String get rateStoreRequired => 'Please rate the store';
+
+  @override
+  String get rateCourierRequired => 'Please rate the delivery driver';
+
+  @override
+  String get couponAppliedSuccess => 'Coupon applied successfully';
+
+  @override
   String get orderDetailsDesignOnly => 'Updated successfully';
 
   @override
@@ -1824,4 +1833,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get productNotesDialogTitle => 'Your notes on the product:';
+
+  @override
+  String get specialOffer => 'Special offer';
 }

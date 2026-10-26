@@ -367,6 +367,7 @@ class OrderDeliveryDto {
   final String? phone;
   final String? image;
   final String? vehicleType;
+  final double? rating;
 
   const OrderDeliveryDto({
     this.id,
@@ -374,15 +375,22 @@ class OrderDeliveryDto {
     this.phone,
     this.image,
     this.vehicleType,
+    this.rating,
   });
 
   factory OrderDeliveryDto.fromJson(Map<String, dynamic> json) {
+    final rawRating = json['rating'] ??
+        json['rate'] ??
+        json['rating_avg'] ??
+        json['average_rating'] ??
+        json['avg_rating'];
     return OrderDeliveryDto(
       id: json['id'] != null ? _parseInt(json['id']) : null,
       name: json['name']?.toString(),
       phone: json['phone']?.toString(),
       image: json['image']?.toString(),
       vehicleType: json['vehicle_type']?.toString(),
+      rating: rawRating != null ? _parseDouble(rawRating) : null,
     );
   }
 
@@ -392,5 +400,6 @@ class OrderDeliveryDto {
     phone: phone,
     image: image,
     vehicleType: vehicleType,
+    rating: rating,
   );
 }

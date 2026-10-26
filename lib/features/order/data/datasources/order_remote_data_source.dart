@@ -15,6 +15,14 @@ abstract class OrderRemoteDataSource {
     required String orderId,
     required String reason,
   });
+  Future<void> submitReview({
+    required int storeId,
+    required int rating,
+    String? comment,
+    int? deliveryId,
+    int? deliveryRating,
+    String? deliveryComment,
+  });
 }
 
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
@@ -103,5 +111,37 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
       return OrderDto.fromJson(data, message: msg);
     }
     throw const ServerException('Invalid cancel response format');
+  }
+
+  @override
+  Future<void> submitReview({
+    required int storeId,
+    required int rating,
+    String? comment,
+    int? deliveryId,
+    int? deliveryRating,
+    String? deliveryComment,
+  }) async {
+    final Map<String, dynamic> body = {
+      'store_id': storeId,
+      'rating': rating,
+    };
+    if (comment != null && comment.trim().isNotEmpty) {
+      body['comment'] = comment.trim();
+    }
+    if (deliveryId != null) {
+      body['delivery_id'] = deliveryId;
+    }
+    if (deliveryRating != null) {
+      body['delivery_rating'] = deliveryRating;
+    }
+    if (deliveryComment != null && deliveryComment.trim().isNotEmpty) {
+      body['delivery_comment'] = deliveryComment.trim();
+    }
+
+    await _dioClient.dio.post(
+      ApiEndpoints.reviews,
+      data: body,
+    );
   }
 }

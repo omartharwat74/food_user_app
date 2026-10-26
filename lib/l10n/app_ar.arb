@@ -269,6 +269,9 @@
   "skipRating": "تخطي",
   "submitRating": "إرسال",
   "ratingSubmittedDesignOnly": "تم إرسال التقييم بنجاح",
+  "rateStoreRequired": "يرجى تحديد تقييم المتجر",
+  "rateCourierRequired": "يرجى تحديد تقييم المندوب",
+  "couponAppliedSuccess": "تم تطبيق الكوبون بنجاح",
   "orderDetailsDesignOnly": "تم التحديث بنجاح",
   "rateOrder": "تقييم الطلب",
   "currentOrders": "الحالية",
@@ -672,5 +675,6 @@
   "invalidExpiryDate": "تاريخ الانتهاء غير صالح",
   "invalidCvv": "رمز الأمان (CVV) غير صالح",
   "orderNotesTitle": "ملاحظاتك :",
-  "productNotesDialogTitle": "ملاحظاتك على المنتج :"
+  "productNotesDialogTitle": "ملاحظاتك على المنتج :",
+  "specialOffer": "عرض خاص"
 }

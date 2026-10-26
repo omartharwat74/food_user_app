@@ -117,4 +117,49 @@ class OrderRepositoryImpl implements OrderRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> submitReview({
+    required int storeId,
+    required int rating,
+    String? comment,
+    int? deliveryId,
+    int? deliveryRating,
+    String? deliveryComment,
+  }) async {
+    try {
+      await remoteDataSource.submitReview(
+        storeId: storeId,
+        rating: rating,
+        comment: comment,
+        deliveryId: deliveryId,
+        deliveryRating: deliveryRating,
+        deliveryComment: deliveryComment,
+      );
+      return const Right(null);
+    } on DioException catch (e) {
+      String errorMessage = 'حدث خطأ أثناء إرسال التقييم';
+      final resData = e.response?.data;
+      if (resData is Map<String, dynamic>) {
+        if (resData['msg'] != null) {
+          errorMessage = resData['msg'].toString();
+        } else if (resData['message'] != null) {
+          errorMessage = resData['message'].toString();
+        } else if (resData['errors'] is Map) {
+          final errors = resData['errors'] as Map;
+          final firstVal = errors.values.firstOrNull;
+          if (firstVal is List && firstVal.isNotEmpty) {
+            errorMessage = firstVal[0].toString();
+          } else if (firstVal is String) {
+            errorMessage = firstVal;
+          }
+        }
+      } else if (e.message != null && e.message!.isNotEmpty) {
+        errorMessage = e.message!;
+      }
+      return Left(ServerFailure(errorMessage));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

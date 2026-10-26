@@ -271,7 +271,11 @@ class CartCubit extends Cubit<CartState> {
     emit(const CartState.loaded(cart: Cart.empty(), appliedPromo: null));
   }
 
-  Future<void> applyPromoCode(String code) async {
+  Future<bool> applyPromoCode(
+    String code, {
+    bool selfPickup = false,
+    int? addressId,
+  }) async {
     final currentCart = state.maybeWhen(
       loaded: (cart, promo, _) => cart,
       error: (cart, promo, message) => cart,
@@ -283,38 +287,83 @@ class CartCubit extends Cubit<CartState> {
       orElse: () => null,
     );
 
-    if (currentCart.id.isEmpty) return;
-
-    emit(const CartState.loading());
-
-    final result = await applyPromoUseCase(
-      ApplyPromoParams(code: code, subtotal: currentCart.subtotal),
-    );
-
-    if (isClosed) return;
-
-    result.fold(
-      (failure) => emit(
+    if (currentCart.items.isEmpty) {
+      emit(
         CartState.error(
           cart: currentCart,
           appliedPromo: currentPromo,
-          message: failure.message,
+          message: 'السلة فارغة',
         ),
+      );
+      return false;
+    }
+
+    emit(CartState.loaded(
+      cart: currentCart,
+      appliedPromo: currentPromo,
+      updatingProductId: -1,
+    ));
+
+    final result = await applyPromoUseCase(
+      ApplyPromoParams(
+        code: code,
+        subtotal: currentCart.subtotal,
+        selfPickup: selfPickup,
+        addressId: addressId,
       ),
-      (promo) {
-        final updatedCart = Cart(
-          id: currentCart.id,
-          restaurantId: currentCart.restaurantId,
-          restaurantName: currentCart.restaurantName,
-          items: currentCart.items,
-          subtotal: currentCart.subtotal,
-          deliveryFee: currentCart.deliveryFee,
-          tax: currentCart.tax,
-          discount: promo.discountAmount,
-          total: promo.total,
+    );
+
+    if (isClosed) return false;
+
+    return result.fold(
+      (failure) {
+        emit(
+          CartState.error(
+            cart: currentCart,
+            appliedPromo: currentPromo,
+            message: failure.message,
+          ),
+        );
+        return false;
+      },
+      (couponDto) {
+        final promo = couponDto.toPromo();
+        final updatedCart = currentCart.copyWith(
+          subtotal: couponDto.subtotal ?? currentCart.subtotal,
+          deliveryFee: couponDto.deliveryFee ??
+              (selfPickup ? 0.0 : currentCart.deliveryFee),
+          tax: couponDto.tax ?? currentCart.tax,
+          discount: promo.discountAmount > 0
+              ? promo.discountAmount
+              : currentCart.discount,
+          total: promo.total > 0
+              ? promo.total
+              : (currentCart.total - promo.discountAmount),
         );
         emit(CartState.loaded(cart: updatedCart, appliedPromo: promo));
+        return true;
       },
+    );
+  }
+
+  void setSelfPickup(bool selfPickup) {
+    state.maybeWhen(
+      loaded: (cart, promo, updatingId) {
+        final newDeliveryFee = selfPickup ? 0.0 : cart.deliveryFee;
+        final newTotal =
+            cart.subtotal + newDeliveryFee + cart.tax - cart.discount;
+        emit(
+          CartState.loaded(
+            cart: cart.copyWith(
+              deliveryFee: newDeliveryFee,
+              total: newTotal > 0 ? newTotal : 0.0,
+            ),
+            appliedPromo: promo,
+            updatingProductId: updatingId,
+          ),
+        );
+      },
+      orElse: () {},
     );
   }
 }

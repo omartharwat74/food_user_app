@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
+import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 
 abstract class CartRemoteDataSource {
@@ -20,6 +21,11 @@ abstract class CartRemoteDataSource {
   Future<PromoPreviewResponseDto> applyPromo({
     required String code,
     required double subtotal,
+  });
+  Future<CartCouponResponseDto> applyCoupon({
+    required String code,
+    required bool selfPickup,
+    int? addressId,
   });
 }
 
@@ -113,6 +119,33 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       );
       return PromoPreviewResponseDto.fromJson(
         response.data as Map<String, dynamic>,
+      );
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<CartCouponResponseDto> applyCoupon({
+    required String code,
+    required bool selfPickup,
+    int? addressId,
+  }) async {
+    try {
+      final Map<String, dynamic> body = {
+        'code': code,
+        'self_pickup': selfPickup,
+      };
+      if (!selfPickup && addressId != null) {
+        body['address_id'] = addressId;
+      }
+      final response = await _dio.post<dynamic>(
+        ApiEndpoints.cartCoupon,
+        data: body,
+      );
+      return CartCouponResponseDto.fromJson(
+        response.data as Map<String, dynamic>,
+        defaultCode: code,
       );
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);

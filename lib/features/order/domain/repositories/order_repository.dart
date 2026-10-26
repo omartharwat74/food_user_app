@@ -17,4 +17,12 @@ abstract class OrderRepository {
     required String orderId,
     required String reason,
   });
+  Future<Either<Failure, void>> submitReview({
+    required int storeId,
+    required int rating,
+    String? comment,
+    int? deliveryId,
+    int? deliveryRating,
+    String? deliveryComment,
+  });
 }

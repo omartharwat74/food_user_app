@@ -13,6 +13,7 @@
   "languageArabic": "Arabic",
   "languageEnglish": "English",
   "generalSettingsTitle": "General Settings",
+  "settingsTitle": "Settings",
   "changeAppLanguage": "Change App Language",
   "notificationsControl": "Notifications Control",
   "notificationsTitle": "Notifications",
@@ -675,5 +676,10 @@
   "invalidCvv": "Invalid CVV",
   "orderNotesTitle": "Your notes:",
   "productNotesDialogTitle": "Your notes on the product:",
-  "specialOffer": "Special offer"
+  "specialOffer": "Special offer",
+  "browseAsGuest": "Browse as Guest",
+  "guestLoginPrompt": "Login / Create Account",
+  "guestGateTitle": "Login Required",
+  "guestGateMessage": "Please log in to complete this action",
+  "guestGateLoginButton": "Login Now"
 }

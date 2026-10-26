@@ -48,6 +48,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get generalSettingsTitle => 'الإعدادات العامة';
 
   @override
+  String get settingsTitle => 'الإعدادات';
+
+  @override
   String get changeAppLanguage => 'تغيير لغة التطبيق';
 
   @override
@@ -1814,4 +1817,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get specialOffer => 'عرض خاص';
+
+  @override
+  String get browseAsGuest => 'تصفح كضيف';
+
+  @override
+  String get guestLoginPrompt => 'تسجيل الدخول / إنشاء حساب';
+
+  @override
+  String get guestGateTitle => 'يرجى تسجيل الدخول';
+
+  @override
+  String get guestGateMessage => 'يرجى تسجيل الدخول لتتمكن من إتمام هذه الخطوة';
+
+  @override
+  String get guestGateLoginButton => 'تسجيل الدخول الآن';
 }

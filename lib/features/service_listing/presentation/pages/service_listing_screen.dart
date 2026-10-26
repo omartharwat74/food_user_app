@@ -218,7 +218,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                     ),
                                     const SizedBox(height: 12),
                                     SizedBox(
-                                      height: 106,
+                                      height: 110,
                                       child: ListView.separated(
                                         scrollDirection: Axis.horizontal,
                                         padding: EdgeInsets.zero,
@@ -474,8 +474,8 @@ class _ServiceCategoryChip extends StatelessWidget {
               color: AppColors.surfaceCard(context),
               borderRadius: const BorderRadius.all(AppRadius.full),
               border: selected
-                  ? Border.all(color: AppColors.primary, width: 1)
-                  : null,
+                  ? Border.all(color: AppColors.primary, width: 1.5)
+                  : Border.all(color: AppColors.border(context), width: 0.5),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.onSurface(context).withValues(alpha: 0.08),
@@ -503,9 +503,13 @@ class _ServiceCategoryChip extends StatelessWidget {
           Text(
             category.name,
             maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppTextStyles.caption(context).copyWith(
-              color: selected ? AppColors.text : AppColors.paragraph(context),
+              color: selected
+                  ? AppColors.onSurface(context)
+                  : AppColors.paragraph(context),
+              fontWeight: selected ? FontWeight.bold : FontWeight.w400,
               fontSize: 10,
               height: 1.25,
             ),

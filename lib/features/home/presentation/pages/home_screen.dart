@@ -11,11 +11,13 @@ import 'package:food_user_app/core/widgets/app_search_field.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/home/presentation/widgets/banner_slider.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/presentation/widgets/category_grid.dart';
+import 'package:food_user_app/features/home/presentation/widgets/guest_drawer.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/restaurant_card.dart';
-import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,25 +29,41 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with AutomaticKeepAliveClientMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final addressesController = SavedAddressesScope.of(context);
-    if (!addressesController.hasLoaded && !addressesController.isLoading) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        addressesController.loadAddressesIfNeeded();
-      });
+    final authState = context.watch<AuthBloc>().state;
+    final isGuest = authState is AuthGuest;
+
+    if (!isGuest) {
+      final addressesController = SavedAddressesScope.of(context);
+      if (!addressesController.hasLoaded && !addressesController.isLoading) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          addressesController.loadAddressesIfNeeded();
+        });
+      }
     }
     final copy = _HomeCopy.of(context);
 
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: isGuest ? const GuestDrawer() : null,
+      drawerEnableOpenDragGesture: isGuest,
       backgroundColor: AppColors.scaffoldBackground(context),
       body: CustomScrollView(
         slivers: [
-          SliverToBoxAdapter(child: _HomeHeader(copy: copy)),
+          SliverToBoxAdapter(
+            child: _HomeHeader(
+              copy: copy,
+              isGuest: isGuest,
+              onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+            ),
+          ),
           SliverPadding(
             padding: const EdgeInsets.only(top: 22, bottom: AppSpacing.lg),
             sliver: SliverList.list(
@@ -69,9 +87,15 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
 class _HomeHeader extends StatelessWidget {
-  const _HomeHeader({required this.copy});
+  const _HomeHeader({
+    required this.copy,
+    required this.isGuest,
+    this.onMenuTap,
+  });
 
   final _HomeCopy copy;
+  final bool isGuest;
+  final VoidCallback? onMenuTap;
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +120,9 @@ class _HomeHeader extends StatelessWidget {
             end: AppSpacing.md,
             child: Align(
               alignment: AlignmentDirectional.centerStart,
-              child: _LocationRow(copy: copy),
+              child: isGuest
+                  ? _GuestMenuButton(onTap: onMenuTap ?? () {})
+                  : _LocationRow(copy: copy),
             ),
           ),
           PositionedDirectional(
@@ -119,6 +145,43 @@ class _HomeHeader extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GuestMenuButton extends StatelessWidget {
+  const _GuestMenuButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: 'القائمة',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.28),
+                width: 0.8,
+              ),
+            ),
+            child: const Icon(
+              Icons.menu_rounded,
+              color: Colors.white,
+              size: 22,
+            ),
+          ),
+        ),
       ),
     );
   }

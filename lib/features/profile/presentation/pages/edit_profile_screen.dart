@@ -11,6 +11,8 @@ import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
@@ -37,6 +39,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
+
+    final profileBloc = context.read<ProfileBloc>();
+    if (profileBloc.state.profile == null && !profileBloc.state.isLoading) {
+      profileBloc.add(const GetProfileEvent());
+    }
   }
 
   @override
@@ -45,13 +52,30 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_didSetInitialProfileData) return;
     final profile = context.read<ProfileBloc>().state.profile;
     if (profile != null) {
-      _nameController.text = profile.fullName.isNotEmpty
+      final formattedName = profile.fullName.isNotEmpty
           ? profile.fullName
-          : '${profile.firstName} ${profile.lastName}';
+          : '${profile.firstName} ${profile.lastName}'.trim();
+      _nameController.text = formattedName;
       _emailController.text = profile.email;
       _phoneController.text = profile.phone;
+      _didSetInitialProfileData = true;
+    } else {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is Authenticated) {
+        final u = authState.user;
+        if (u.name.isNotEmpty) _nameController.text = u.name;
+        if (u.email != null && u.email!.isNotEmpty) {
+          _emailController.text = u.email!;
+        }
+        if (u.phone != null && u.phone!.isNotEmpty) {
+          _phoneController.text = u.phone!;
+        }
+        if (_nameController.text.isNotEmpty ||
+            _phoneController.text.isNotEmpty) {
+          _didSetInitialProfileData = true;
+        }
+      }
     }
-    _didSetInitialProfileData = true;
   }
 
   @override
@@ -82,7 +106,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground(context),
-      body: BlocListener<ProfileBloc, ProfileState>(
+      body: BlocConsumer<ProfileBloc, ProfileState>(
         listenWhen: (prev, curr) =>
             curr.updateProfileSuccess != prev.updateProfileSuccess ||
             curr.errorMessage != prev.errorMessage ||
@@ -121,88 +145,99 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           }
           final profile = state.profile;
           if (profile != null) {
-            if (_nameController.text.isEmpty) {
-              _nameController.text = profile.fullName.isNotEmpty
-                  ? profile.fullName
-                  : '${profile.firstName} ${profile.lastName}';
+            final formattedName = profile.fullName.isNotEmpty
+                ? profile.fullName
+                : '${profile.firstName} ${profile.lastName}'.trim();
+            if (_nameController.text.isEmpty && formattedName.isNotEmpty) {
+              _nameController.text = formattedName;
             }
-            // phone and email are read-only, so always sync them with the latest profile state
-            _emailController.text = profile.email;
-            _phoneController.text = profile.phone;
+            if (_emailController.text.isEmpty && profile.email.isNotEmpty) {
+              _emailController.text = profile.email;
+            }
+            if (_phoneController.text.isEmpty && profile.phone.isNotEmpty) {
+              _phoneController.text = profile.phone;
+            }
           }
         },
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: SafeArea(
-            bottom: false,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _ProfileHeader(title: l10n.personalDataTitle),
-                Expanded(
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      16,
-                      20,
-                      16,
-                      24,
+        builder: (context, state) {
+          final showFullLoading = state.isLoading &&
+              state.profile == null &&
+              _nameController.text.isEmpty &&
+              _phoneController.text.isEmpty;
+
+          return GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: SafeArea(
+              bottom: false,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _ProfileHeader(title: l10n.personalDataTitle),
+                  if (showFullLoading)
+                    const Expanded(
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else
+                    Expanded(
+                      child: SingleChildScrollView(
+                        physics: const ClampingScrollPhysics(),
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          20,
+                          16,
+                          24,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            _ProfileField(
+                              label: l10n.email,
+                              controller: _emailController,
+                              readOnly: true,
+                              keyboardType: TextInputType.emailAddress,
+                              textDirection: TextDirection.ltr,
+                            ),
+                            const SizedBox(height: 16),
+                            _ProfileField(
+                              label: l10n.fullName,
+                              controller: _nameController,
+                              textInputAction: TextInputAction.done,
+                            ),
+                            const SizedBox(height: 16),
+                            _ProfileField(
+                              label: l10n.mobileNumber,
+                              controller: _phoneController,
+                              readOnly: true,
+                              keyboardType: TextInputType.phone,
+                              textDirection: TextDirection.ltr,
+                              trailing: _PhoneChangeAction(
+                                label: l10n.changePhone,
+                                onTap: () {
+                                  context.read<ProfileBloc>().add(
+                                    const SendCurrentPhoneOtpEvent(),
+                                  );
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            state.isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : _PrimaryProfileButton(
+                                    label: l10n.saveChanges,
+                                    onTap: _saveProfile,
+                                  ),
+                          ],
+                        ),
+                      ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _ProfileField(
-                          label: l10n.email,
-                          controller: _emailController,
-                          readOnly: true,
-                          keyboardType: TextInputType.emailAddress,
-                          textDirection: TextDirection.ltr,
-                        ),
-                        const SizedBox(height: 16),
-                        _ProfileField(
-                          label: l10n.fullName,
-                          controller: _nameController,
-                          textInputAction: TextInputAction.done,
-                        ),
-                        const SizedBox(height: 16),
-                        _ProfileField(
-                          label: l10n.mobileNumber,
-                          controller: _phoneController,
-                          readOnly: true,
-                          keyboardType: TextInputType.phone,
-                          textDirection: TextDirection.ltr,
-                          trailing: _PhoneChangeAction(
-                            label: l10n.changePhone,
-                            onTap: () {
-                              context.read<ProfileBloc>().add(
-                                const SendCurrentPhoneOtpEvent(),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        BlocBuilder<ProfileBloc, ProfileState>(
-                          builder: (context, state) {
-                            if (state.isLoading) {
-                              return const Center(
-                                child: CircularProgressIndicator(),
-                              );
-                            }
-                            return _PrimaryProfileButton(
-                              label: l10n.saveChanges,
-                              onTap: _saveProfile,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

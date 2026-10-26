@@ -224,6 +224,19 @@ class ApiEndpoints {
     completeProfile,
     socialLogin,
     refreshToken,
+    // Public browsing endpoints (accessible without auth)
+    sections,
+    tags,
+    banners,
+    spotlights,
+    stores,
+    majorStores,
+    storeProducts,
+    storeProductCategories,
+    storeProductCategorySections,
+    storeShow,
+    generalSettings,
+    searchKeywords,
   };
 
   // ── Wallet ─────────────────────────────────────────────────────────────────

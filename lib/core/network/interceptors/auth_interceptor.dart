@@ -90,8 +90,18 @@ class AuthInterceptor extends Interceptor {
       return handler.next(err);
     }
 
-    // If the failing request IS the refresh endpoint or auth endpoint → logout immediately
     final failedPath = err.requestOptions.path;
+
+    // If the request had no Authorization header, it was not an authenticated
+    // session request (e.g. guest mode or public API returning 401).
+    // NEVER attempt refresh or logout redirect for unauthenticated requests.
+    final authHeader = err.requestOptions.headers['Authorization'];
+    if (authHeader == null || authHeader.toString().trim().isEmpty) {
+      _logAuthDebug('401 on unauthenticated request ($failedPath) → skipping refresh/logout');
+      return handler.next(err);
+    }
+
+    // If the failing request IS the refresh endpoint or auth endpoint → logout immediately
     if (failedPath == ApiEndpoints.refreshToken ||
         failedPath.endsWith(ApiEndpoints.refreshToken)) {
       _logAuthDebug('Refresh endpoint returned 401 → logging out');
@@ -112,11 +122,15 @@ class AuthInterceptor extends Interceptor {
     _logAuthDebug('Token invalid/expired (401) for: $failedPath');
 
     final refreshToken = await _tokenStorage.getRefreshToken();
+    final accessToken = await _tokenStorage.getAccessToken();
     if (refreshToken == null || refreshToken.isEmpty) {
-      _logAuthDebug('No refresh token stored → logging out');
+      _logAuthDebug('No refresh token stored');
       _isRefreshing = false;
       await _rejectQueue(err);
-      await _handleLogout(err);
+      if (accessToken != null && accessToken.isNotEmpty) {
+        // Had an active token but no refresh token → session expired, logout
+        await _handleLogout(err);
+      }
       return handler.next(err);
     }
 

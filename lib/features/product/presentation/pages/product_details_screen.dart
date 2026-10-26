@@ -15,6 +15,9 @@ import 'package:food_user_app/features/restaurant/presentation/cubit/product_det
 import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/core/widgets/guest_gate_bottom_sheet.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({required this.item, super.key});
@@ -240,6 +243,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               onDecrement: () =>
                   setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
               onSubmit: () {
+                final authState = context.read<AuthBloc>().state;
+                if (authState is AuthGuest) {
+                  showGuestGate(context);
+                  return;
+                }
                 final isLoading = context.read<CartCubit>().state.maybeWhen(
                   loading: () => true,
                   orElse: () => false,

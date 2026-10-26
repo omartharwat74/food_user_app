@@ -26,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<PhoneOtpVerifySubmitted>(_onPhoneOtpVerifySubmitted);
     on<CompleteRegistrationSubmitted>(_onCompleteRegistrationSubmitted);
     on<SocialLoginRequested>(_onSocialLoginRequested);
+    on<EnterGuestMode>(_onEnterGuestMode);
   }
 
   final LogoutUseCase logoutUseCase;
@@ -226,6 +227,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     });
+  }
+
+  // ── Guest Mode ────────────────────────────────────────────────────────────
+
+  Future<void> _onEnterGuestMode(
+    EnterGuestMode event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthGuest());
   }
 
   Future<void> _onCompleteRegistrationSubmitted(

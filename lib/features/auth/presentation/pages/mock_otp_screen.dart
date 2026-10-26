@@ -14,6 +14,10 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/auth/presentation/pages/phone_auth_screen.dart';
 import 'package:food_user_app/features/auth/presentation/widgets/auth_primary_button.dart';
 import 'package:food_user_app/features/auth/presentation/utils/auth_error_localizer.dart';
@@ -126,6 +130,9 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
               }
             } else if (state is PhoneOtpLoginSuccess ||
                 state is CompleteRegistrationSuccess) {
+              context.read<ProfileBloc>().add(const GetProfileEvent());
+              context.read<CartCubit>().loadCart();
+              context.read<FavoriteCubit>().loadFavorites();
               final addressController = SavedAddressesScope.of(context);
               addressController.loadAddressesIfNeeded().then((_) {
                 if (!context.mounted) return;

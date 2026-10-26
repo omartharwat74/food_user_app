@@ -12,6 +12,9 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_state.dart';
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/core/widgets/guest_gate_bottom_sheet.dart';
 
 class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
@@ -106,6 +109,11 @@ class RestaurantCard extends StatelessWidget {
 
                           return GestureDetector(
                             onTap: () {
+                              final authState = context.read<AuthBloc>().state;
+                              if (authState is AuthGuest) {
+                                showGuestGate(context);
+                                return;
+                              }
                               context.read<FavoriteCubit>().toggleFavorite(
                                 restaurant.id,
                               );

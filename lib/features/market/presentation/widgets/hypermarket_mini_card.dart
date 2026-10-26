@@ -34,7 +34,7 @@ class HypermarketMiniCard extends StatelessWidget {
           ],
         ),
         child: SizedBox(
-          width: 76,
+          width: 82,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,

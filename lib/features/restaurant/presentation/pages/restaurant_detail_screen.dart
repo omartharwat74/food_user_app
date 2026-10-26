@@ -29,6 +29,8 @@ import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cu
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_state.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_state.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 
 // ── Layout constants ───────────────────────────────────────────────────────────────
 /// Height of the restaurant hero background section.
@@ -93,6 +95,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
     // maxExtent: pinned AppBar row + hero + info card area.
     final maxExtent = _kHeaderContentHeight;
 
+    final authState = context.watch<AuthBloc>().state;
+    final isLoggedIn = authState is Authenticated;
+
     final favoriteState = context.watch<FavoriteCubit>().state;
     final isFav = favoriteState.maybeWhen(
       loaded: (ids, _) => ids.contains(widget.restaurantId),
@@ -153,6 +158,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                             ),
                             restaurantName: restaurant.name,
                             restaurantId: restaurant.id,
+                            showFavorite: isLoggedIn,
                             isFavorite: isFav,
                             onFavoriteTap: () {
                               context.read<FavoriteCubit>().toggleFavorite(
@@ -323,6 +329,7 @@ class _RestaurantHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.infoCard,
     required this.restaurantName,
     required this.restaurantId,
+    required this.showFavorite,
     required this.isFavorite,
     required this.onFavoriteTap,
   });
@@ -336,6 +343,7 @@ class _RestaurantHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget infoCard;
   final String restaurantName;
   final String restaurantId;
+  final bool showFavorite;
   final bool isFavorite;
   final VoidCallback onFavoriteTap;
 
@@ -371,50 +379,39 @@ class _RestaurantHeaderDelegate extends SliverPersistentHeaderDelegate {
       onTap: () => Navigator.of(context).pop(),
     );
 
+    final searchButton = _GlassIconButton(
+      assetName: AppAssets.restaurantSearchIcon,
+      iconWidth: 24,
+      iconHeight: 24,
+      isScrolled: isScrolled,
+      onTap: () =>
+          context.push(RouteNames.restaurantSearchFor(restaurantId)),
+    );
+
+    final favoriteButton = _GlassIconButton(
+      assetName: isFavorite
+          ? AppAssets.restaurantFavoriteActiveIcon
+          : AppAssets.restaurantFavoriteIcon,
+      iconWidth: 24,
+      iconHeight: 24,
+      isScrolled: isScrolled,
+      onTap: onFavoriteTap,
+    );
+
     final actionButtons = Row(
       textDirection: TextDirection.ltr,
       mainAxisSize: MainAxisSize.min,
-      children: isArabic
-          ? [
-              _GlassIconButton(
-                assetName: AppAssets.restaurantSearchIcon,
-                iconWidth: 24,
-                iconHeight: 24,
-                isScrolled: isScrolled,
-                onTap: () =>
-                    context.push(RouteNames.restaurantSearchFor(restaurantId)),
-              ),
-              const SizedBox(width: 12),
-              _GlassIconButton(
-                assetName: isFavorite
-                    ? AppAssets.restaurantFavoriteActiveIcon
-                    : AppAssets.restaurantFavoriteIcon,
-                iconWidth: 24,
-                iconHeight: 24,
-                isScrolled: isScrolled,
-                onTap: onFavoriteTap,
-              ),
-            ]
-          : [
-              _GlassIconButton(
-                assetName: isFavorite
-                    ? AppAssets.restaurantFavoriteActiveIcon
-                    : AppAssets.restaurantFavoriteIcon,
-                iconWidth: 24,
-                iconHeight: 24,
-                isScrolled: isScrolled,
-                onTap: onFavoriteTap,
-              ),
-              const SizedBox(width: 12),
-              _GlassIconButton(
-                assetName: AppAssets.restaurantSearchIcon,
-                iconWidth: 24,
-                iconHeight: 24,
-                isScrolled: isScrolled,
-                onTap: () =>
-                    context.push(RouteNames.restaurantSearchFor(restaurantId)),
-              ),
-            ],
+      children: [
+        if (showFavorite && !isArabic) ...[
+          favoriteButton,
+          const SizedBox(width: 12),
+        ],
+        searchButton,
+        if (showFavorite && isArabic) ...[
+          const SizedBox(width: 12),
+          favoriteButton,
+        ],
+      ],
     );
 
     // 4 px fixed gap between back button and title start (SizedBox(width: 4)).
@@ -522,6 +519,7 @@ class _RestaurantHeaderDelegate extends SliverPersistentHeaderDelegate {
       oldDelegate.minExtent != minExtent ||
       oldDelegate.maxExtent != maxExtent ||
       oldDelegate.restaurantName != restaurantName ||
+      oldDelegate.showFavorite != showFavorite ||
       oldDelegate.isFavorite != isFavorite;
 }
 

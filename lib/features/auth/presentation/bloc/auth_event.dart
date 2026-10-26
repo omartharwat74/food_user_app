@@ -17,6 +17,11 @@ class LogoutRequested extends AuthEvent {
   const LogoutRequested();
 }
 
+/// User tapped "Browse as Guest" — sets state to [AuthGuest] with no API call.
+class EnterGuestMode extends AuthEvent {
+  const EnterGuestMode();
+}
+
 class SocialLoginRequested extends AuthEvent {
   final String provider;
 

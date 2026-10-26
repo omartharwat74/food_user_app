@@ -16,6 +16,10 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 
 class AuthEntryScreen extends StatelessWidget {
   const AuthEntryScreen({super.key});
@@ -39,7 +43,8 @@ class AuthEntryScreen extends StatelessWidget {
             curr is PhoneOtpCompleteProfile ||
             curr is PhoneOtpVerificationRequired ||
             curr is SocialLoginFailure ||
-            curr is Authenticated,
+            curr is Authenticated ||
+            curr is AuthGuest,
         listener: (context, state) {
           if (state is PhoneOtpCompleteProfile) {
             context.push(
@@ -59,6 +64,9 @@ class AuthEntryScreen extends StatelessWidget {
               ),
             );
           } else if (state is Authenticated) {
+            context.read<ProfileBloc>().add(const GetProfileEvent());
+            context.read<CartCubit>().loadCart();
+            context.read<FavoriteCubit>().loadFavorites();
             final addressController = SavedAddressesScope.of(context);
             addressController.loadAddressesIfNeeded().then((_) {
               if (!context.mounted) return;
@@ -68,6 +76,8 @@ class AuthEntryScreen extends StatelessWidget {
                 context.go(RouteNames.home);
               }
             });
+          } else if (state is AuthGuest) {
+            context.go(RouteNames.home);
           } else if (state is SocialLoginFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -162,6 +172,8 @@ class AuthEntryScreen extends StatelessWidget {
                                 color: AppColors.facebookBlue,
                               ),
                             ),
+                            const SizedBox(height: 24),
+                            _GuestBrowseButton(),
                           ],
                         ),
                       ),
@@ -356,6 +368,38 @@ class _AuthMethodButton extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _GuestBrowseButton extends StatelessWidget {
+  const _GuestBrowseButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          final authBloc = context.read<AuthBloc>();
+          if (authBloc.state is AuthGuest) {
+            context.go(RouteNames.home);
+          } else {
+            authBloc.add(const EnterGuestMode());
+          }
+        },
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.paragraph(context),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        ),
+        child: Text(
+          l10n.browseAsGuest,
+          style: AppTextStyles.textLink(context).copyWith(
+            color: AppColors.paragraph(context),
+            decoration: TextDecoration.underline,
+          ),
         ),
       ),
     );

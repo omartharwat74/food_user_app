@@ -13,6 +13,10 @@ class GetProfileEvent extends ProfileEvent {
   const GetProfileEvent();
 }
 
+class ClearProfileEvent extends ProfileEvent {
+  const ClearProfileEvent();
+}
+
 class UpdateProfileEvent extends ProfileEvent {
   final UpdateProfileRequest request;
   const UpdateProfileEvent(this.request);

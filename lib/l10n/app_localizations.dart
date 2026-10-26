@@ -176,6 +176,12 @@ abstract class AppLocalizations {
   /// **'General Settings'**
   String get generalSettingsTitle;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
   /// No description provided for @changeAppLanguage.
   ///
   /// In en, this message translates to:
@@ -3613,6 +3619,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Special offer'**
   String get specialOffer;
+
+  /// No description provided for @browseAsGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse as Guest'**
+  String get browseAsGuest;
+
+  /// No description provided for @guestLoginPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Login / Create Account'**
+  String get guestLoginPrompt;
+
+  /// No description provided for @guestGateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Required'**
+  String get guestGateTitle;
+
+  /// No description provided for @guestGateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to complete this action'**
+  String get guestGateMessage;
+
+  /// No description provided for @guestGateLoginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Now'**
+  String get guestGateLoginButton;
 }
 
 class _AppLocalizationsDelegate

@@ -15,10 +15,11 @@ import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
-class AccountTabPage extends StatelessWidget {
+class AccountTabPage extends StatefulWidget {
   const AccountTabPage({super.key});
 
   static const _horizontalPadding = AppSpacing.md;
@@ -39,6 +40,26 @@ class AccountTabPage extends StatelessWidget {
   static const _shadowColor = AppColors.accountShadow;
 
   @override
+  State<AccountTabPage> createState() => _AccountTabPageState();
+}
+
+class _AccountTabPageState extends State<AccountTabPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final auth = context.read<AuthBloc>().state;
+      final profileState = context.read<ProfileBloc>().state;
+      if (auth is Authenticated &&
+          profileState.profile == null &&
+          !profileState.isLoading) {
+        context.read<ProfileBloc>().add(const GetProfileEvent());
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
@@ -49,7 +70,7 @@ class AccountTabPage extends StatelessWidget {
             final layout = _AccountLayoutValues.fromContext(context);
             final height = math.max(
               constraints.maxHeight,
-              layout.menuTop + _menuContentHeight,
+              layout.menuTop + AccountTabPage._menuContentHeight,
             );
 
             return ColoredBox(
@@ -67,8 +88,8 @@ class AccountTabPage extends StatelessWidget {
                       _AccountProfileCard(top: layout.profileTop),
                       PositionedDirectional(
                         top: layout.menuTop,
-                        start: _horizontalPadding,
-                        end: _horizontalPadding,
+                        start: AccountTabPage._horizontalPadding,
+                        end: AccountTabPage._horizontalPadding,
                         child: _AccountMenu(loggingOut: loggingOut),
                       ),
                     ],
@@ -179,19 +200,23 @@ class _AccountProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final chevronIcon = _detailsChevronIcon(context);
+    final authState = context.watch<AuthBloc>().state;
+    final authUser = authState is Authenticated ? authState.user : null;
 
     return BlocBuilder<ProfileBloc, ProfileState>(
       builder: (context, state) {
         final profile = state.profile;
-        final name = profile != null && profile.fullName.isNotEmpty
+        final name = (profile != null && profile.fullName.isNotEmpty)
             ? profile.fullName
-            : (profile != null && profile.firstName.isNotEmpty
-                  ? '${profile.firstName} ${profile.lastName}'
-                  : '');
-        final email = profile != null && profile.email.isNotEmpty
+            : (profile != null && profile.firstName.isNotEmpty)
+                ? '${profile.firstName} ${profile.lastName}'
+                : (authUser != null ? authUser.name : '');
+        final email = (profile != null && profile.email.isNotEmpty)
             ? profile.email
-            : '';
+            : (authUser != null ? (authUser.email ?? '') : '');
         final letter = name.isNotEmpty ? name.characters.first : 'U';
+
+        final showLoading = state.isLoading && profile == null && name.isEmpty;
 
         return PositionedDirectional(
           top: top,
@@ -213,52 +238,60 @@ class _AccountProfileCard extends StatelessWidget {
                   BoxShadow(color: AccountTabPage._shadowColor, blurRadius: 4),
                 ],
               ),
-              child: Row(
-                children: [
-                  _Avatar(letter: letter),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+              child: showLoading
+                  ? const Center(
+                      child: SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2.5),
+                      ),
+                    )
+                  : Row(
                       children: [
-                        Text(
-                          name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textAlign: TextAlign.start,
-                          style: AppTextStyles.textFieldTitle(context).copyWith(
-                            color: AppColors.onSurface(context),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            height: 1.35,
+                        _Avatar(letter: letter),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
+                                style: AppTextStyles.textFieldTitle(context).copyWith(
+                                  color: AppColors.onSurface(context),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.35,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                email,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textDirection: TextDirection.ltr,
+                                textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                                style: AppTextStyles.caption(context).copyWith(
+                                  color: AppColors.paragraph(context),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  height: 1.3,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          email,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          textDirection: TextDirection.ltr,
-                          textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                          style: AppTextStyles.caption(context).copyWith(
-                            color: AppColors.paragraph(context),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            height: 1.3,
-                          ),
+                        const SizedBox(width: 12),
+                        Icon(
+                          chevronIcon,
+                          color: AppColors.onSurface(context),
+                          size: AccountTabPage._arrowSize,
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Icon(
-                    chevronIcon,
-                    color: AppColors.onSurface(context),
-                    size: AccountTabPage._arrowSize,
-                  ),
-                ],
-              ),
             ),
           ),
         );

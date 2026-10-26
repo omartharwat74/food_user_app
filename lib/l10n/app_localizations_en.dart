@@ -48,6 +48,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get generalSettingsTitle => 'General Settings';
 
   @override
+  String get settingsTitle => 'Settings';
+
+  @override
   String get changeAppLanguage => 'Change App Language';
 
   @override
@@ -1836,4 +1839,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get specialOffer => 'Special offer';
+
+  @override
+  String get browseAsGuest => 'Browse as Guest';
+
+  @override
+  String get guestLoginPrompt => 'Login / Create Account';
+
+  @override
+  String get guestGateTitle => 'Login Required';
+
+  @override
+  String get guestGateMessage => 'Please log in to complete this action';
+
+  @override
+  String get guestGateLoginButton => 'Login Now';
 }

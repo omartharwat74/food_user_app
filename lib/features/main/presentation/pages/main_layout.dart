@@ -18,6 +18,9 @@ import 'package:food_user_app/core/localization/app_locale_scope.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart';
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 
 class MainLayout extends StatefulWidget {
   static final GlobalKey<MainLayoutState> globalKey = GlobalKey();
@@ -38,6 +41,20 @@ class MainLayoutState extends State<MainLayout> {
   Locale? _previousLocale;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final auth = context.read<AuthBloc>().state;
+      if (auth is Authenticated) {
+        context.read<CartCubit>().loadCart();
+        context.read<FavoriteCubit>().loadFavorites();
+        context.read<ProfileBloc>().add(const GetProfileEvent());
+      }
+    });
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final currentLocale = AppLocaleScope.of(context).locale;
@@ -45,7 +62,10 @@ class MainLayoutState extends State<MainLayout> {
       context.read<BannerCubit>().getActiveBanners();
       context.read<SectionsCubit>().fetchSections();
       context.read<SpotlightsCubit>().fetchSpotlights();
-      context.read<CartCubit>().loadCart();
+      final auth = context.read<AuthBloc>().state;
+      if (auth is Authenticated) {
+        context.read<CartCubit>().loadCart();
+      }
     }
     _previousLocale = currentLocale;
   }
@@ -54,13 +74,24 @@ class MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
       listenWhen: (previous, current) =>
-          current is Unauthenticated && previous is LogoutInProgress,
+          (current is Unauthenticated && previous is LogoutInProgress) ||
+          (current is Authenticated && previous is! Authenticated),
       listener: (context, state) {
         if (state is Unauthenticated) {
+          context.read<ProfileBloc>().add(const ClearProfileEvent());
           context.go(RouteNames.authEntry);
+        } else if (state is Authenticated) {
+          context.read<CartCubit>().loadCart();
+          context.read<FavoriteCubit>().loadFavorites();
+          context.read<ProfileBloc>().add(const GetProfileEvent());
         }
       },
       builder: (context, state) {
+        final isGuest = state is AuthGuest;
+        if (isGuest) {
+          return const HomeScreen();
+        }
+
         final tabs = _tabs;
         final body = IndexedStack(
           index: _selectedIndex,

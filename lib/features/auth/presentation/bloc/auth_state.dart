@@ -61,6 +61,11 @@ class Unauthenticated extends AuthState {
   const Unauthenticated();
 }
 
+/// User chose to browse without an account.
+class AuthGuest extends AuthState {
+  const AuthGuest();
+}
+
 // ── Phone OTP Flow (New Plezmo API) ──────────────────────────────────────────
 
 // Send OTP
@@ -93,13 +98,8 @@ class PhoneOtpVerifyInProgress extends AuthState {
 }
 
 /// Existing account verified → session persisted, user signed in.
-class PhoneOtpLoginSuccess extends AuthState {
-  final User user;
-
-  const PhoneOtpLoginSuccess(this.user);
-
-  @override
-  List<Object?> get props => [user];
+class PhoneOtpLoginSuccess extends Authenticated {
+  const PhoneOtpLoginSuccess(super.user);
 }
 
 /// New phone verified → navigate to complete-profile screen.
@@ -145,13 +145,8 @@ class CompleteRegistrationInProgress extends AuthState {
   const CompleteRegistrationInProgress();
 }
 
-class CompleteRegistrationSuccess extends AuthState {
-  final User user;
-
-  const CompleteRegistrationSuccess(this.user);
-
-  @override
-  List<Object?> get props => [user];
+class CompleteRegistrationSuccess extends Authenticated {
+  const CompleteRegistrationSuccess(super.user);
 }
 
 class CompleteRegistrationFailure extends AuthState {

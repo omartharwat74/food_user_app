@@ -12,6 +12,7 @@
   "languageArabic": "العربية",
   "languageEnglish": "الإنجليزية",
   "generalSettingsTitle": "الإعدادات العامة",
+  "settingsTitle": "الإعدادات",
   "changeAppLanguage": "تغيير لغة التطبيق",
   "notificationsControl": "التحكم في الاشعارات",
   "notificationsTitle": "الاشعارات",
@@ -676,5 +677,10 @@
   "invalidCvv": "رمز الأمان (CVV) غير صالح",
   "orderNotesTitle": "ملاحظاتك :",
   "productNotesDialogTitle": "ملاحظاتك على المنتج :",
-  "specialOffer": "عرض خاص"
+  "specialOffer": "عرض خاص",
+  "browseAsGuest": "تصفح كضيف",
+  "guestLoginPrompt": "تسجيل الدخول / إنشاء حساب",
+  "guestGateTitle": "يرجى تسجيل الدخول",
+  "guestGateMessage": "يرجى تسجيل الدخول لتتمكن من إتمام هذه الخطوة",
+  "guestGateLoginButton": "تسجيل الدخول الآن"
 }

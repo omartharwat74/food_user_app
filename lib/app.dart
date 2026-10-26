@@ -9,7 +9,6 @@ import 'package:food_user_app/core/theme/app_theme_scope.dart';
 import 'package:food_user_app/core/theme/theme_controller.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -39,11 +38,7 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()),
-        BlocProvider<ProfileBloc>(
-          create: (_) => sl<ProfileBloc>()
-            ..add(const GetProfileEvent())
-            ..add(const GetSettingsEvent()),
-        ),
+        BlocProvider<ProfileBloc>(create: (_) => sl<ProfileBloc>()),
 
         BlocProvider<SectionsCubit>(
           create: (_) => sl<SectionsCubit>()..fetchSections(),
@@ -55,12 +50,10 @@ class App extends StatelessWidget {
           create: (_) => sl<BannerCubit>()..getActiveBanners(),
         ),
         BlocProvider<SearchCubit>(create: (context) => sl<SearchCubit>()),
-        BlocProvider<FavoriteCubit>(
-          create: (_) => sl<FavoriteCubit>()..loadFavorites(),
-        ),
-        BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()..loadCart()),
+        BlocProvider<FavoriteCubit>(create: (_) => sl<FavoriteCubit>()),
+        BlocProvider<CartCubit>(create: (_) => sl<CartCubit>()),
         BlocProvider<PaymentMethodCubit>(
-          create: (_) => sl<PaymentMethodCubit>()..fetchSavedCards(),
+          create: (_) => sl<PaymentMethodCubit>(),
         ),
         BlocProvider<CheckoutCubit>(create: (_) => sl<CheckoutCubit>()),
         BlocProvider<WalletCubit>(create: (_) => sl<WalletCubit>()),

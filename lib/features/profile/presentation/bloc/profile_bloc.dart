@@ -41,6 +41,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     required this.verifyNewPhoneOtpUseCase,
   }) : super(const ProfileState()) {
     on<GetProfileEvent>(_onGetProfile);
+    on<ClearProfileEvent>((event, emit) => emit(const ProfileState()));
     on<UpdateProfileEvent>(_onUpdateProfile);
     on<GetSettingsEvent>(_onGetSettings);
     on<UpdateSettingsEvent>(_onUpdateSettings);

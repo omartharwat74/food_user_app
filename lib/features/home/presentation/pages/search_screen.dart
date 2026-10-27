@@ -30,7 +30,9 @@ import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({super.key, this.sectionId});
+
+  final int? sectionId;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -49,7 +51,10 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     // Explicitly reset global filter states to ensure clean entry
-    context.read<SearchCubit>().resetFilters();
+    context.read<SearchCubit>().resetFilters(
+      sectionId: widget.sectionId,
+      clearSection: widget.sectionId == null,
+    );
     _controller = TextEditingController()..addListener(_onSearchChanged);
     _focusNode = FocusNode();
     _scrollController = ScrollController();
@@ -83,7 +88,10 @@ class _SearchScreenState extends State<SearchScreen> {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       if (mounted) {
-        context.read<SearchCubit>().search(_controller.text.trim());
+        context.read<SearchCubit>().search(
+          _controller.text.trim(),
+          sectionId: widget.sectionId,
+        );
       }
     });
   }
@@ -199,7 +207,10 @@ class _SearchScreenState extends State<SearchScreen> {
                             topRated: topRated,
                             hasOffers: hasOffers,
                           );
-                          cubit.search(_controller.text.trim());
+                          cubit.search(
+                            _controller.text.trim(),
+                            sectionId: widget.sectionId,
+                          );
                         },
                       ),
                     ],

@@ -158,7 +158,15 @@
   "serviceEmptyMessage": "Matching places will appear here soon.",
   "serviceNoResultsAvailable": "No results available",
   "cartTitle": "Cart",
-  "cartRestaurantSubtitle": "Your order from Az Al Sham Restaurant",
+  "cartRestaurantSubtitle": "Your order from {restaurantName}",
+  "@cartRestaurantSubtitle": {
+    "placeholders": {
+      "restaurantName": {
+        "type": "String"
+      }
+    }
+  },
+  "yourOrderFrom": "Your order from",
   "cartProductBurgerCombo": "Burger meal with fries offer",
   "cartNotesHint": "Your notes here...",
   "cartDiscountCode": "Discount code",

@@ -200,7 +200,7 @@ class StoresCubit extends Cubit<StoresState> {
   final GetStoresUseCase getStoresUseCase;
 
   Future<void> fetchStores({
-    required int sectionId,
+    int? sectionId,
     String? search,
     List<int>? tagIds,
     int page = 1,

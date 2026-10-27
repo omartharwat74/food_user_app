@@ -9,6 +9,7 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 abstract class SearchRepository {
   Future<Either<Failure, SearchResult>> search(
     String query, {
+    int? sectionId,
     List<int>? tagIds,
     int? fastPrep,
     int? topRated,

@@ -15,10 +15,18 @@ class SearchCubit extends Cubit<SearchState> {
 
   List<Tag> tags = [];
   int? selectedTagId;
+  int? sectionId;
 
-  SearchCubit({required this.searchRepository, required this.getTagsUseCase})
-    : super(const SearchState.initial()) {
+  SearchCubit({
+    required this.searchRepository,
+    required this.getTagsUseCase,
+    this.sectionId,
+  }) : super(const SearchState.initial()) {
     fetchInitialData();
+  }
+
+  void setSectionId(int? id) {
+    sectionId = id;
   }
 
   void toggleTag(int id, String currentQuery) {
@@ -34,12 +42,17 @@ class SearchCubit extends Cubit<SearchState> {
   int? topRated;
   int? hasOffers;
 
-  void resetFilters() {
+  void resetFilters({int? sectionId, bool clearSection = false}) {
+    if (clearSection) {
+      this.sectionId = null;
+    } else if (sectionId != null) {
+      this.sectionId = sectionId;
+    }
     selectedTagId = null;
     fastPrep = null;
     topRated = null;
     hasOffers = null;
-    fetchInitialData();
+    fetchInitialData(sectionId: this.sectionId);
   }
 
   void setFilters({int? fastPrep, int? topRated, int? hasOffers}) {
@@ -48,7 +61,9 @@ class SearchCubit extends Cubit<SearchState> {
     this.hasOffers = hasOffers;
   }
 
-  Future<void> search(String query) async {
+  Future<void> search(String query, {int? sectionId}) async {
+    final effectiveSectionId = sectionId ?? this.sectionId;
+
     if (query.isEmpty &&
         selectedTagId == null &&
         fastPrep == null &&
@@ -66,7 +81,7 @@ class SearchCubit extends Cubit<SearchState> {
           );
         },
         orElse: () {
-          fetchInitialData();
+          fetchInitialData(sectionId: effectiveSectionId);
         },
       );
       return;
@@ -75,6 +90,7 @@ class SearchCubit extends Cubit<SearchState> {
     final tagIds = selectedTagId != null ? [selectedTagId!] : null;
     final result = await searchRepository.search(
       query,
+      sectionId: effectiveSectionId,
       tagIds: tagIds,
       fastPrep: fastPrep,
       topRated: topRated,
@@ -87,13 +103,15 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  Future<void> fetchInitialData() async {
+  Future<void> fetchInitialData({int? sectionId}) async {
     emit(const SearchState.loading());
+
+    final effectiveSectionId = sectionId ?? this.sectionId;
 
     final results = await Future.wait([
       searchRepository.getSearchHistory(),
       searchRepository.getSearchKeywords(),
-      getTagsUseCase(const GetTagsParams()),
+      getTagsUseCase(GetTagsParams(sectionId: effectiveSectionId)),
       searchRepository.getMajorStores(),
     ]);
 

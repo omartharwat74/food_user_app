@@ -167,4 +167,11 @@ class AppColors {
         ? modalBarrierDark
         : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45);
   }
+
+  /// Disabled button fill color (adaptive light/dark).
+  static Color disabledButtonBackground(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? const Color(0xFF242424)
+        : inactiveIndicator;
+  }
 }

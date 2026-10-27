@@ -18,7 +18,7 @@ abstract class HomeRepository {
 
   /// `GET /api/v1/stores` with optional search/tag filters and pagination.
   Future<Either<Failure, StoreListResult>> getStores({
-    required int sectionId,
+    int? sectionId,
     String? search,
     List<int>? tagIds,
     int page = 1,

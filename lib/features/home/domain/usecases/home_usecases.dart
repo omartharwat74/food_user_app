@@ -45,7 +45,7 @@ class GetTagsUseCase extends UseCase<List<Tag>, GetTagsParams> {
 // ── Stores ────────────────────────────────────────────────────────────────────
 
 class GetStoresParams extends Equatable {
-  final int sectionId;
+  final int? sectionId;
   final String? search;
   final List<int>? tagIds;
   final int page;
@@ -55,7 +55,7 @@ class GetStoresParams extends Equatable {
   final int? hasOffers;
 
   const GetStoresParams({
-    required this.sectionId,
+    this.sectionId,
     this.search,
     this.tagIds,
     this.page = 1,

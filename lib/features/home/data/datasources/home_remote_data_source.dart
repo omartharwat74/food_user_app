@@ -25,7 +25,7 @@ abstract class HomeRemoteDataSource {
 
   /// `GET /api/v1/stores` — paginated store list with optional filters.
   Future<StoreListResultModel> getStores({
-    required int sectionId,
+    int? sectionId,
     String? search,
     List<int>? tagIds,
     int page = 1,
@@ -137,7 +137,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
 
   @override
   Future<StoreListResultModel> getStores({
-    required int sectionId,
+    int? sectionId,
     String? search,
     List<int>? tagIds,
     int page = 1,
@@ -148,7 +148,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   }) async {
     try {
       final Map<String, dynamic> params = {
-        'section_id': sectionId,
+        'section_id': ?sectionId,
         'page': page,
         'per_page': perPage,
         if (search != null && search.isNotEmpty) 'search': search,

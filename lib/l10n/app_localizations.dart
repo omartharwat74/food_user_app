@@ -1007,8 +1007,14 @@ abstract class AppLocalizations {
   /// No description provided for @cartRestaurantSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your order from Az Al Sham Restaurant'**
-  String get cartRestaurantSubtitle;
+  /// **'Your order from {restaurantName}'**
+  String cartRestaurantSubtitle(String restaurantName);
+
+  /// No description provided for @yourOrderFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order from'**
+  String get yourOrderFrom;
 
   /// No description provided for @cartProductBurgerCombo.
   ///

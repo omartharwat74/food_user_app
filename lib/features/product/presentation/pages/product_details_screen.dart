@@ -1140,10 +1140,13 @@ class _ProductBottomBar extends StatelessWidget {
                       loading: () => true,
                       orElse: () => false,
                     );
+                    final isDark =
+                        Theme.of(context).brightness == Brightness.dark;
+                    final isButtonActive = enabled && !isLoading;
 
                     return GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onTap: (enabled && !isLoading) ? onSubmit : null,
+                      onTap: isButtonActive ? onSubmit : null,
                       child: Container(
                         height: 48,
                         padding: const EdgeInsetsDirectional.fromSTEB(
@@ -1153,10 +1156,16 @@ class _ProductBottomBar extends StatelessWidget {
                           0,
                         ),
                         decoration: BoxDecoration(
-                          color: (enabled && !isLoading)
+                          color: isButtonActive
                               ? AppColors.primary
-                              : AppColors.inactiveIndicator,
+                              : AppColors.disabledButtonBackground(context),
                           borderRadius: BorderRadius.circular(10),
+                          border: (!isButtonActive && isDark)
+                              ? Border.all(
+                                  color: AppColors.border(context),
+                                  width: 0.5,
+                                )
+                              : null,
                         ),
                         child: isLoading
                             ? const Center(
@@ -1182,7 +1191,7 @@ class _ProductBottomBar extends StatelessWidget {
                                           AppTextStyles.buttonHeading(
                                             context,
                                           ).copyWith(
-                                            color: (enabled && !isLoading)
+                                            color: isButtonActive
                                                 ? AppColors.text
                                                 : AppColors.paragraph(context),
                                             fontSize: 14,
@@ -1195,7 +1204,7 @@ class _ProductBottomBar extends StatelessWidget {
                                     l10n.cartPrice((total).toFormattedPrice()),
                                     style: AppTextStyles.buttonHeading(context)
                                         .copyWith(
-                                          color: (enabled && !isLoading)
+                                          color: isButtonActive
                                               ? AppColors.text
                                               : AppColors.paragraph(context),
                                           fontSize: 14,

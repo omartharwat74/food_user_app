@@ -480,7 +480,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cartTitle => 'Cart';
 
   @override
-  String get cartRestaurantSubtitle => 'Your order from Az Al Sham Restaurant';
+  String cartRestaurantSubtitle(String restaurantName) {
+    return 'Your order from $restaurantName';
+  }
+
+  @override
+  String get yourOrderFrom => 'Your order from';
 
   @override
   String get cartProductBurgerCombo => 'Burger meal with fries offer';

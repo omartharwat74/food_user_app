@@ -128,7 +128,16 @@ class AppRouter {
         path: RouteNames.home,
         builder: (c, s) => MainLayout(key: MainLayout.globalKey),
       ),
-      GoRoute(path: RouteNames.search, builder: (c, s) => const SearchScreen()),
+      GoRoute(
+        path: RouteNames.search,
+        builder: (c, s) {
+          final sectionIdStr = s.uri.queryParameters['sectionId'] ??
+              s.uri.queryParameters['section_id'];
+          final sectionId = int.tryParse(sectionIdStr ?? '') ??
+              (s.extra is int ? s.extra as int : null);
+          return SearchScreen(sectionId: sectionId);
+        },
+      ),
       GoRoute(
         path: RouteNames.searchResults,
         builder: (c, s) => const SearchResultsScreen(),

@@ -10,6 +10,7 @@ import 'package:food_user_app/features/restaurant/data/models/restaurant_dto.dar
 abstract class SearchRemoteDataSource {
   Future<SearchResultDto> search(
     String query, {
+    int? sectionId,
     List<int>? tagIds,
     int? fastPrep,
     int? topRated,
@@ -31,6 +32,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
   @override
   Future<SearchResultDto> search(
     String query, {
+    int? sectionId,
     List<int>? tagIds,
     int? fastPrep,
     int? topRated,
@@ -39,8 +41,7 @@ class SearchRemoteDataSourceImpl implements SearchRemoteDataSource {
     try {
       final queryParams = <String, dynamic>{
         'search': query,
-        'section_id':
-            1, // Defaulting to 1 to satisfy required param since search maps to Restaurant domain
+        'section_id': ?sectionId,
       };
       if (tagIds != null && tagIds.isNotEmpty) {
         queryParams['tag_ids[]'] = tagIds;

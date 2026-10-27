@@ -111,7 +111,8 @@ class _CartScreenState extends State<CartScreen> {
                       sliver: SliverToBoxAdapter(
                         child: _CartHeader(
                           l10n: l10n,
-                          restaurantName: cart.restaurantName,
+                          restaurantName:
+                              cart.items.isNotEmpty ? cart.restaurantName : null,
                         ),
                       ),
                     ),
@@ -317,6 +318,9 @@ class _CartHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final name = restaurantName?.trim();
+    final hasRestaurant = name != null && name.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -334,6 +338,20 @@ class _CartHeader extends StatelessWidget {
             ),
           ],
         ),
+        if (hasRestaurant) ...[
+          const SizedBox(height: 4),
+          Text(
+            l10n.cartRestaurantSubtitle(name),
+            textAlign: TextAlign.start,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.subtitle(context).copyWith(
+              color: AppColors.paragraph(context),
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ],
       ],
     );
   }

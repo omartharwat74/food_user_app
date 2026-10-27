@@ -20,6 +20,7 @@ class SearchRepositoryImpl implements SearchRepository {
   @override
   Future<Either<Failure, SearchResult>> search(
     String query, {
+    int? sectionId,
     List<int>? tagIds,
     int? fastPrep,
     int? topRated,
@@ -28,6 +29,7 @@ class SearchRepositoryImpl implements SearchRepository {
     try {
       final dto = await remoteDataSource.search(
         query,
+        sectionId: sectionId,
         tagIds: tagIds,
         fastPrep: fastPrep,
         topRated: topRated,

@@ -157,7 +157,15 @@
   "serviceEmptyMessage": "ستظهر هنا الأماكن المطابقة قريباً.",
   "serviceNoResultsAvailable": "لا يوجد نتائج متاحه",
   "cartTitle": "سلة المشتريات",
-  "cartRestaurantSubtitle": "طلبك من مطعم عز الشام",
+  "cartRestaurantSubtitle": "طلبك من {restaurantName}",
+  "@cartRestaurantSubtitle": {
+    "placeholders": {
+      "restaurantName": {
+        "type": "String"
+      }
+    }
+  },
+  "yourOrderFrom": "طلبك من",
   "cartProductBurgerCombo": "عرض البرجر مع الفرايز",
   "cartNotesHint": "ملاحظاتك هنا...",
   "cartDiscountCode": "كود الخصم",

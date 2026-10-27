@@ -474,7 +474,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartTitle => 'سلة المشتريات';
 
   @override
-  String get cartRestaurantSubtitle => 'طلبك من مطعم عز الشام';
+  String cartRestaurantSubtitle(String restaurantName) {
+    return 'طلبك من $restaurantName';
+  }
+
+  @override
+  String get yourOrderFrom => 'طلبك من';
 
   @override
   String get cartProductBurgerCombo => 'عرض البرجر مع الفرايز';

@@ -50,7 +50,7 @@ class HomeRepositoryImpl implements HomeRepository {
 
   @override
   Future<Either<Failure, StoreListResult>> getStores({
-    required int sectionId,
+    int? sectionId,
     String? search,
     List<int>? tagIds,
     int page = 1,

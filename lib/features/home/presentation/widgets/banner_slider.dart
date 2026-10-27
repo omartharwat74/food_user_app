@@ -43,7 +43,7 @@ class _BannerSliderState extends State<BannerSlider> {
             return Column(
               children: [
                 SizedBox(
-                  height: 125,
+                  height: 150,
                   child: PageView.builder(
                     controller: _controller,
                     onPageChanged: (page) =>
@@ -57,6 +57,7 @@ class _BannerSliderState extends State<BannerSlider> {
                         ),
                         child: PromoBannerCard(
                           banner: banner,
+                          isHome: true,
                           onTap: () async {
                             if (banner.type == 'store' ||
                                 (banner.storeId != null &&
@@ -99,7 +100,7 @@ class _BannerSliderState extends State<BannerSlider> {
           },
           orElse: () {
             return const SizedBox(
-              height: 125,
+              height: 150,
               child: Center(child: CircularProgressIndicator()),
             );
           },

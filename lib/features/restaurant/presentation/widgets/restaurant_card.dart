@@ -64,7 +64,7 @@ class RestaurantCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 124,
+                height: 116,
                 child: Stack(
                   children: [
                     Positioned.fill(
@@ -174,8 +174,8 @@ class RestaurantCard extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.start,
                                   style: AppTextStyles.body(context).copyWith(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w600,
                                     height: 1.3,
                                   ),
                                 ),
@@ -194,7 +194,7 @@ class RestaurantCard extends StatelessWidget {
                       ],
                     ),
                     if (restaurant.tags.isNotEmpty) ...[
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 6),
                       Row(
                         children: [
                           Expanded(
@@ -205,26 +205,26 @@ class RestaurantCard extends StatelessWidget {
                               textAlign: TextAlign.start,
                               style: AppTextStyles.caption(
                                 context,
-                              ).copyWith(fontSize: 10, height: 1.25),
+                              ).copyWith(fontSize: 12.5, height: 1.25),
                             ),
                           ),
                         ],
                       ),
                     ],
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
                         const Icon(
                           Icons.schedule_rounded,
                           color: AppColors.metaIcon,
-                          size: 14,
+                          size: 16,
                         ),
                         const SizedBox(width: 4),
                         DeliveryTimeText(
                           minTime: restaurant.deliveryTimeMin,
                           maxTime: restaurant.deliveryTimeMax,
                           style: AppTextStyles.caption(context).copyWith(
-                            fontSize: 10,
+                            fontSize: 12,
                             height: 1.25,
                             color: AppColors.onSurface(context),
                           ),
@@ -257,20 +257,25 @@ class _RatingBadge extends StatelessWidget {
     );
     final text = Text(
       rating,
-      style: AppTextStyles.body(context).copyWith(fontSize: 10, height: 1.25),
+      style: AppTextStyles.body(context).copyWith(
+        fontSize: 12.5,
+        fontWeight: FontWeight.w600,
+        height: 1.1,
+      ),
     );
 
     return Container(
-      padding: const EdgeInsetsDirectional.all(4),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2.5),
       decoration: BoxDecoration(
         color: AppColors.scaffoldBackground(context),
         borderRadius: const BorderRadius.all(Radius.circular(4)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: isRtl
-            ? [icon, const SizedBox(width: 2), text]
-            : [text, const SizedBox(width: 2), icon],
+            ? [icon, const SizedBox(width: 3), text]
+            : [text, const SizedBox(width: 3), icon],
       ),
     );
   }
@@ -304,16 +309,16 @@ class _AvailabilityBadge extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 6,
-          height: 6,
+          width: 7,
+          height: 7,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: 2),
+        const SizedBox(width: 3),
         Text(
           text,
           style: AppTextStyles.caption(
             context,
-          ).copyWith(fontSize: 10, color: color, fontWeight: FontWeight.w500),
+          ).copyWith(fontSize: 12, color: color, fontWeight: FontWeight.w500),
         ),
       ],
     );

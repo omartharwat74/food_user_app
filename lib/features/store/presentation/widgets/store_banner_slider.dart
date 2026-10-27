@@ -126,7 +126,7 @@ class _StoreBannerSliderState extends State<StoreBannerSlider> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            height: 125,
+            height: 143,
             child: PageView.builder(
               controller: _controller,
               onPageChanged: (page) => setState(() => _currentPage = page),

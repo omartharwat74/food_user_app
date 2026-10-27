@@ -26,14 +26,14 @@ class CategoryGrid extends StatelessWidget {
             children: [
               for (var index = 0; index < sections.length; index++) ...[
                 Expanded(child: _CategoryTile(section: sections[index])),
-                if (index != sections.length - 1) const SizedBox(width: 14),
+                if (index != sections.length - 1) const SizedBox(width: 16),
               ],
             ],
           );
         }
 
         return const SizedBox(
-          height: 104,
+          height: 118,
           child: Center(child: CircularProgressIndicator()),
         );
       },
@@ -63,8 +63,8 @@ class _CategoryTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 72,
-            height: 72,
+            width: 82,
+            height: 82,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: AppColors.surfaceCard(context),
@@ -102,9 +102,9 @@ class _CategoryTile extends StatelessWidget {
                   ),
                 ),
                 if (section.image != null)
-                  AppNetworkImage(section.image!, width: 56, height: 56)
+                  AppNetworkImage(section.image!, width: 66, height: 66)
                 else
-                  const Icon(Icons.storefront, size: 30, color: Colors.grey),
+                  const Icon(Icons.storefront, size: 34, color: Colors.grey),
               ],
             ),
           ),
@@ -114,7 +114,8 @@ class _CategoryTile extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.body(context).copyWith(
-              fontSize: 12,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
               height: 1.3,
               color: AppColors.onSurface(context),
             ),

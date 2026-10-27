@@ -1173,12 +1173,12 @@ class _MenuTab extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: AppTextStyles.caption(context).copyWith(
-                    fontSize: 12,
+                    fontSize: 14.5,
                     height: 1.3,
                     color: selected
                         ? AppColors.onSurface(context)
                         : AppColors.paragraph(context),
-                    fontWeight: selected ? FontWeight.w500 : FontWeight.w400,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 10),

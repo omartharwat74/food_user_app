@@ -562,12 +562,12 @@ class _CategoryStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (tags.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 90,
+      height: 98,
       child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: EdgeInsets.zero,
         scrollDirection: Axis.horizontal,
         itemCount: tags.length,
-        separatorBuilder: (_, _) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final tag = tags[index];
           return _CategoryChip(
@@ -601,8 +601,8 @@ class _CategoryChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 56,
+            height: 56,
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: AppColors.surfaceCard(context),
@@ -618,22 +618,22 @@ class _CategoryChip extends StatelessWidget {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(7),
+              padding: const EdgeInsets.all(8),
               child: tag.image != null
                   ? _buildImage(
                       tag.image!,
-                      width: 30,
-                      height: 30,
+                      width: 38,
+                      height: 38,
                       fit: BoxFit.contain,
                     )
                   : Icon(
                       Icons.category,
                       color: AppColors.paragraph(context),
-                      size: 22,
+                      size: 28,
                     ),
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             tag.name,
             maxLines: 1,
@@ -643,8 +643,8 @@ class _CategoryChip extends StatelessWidget {
               color: selected
                   ? AppColors.onSurface(context)
                   : AppColors.paragraph(context),
-              fontWeight: selected ? FontWeight.bold : FontWeight.w400,
-              fontSize: 12,
+              fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+              fontSize: 13.5,
               height: 1.3,
             ),
           ),
@@ -703,8 +703,8 @@ class _FilterChip extends StatelessWidget {
       onTap: onTap,
       borderRadius: const BorderRadius.all(AppRadius.sm),
       child: Container(
-        height: 32,
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+        height: 36,
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 14),
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : AppColors.surfaceCard(context),
@@ -720,7 +720,8 @@ class _FilterChip extends StatelessWidget {
           filter.label,
           style: AppTextStyles.caption(context).copyWith(
             color: selected ? AppColors.text : AppColors.paragraph(context),
-            fontSize: 10,
+            fontSize: 13,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
             height: 1.25,
           ),
         ),

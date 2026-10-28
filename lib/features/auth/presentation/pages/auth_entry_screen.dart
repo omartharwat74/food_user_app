@@ -64,13 +64,15 @@ class AuthEntryScreen extends StatelessWidget {
               ),
             );
           } else if (state is Authenticated) {
+            if (ModalRoute.of(context)?.isCurrent != true) return;
             context.read<ProfileBloc>().add(const GetProfileEvent());
             context.read<CartCubit>().loadCart();
             context.read<FavoriteCubit>().loadFavorites();
             final addressController = SavedAddressesScope.of(context);
-            addressController.loadAddressesIfNeeded().then((_) {
+            addressController.loadAddresses().then((_) {
               if (!context.mounted) return;
-              if (addressController.addresses.isEmpty) {
+              if (!addressController.hasError &&
+                  addressController.addresses.isEmpty) {
                 context.go('${RouteNames.addressBookAddMap}?isOnboarding=true');
               } else {
                 context.go(RouteNames.home);

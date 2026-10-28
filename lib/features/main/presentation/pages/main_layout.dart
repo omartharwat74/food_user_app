@@ -20,6 +20,7 @@ import 'package:food_user_app/features/home/presentation/cubit/home_cubits.dart'
 import 'package:food_user_app/features/home/presentation/cubit/banner_cubit.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_event.dart';
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
 import 'package:food_user_app/features/restaurant/presentation/cubit/favorite_cubit.dart';
 
 class MainLayout extends StatefulWidget {
@@ -79,6 +80,8 @@ class MainLayoutState extends State<MainLayout> {
       listener: (context, state) {
         if (state is Unauthenticated) {
           context.read<ProfileBloc>().add(const ClearProfileEvent());
+          context.read<CartCubit>().clearLocalCart();
+          SavedAddressesScope.of(context).clear();
           context.go(RouteNames.authEntry);
         } else if (state is Authenticated) {
           context.read<CartCubit>().loadCart();

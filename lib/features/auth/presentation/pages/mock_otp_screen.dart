@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:food_user_app/features/auth/presentation/pages/complete_profile_args.dart';
+import 'package:food_user_app/core/utils/english_digits_formatter.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -134,9 +134,10 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
               context.read<CartCubit>().loadCart();
               context.read<FavoriteCubit>().loadFavorites();
               final addressController = SavedAddressesScope.of(context);
-              addressController.loadAddressesIfNeeded().then((_) {
+              addressController.loadAddresses().then((_) {
                 if (!context.mounted) return;
-                if (addressController.addresses.isEmpty) {
+                if (!addressController.hasError &&
+                    addressController.addresses.isEmpty) {
                   context.go(
                     '${RouteNames.addressBookAddMap}?isOnboarding=true',
                   );
@@ -252,14 +253,17 @@ class _OtpBoxes extends StatelessWidget {
                 controller: controller,
                 focusNode: focusNode,
                 autofocus: true,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                  signed: false,
+                  decimal: false,
+                ),
                 maxLength: 6,
                 textAlign: TextAlign.left,
                 textDirection: TextDirection.ltr,
                 showCursor: false,
                 style: AppTextStyles.hiddenOtpInput,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                inputFormatters: const [
+                  EnglishDigitsOnlyFormatter(maxLength: 6),
                 ],
                 decoration: const InputDecoration(
                   border: InputBorder.none,

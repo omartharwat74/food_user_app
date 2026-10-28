@@ -65,14 +65,33 @@ class SavedAddressesController extends ChangeNotifier {
     return null;
   }
 
+  Future<void>? _activeLoadFuture;
+
   Future<void> loadAddressesIfNeeded() async {
-    if (_hasLoaded || _isLoading) return;
+    if (_activeLoadFuture != null) {
+      await _activeLoadFuture;
+      return;
+    }
+    if (_hasLoaded) return;
     await loadAddresses();
   }
 
   bool get hasCachedAddresses => prefs.getBool('has_saved_address') ?? false;
 
   Future<void> loadAddresses() async {
+    if (_activeLoadFuture != null) {
+      return _activeLoadFuture;
+    }
+
+    _activeLoadFuture = _performLoadAddresses();
+    try {
+      await _activeLoadFuture;
+    } finally {
+      _activeLoadFuture = null;
+    }
+  }
+
+  Future<void> _performLoadAddresses() async {
     _isLoading = true;
     _lastError = null;
     notifyListeners();
@@ -92,6 +111,17 @@ class SavedAddressesController extends ChangeNotifier {
     );
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  void clear() {
+    _addresses = const [];
+    _selectedAddressId = null;
+    _hasLoaded = false;
+    _isLoading = false;
+    _lastError = null;
+    _activeLoadFuture = null;
+    prefs.remove('has_saved_address');
     notifyListeners();
   }
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:food_user_app/core/utils/phone_formatter.dart';
+import 'package:food_user_app/core/utils/english_digits_formatter.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/profile/presentation/bloc/profile_bloc.dart';
@@ -290,12 +290,16 @@ class _PhoneNumberField extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     focusNode: focusNode,
-                    keyboardType: TextInputType.phone,
+                    keyboardType: const TextInputType.numberWithOptions(
+                      signed: false,
+                      decimal: false,
+                    ),
+                    maxLength: 11,
                     textInputAction: TextInputAction.done,
                     textDirection: TextDirection.ltr,
                     textAlign: TextAlign.left,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    inputFormatters: const [
+                      EnglishDigitsOnlyFormatter(maxLength: 11),
                     ],
                     cursorColor: AppColors.cursor(context),
                     style: AppTextStyles.inputText(context).copyWith(
@@ -305,6 +309,7 @@ class _PhoneNumberField extends StatelessWidget {
                       height: 1.3,
                     ),
                     decoration: InputDecoration(
+                      counterText: '',
                       isDense: true,
                       hintText: hint,
                       hintStyle: AppTextStyles.inputHint(context).copyWith(

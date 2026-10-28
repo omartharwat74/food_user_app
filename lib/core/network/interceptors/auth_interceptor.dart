@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 import '../../constants/api_endpoints.dart';
+import '../../di/injection_container.dart' as di;
 import '../../storage/token_storage.dart';
 import '../../router/app_router.dart';
 import '../../router/route_names.dart';
+import '../../../features/profile/presentation/controllers/saved_addresses_controller.dart';
 
 /// A record holding a pending request that arrived while a token refresh was
 /// already in flight.
@@ -253,6 +255,9 @@ class AuthInterceptor extends Interceptor {
   Future<void> _handleLogout(DioException err) async {
     await _tokenStorage.clearAccessToken();
     await _tokenStorage.clearRefreshToken();
+    if (di.sl.isRegistered<SavedAddressesController>()) {
+      di.sl<SavedAddressesController>().clear();
+    }
     AppRouter.router.go(RouteNames.authEntry);
   }
 }

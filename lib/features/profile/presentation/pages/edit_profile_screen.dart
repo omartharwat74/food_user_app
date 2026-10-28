@@ -221,7 +221,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               label: l10n.mobileNumber,
                               controller: _phoneController,
                               readOnly: true,
-                              keyboardType: TextInputType.phone,
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                    signed: false,
+                                    decimal: false,
+                                  ),
                               textDirection: TextDirection.ltr,
                               trailing: _PhoneChangeAction(
                                 label: l10n.changePhone,

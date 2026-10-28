@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:food_user_app/core/usecases/usecase.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:food_user_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:food_user_app/features/auth/domain/usecases/send_phone_otp_usecase.dart';
@@ -69,6 +71,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _registrationToken = null;
     emit(const LogoutInProgress());
     await logoutUseCase(const NoParams());
+    if (di.sl.isRegistered<SavedAddressesController>()) {
+      di.sl<SavedAddressesController>().clear();
+    }
     if (isClosed || emit.isDone) return;
     emit(const Unauthenticated());
   }

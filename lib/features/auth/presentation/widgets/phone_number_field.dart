@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
+import 'package:food_user_app/core/utils/english_digits_formatter.dart';
 
 class PhoneNumberField extends StatelessWidget {
   const PhoneNumberField({
@@ -61,18 +61,23 @@ class PhoneNumberField extends StatelessWidget {
             Expanded(
               child: TextField(
                 controller: controller,
-                keyboardType: TextInputType.phone,
+                keyboardType: const TextInputType.numberWithOptions(
+                  signed: false,
+                  decimal: false,
+                ),
                 textInputAction: TextInputAction.done,
                 textAlign: TextAlign.left,
                 textDirection: TextDirection.ltr,
                 style: phoneTextStyle,
+                maxLength: 11,
                 cursorColor: AppColors.cursor(context),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                inputFormatters: const [
+                  EnglishDigitsOnlyFormatter(maxLength: 11),
                 ],
                 onTapOutside: (_) =>
                     FocusManager.instance.primaryFocus?.unfocus(),
                 decoration: InputDecoration(
+                  counterText: '',
                   hintText: hintText,
                   hintStyle: AppTextStyles.inputHint(context),
                   border: InputBorder.none,

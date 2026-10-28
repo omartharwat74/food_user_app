@@ -69,8 +69,9 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim().formatAsEgyptianPhone();
 
-    if (widget.requiredFields.contains('first_name') && firstName.isEmpty)
+    if (widget.requiredFields.contains('first_name') && firstName.isEmpty) {
       return;
+    }
     if (widget.requiredFields.contains('last_name') && lastName.isEmpty) return;
     if (widget.requiredFields.contains('email') && email.isEmpty) return;
     if (widget.requiredFields.contains('phone') && phone.isEmpty) return;
@@ -106,9 +107,10 @@ class _CompleteProfileScreenState extends State<CompleteProfileScreen> {
               context.read<CartCubit>().loadCart();
               context.read<FavoriteCubit>().loadFavorites();
               final addressController = SavedAddressesScope.of(context);
-              addressController.loadAddressesIfNeeded().then((_) {
+              addressController.loadAddresses().then((_) {
                 if (!context.mounted) return;
-                if (addressController.addresses.isEmpty) {
+                if (!addressController.hasError &&
+                    addressController.addresses.isEmpty) {
                   context.go(
                     '${RouteNames.addressBookAddMap}?isOnboarding=true',
                   );

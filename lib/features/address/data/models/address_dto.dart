@@ -24,22 +24,28 @@ class AddressDto {
   });
 
   factory AddressDto.fromJson(Map<String, dynamic> json) {
+    double? parseDouble(dynamic v) {
+      if (v == null) return null;
+      if (v is num) return v.toDouble();
+      if (v is String) return double.tryParse(v.trim());
+      return null;
+    }
+
     return AddressDto(
       id: json['id']?.toString() ?? '',
       name: json['name'] as String?,
       fullAddress: json['full_address'] as String?,
-      buildingNumber: json['building_number'] as String?,
-      floor: json['floor'] as String?,
-      apartment: json['apartment'] as String?,
-      lat: (json['lat'] as num?)?.toDouble(),
-      lng:
-          (json['long'] as num?)?.toDouble() ??
-          (json['lng'] as num?)?.toDouble(),
+      buildingNumber: json['building_number']?.toString(),
+      floor: json['floor']?.toString(),
+      apartment: json['apartment']?.toString(),
+      lat: parseDouble(json['lat']),
+      lng: parseDouble(json['long']) ?? parseDouble(json['lng']),
       type: json['type'] as String?,
     );
   }
 
   Address toEntity() {
+    final t = type?.toLowerCase();
     return Address(
       id: id,
       label: name ?? '',
@@ -55,7 +61,7 @@ class AddressDto {
       floor: floor ?? '',
       apartment: apartment ?? '',
       addressType: type?.toUpperCase() ?? 'OTHER',
-      isDefault: type == 'primary',
+      isDefault: t == 'primary' || t == 'default',
     );
   }
 }

@@ -54,6 +54,12 @@ void main() async {
           setDefaultAddressUseCase: di.sl(),
           prefs: prefs,
         );
+        if (di.sl.isRegistered<SavedAddressesController>()) {
+          di.sl.unregister<SavedAddressesController>();
+        }
+        di.sl.registerSingleton<SavedAddressesController>(
+          savedAddressesController,
+        );
 
         runApp(
           App(

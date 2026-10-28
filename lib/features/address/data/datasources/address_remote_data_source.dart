@@ -32,14 +32,40 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
-      final data = raw['data'];
-      if (data is! List) return [];
-      return data
-          .map((json) => AddressDto.fromJson(json as Map<String, dynamic>))
+      final list = _extractList(raw['data']);
+      return list
+          .whereType<Map<String, dynamic>>()
+          .map(AddressDto.fromJson)
           .toList();
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
+  }
+
+  static List<dynamic> _extractList(dynamic raw) {
+    if (raw is List) return raw;
+    if (raw is Map<String, dynamic>) {
+      final data = raw['data'];
+      if (data is List) return data;
+      final addresses = raw['addresses'];
+      if (addresses is List) return addresses;
+      final content = raw['content'];
+      if (content is List) return content;
+    }
+    return const [];
+  }
+
+  static Map<String, dynamic> _extractMap(dynamic raw) {
+    if (raw is Map<String, dynamic>) {
+      if (raw['data'] is Map<String, dynamic>) {
+        return raw['data'] as Map<String, dynamic>;
+      }
+      if (raw['address'] is Map<String, dynamic>) {
+        return raw['address'] as Map<String, dynamic>;
+      }
+      return raw;
+    }
+    return const {};
   }
 
   @override
@@ -53,7 +79,7 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
-      return AddressDto.fromJson(raw['data'] as Map<String, dynamic>);
+      return AddressDto.fromJson(_extractMap(raw['data']));
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -76,7 +102,7 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
-      return AddressDto.fromJson(raw['data'] as Map<String, dynamic>);
+      return AddressDto.fromJson(_extractMap(raw['data']));
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -103,7 +129,7 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected unified envelope');
       }
-      return AddressDto.fromJson(raw['data'] as Map<String, dynamic>);
+      return AddressDto.fromJson(_extractMap(raw['data']));
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

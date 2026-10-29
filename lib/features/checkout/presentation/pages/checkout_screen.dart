@@ -28,9 +28,10 @@ import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key, this.couponCode});
+  const CheckoutScreen({super.key, this.couponCode, this.initialNote});
 
   final String? couponCode;
+  final String? initialNote;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -240,11 +241,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final paymentMethod =
         _paymentOption == CheckoutPaymentOption.wallet ? 'wallet' : 'cash';
 
+    final rawNote = widget.initialNote?.trim();
+    final note = (rawNote != null && rawNote.isNotEmpty) ? rawNote : null;
+
     context.read<CheckoutCubit>().checkout(
       paymentMethod: paymentMethod,
       addressId: addressId,
       selfPickup: false,
       couponCode: _effectiveCouponCode,
+      note: note,
     );
   }
 

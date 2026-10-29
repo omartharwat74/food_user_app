@@ -2,10 +2,12 @@ import 'package:dartz/dartz.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart_extra_item.dart';
 import 'package:food_user_app/features/cart/domain/entities/promo.dart';
 
 abstract class CartRepository {
   Future<Either<Failure, Cart>> getCart();
+  Future<Either<Failure, List<CartExtraItem>>> getCartExtras();
   Future<Either<Failure, Cart>> addToCart({
     required String productId,
     required int quantity,

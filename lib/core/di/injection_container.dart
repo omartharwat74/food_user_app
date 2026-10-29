@@ -114,8 +114,10 @@ import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/clear_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/get_cart_usecase.dart';
+import 'package:food_user_app/features/cart/domain/usecases/get_cart_extras_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/remove_from_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/update_cart_item_usecase.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_cubit.dart';
 import 'package:food_user_app/features/checkout/domain/usecases/apply_promo_usecase.dart';
 import 'package:food_user_app/features/support/data/datasources/support_remote_data_source.dart';
 import 'package:food_user_app/features/support/data/repositories/support_repository_impl.dart';
@@ -486,6 +488,9 @@ Future<void> init({SharedPreferences? prefs}) async {
   sl.registerLazySingleton(
     () => ApplyPromoUseCase(repository: sl<CartRepository>()),
   );
+  sl.registerLazySingleton(
+    () => GetCartExtrasUseCase(repository: sl<CartRepository>()),
+  );
 
   sl.registerFactory<CartCubit>(
     () => CartCubit(
@@ -496,6 +501,12 @@ Future<void> init({SharedPreferences? prefs}) async {
       clearCartUseCase: sl<ClearCartUseCase>(),
       applyPromoUseCase: sl<ApplyPromoUseCase>(),
       snackbarService: sl<SnackbarService>(),
+    ),
+  );
+  sl.registerFactory<CartExtrasCubit>(
+    () => CartExtrasCubit(
+      getCartExtrasUseCase: sl<GetCartExtrasUseCase>(),
+      addToCartUseCase: sl<AddToCartUseCase>(),
     ),
   );
 

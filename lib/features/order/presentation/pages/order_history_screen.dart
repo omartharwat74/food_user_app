@@ -40,12 +40,23 @@ class _OrderHistoryView extends StatefulWidget {
 
 class _OrderHistoryViewState extends State<_OrderHistoryView> {
   late final ScrollController _scrollController;
+  Locale? _lastLocale;
 
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = Localizations.localeOf(context);
+    if (_lastLocale != null && _lastLocale != currentLocale) {
+      context.read<OrderHistoryCubit>().refreshOrders();
+    }
+    _lastLocale = currentLocale;
   }
 
   void _onScroll() {

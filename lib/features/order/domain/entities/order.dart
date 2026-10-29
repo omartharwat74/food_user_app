@@ -17,6 +17,7 @@ class Order extends Equatable {
   final DateTime? createdAt;
   final String? message;
   final String? notes;
+  final bool isReviewed;
 
   const Order({
     required this.id,
@@ -35,7 +36,48 @@ class Order extends Equatable {
     this.createdAt,
     this.message,
     this.notes,
+    this.isReviewed = false,
   });
+
+  Order copyWith({
+    int? id,
+    String? code,
+    String? status,
+    String? paymentMethod,
+    bool? selfPickup,
+    String? deliveryMode,
+    OrderStore? store,
+    List<OrderItem>? items,
+    OrderSummary? summary,
+    OrderCoupon? coupon,
+    OrderAddress? address,
+    OrderDelivery? delivery,
+    String? cancelReason,
+    DateTime? createdAt,
+    String? message,
+    String? notes,
+    bool? isReviewed,
+  }) {
+    return Order(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      status: status ?? this.status,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      selfPickup: selfPickup ?? this.selfPickup,
+      deliveryMode: deliveryMode ?? this.deliveryMode,
+      store: store ?? this.store,
+      items: items ?? this.items,
+      summary: summary ?? this.summary,
+      coupon: coupon ?? this.coupon,
+      address: address ?? this.address,
+      delivery: delivery ?? this.delivery,
+      cancelReason: cancelReason ?? this.cancelReason,
+      createdAt: createdAt ?? this.createdAt,
+      message: message ?? this.message,
+      notes: notes ?? this.notes,
+      isReviewed: isReviewed ?? this.isReviewed,
+    );
+  }
 
   // Backwards compatibility getters
   String get orderId => id.toString();
@@ -73,6 +115,7 @@ class Order extends Equatable {
     createdAt,
     message,
     notes,
+    isReviewed,
   ];
 }
 
@@ -255,6 +298,7 @@ class OrderDelivery extends Equatable {
   final String? image;
   final String? vehicleType;
   final double? rating;
+  final int ratingCount;
 
   const OrderDelivery({
     this.id,
@@ -263,8 +307,17 @@ class OrderDelivery extends Equatable {
     this.image,
     this.vehicleType,
     this.rating,
+    this.ratingCount = 0,
   });
 
   @override
-  List<Object?> get props => [id, name, phone, image, vehicleType, rating];
+  List<Object?> get props => [
+    id,
+    name,
+    phone,
+    image,
+    vehicleType,
+    rating,
+    ratingCount,
+  ];
 }

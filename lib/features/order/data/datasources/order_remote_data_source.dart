@@ -16,6 +16,7 @@ abstract class OrderRemoteDataSource {
     required String reason,
   });
   Future<void> submitReview({
+    required int orderId,
     required int storeId,
     required int rating,
     String? comment,
@@ -115,6 +116,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<void> submitReview({
+    required int orderId,
     required int storeId,
     required int rating,
     String? comment,
@@ -123,6 +125,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
     String? deliveryComment,
   }) async {
     final Map<String, dynamic> body = {
+      'order_id': orderId,
       'store_id': storeId,
       'rating': rating,
     };

@@ -18,6 +18,7 @@ class BannerModel extends BannerItem {
     required super.id,
     super.type,
     super.title,
+    super.subtitle,
     super.imageUrl,
     super.link,
     super.storeId,
@@ -32,6 +33,7 @@ class BannerModel extends BannerItem {
       id: int.tryParse(json['id']?.toString() ?? '') ?? 0,
       type: json['type']?.toString(),
       title: json['title']?.toString(),
+      subtitle: json['subtitle']?.toString().trim() ?? '',
       imageUrl: json['image']?.toString() ?? json['image_url']?.toString(),
       link: json['link']?.toString(),
       storeId: json['store_id'] != null

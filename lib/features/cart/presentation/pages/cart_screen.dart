@@ -28,6 +28,13 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   bool _isSelfPickup = false;
+  final TextEditingController _notesController = TextEditingController();
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -161,7 +168,7 @@ class _CartScreenState extends State<CartScreen> {
                               ),
                             ),
                     ),
-                    if (cart.items.isNotEmpty)
+                    if (cart.items.isNotEmpty) ...[
                       SliverToBoxAdapter(
                         child: CartSummary(
                           subtotal: subtotal,
@@ -179,6 +186,7 @@ class _CartScreenState extends State<CartScreen> {
                             setState(() => _isSelfPickup = selfPickup);
                             context.read<CartCubit>().setSelfPickup(selfPickup);
                           },
+                          notesController: _notesController,
                           onCheckout: _openCheckout,
                           onAddMore: () {
                             if (cart.restaurantId != null) {
@@ -194,6 +202,7 @@ class _CartScreenState extends State<CartScreen> {
                           onApplyPromo: (code) => _handleApplyCoupon(code),
                         ),
                       ),
+                    ],
                   ],
                 );
               },
@@ -259,13 +268,18 @@ class _CartScreenState extends State<CartScreen> {
       loaded: (_, promo, _) => promo?.code,
       orElse: () => null,
     );
+    final note = _notesController.text.trim();
     final completed = await context.push<bool>(
       RouteNames.checkout,
-      extra: couponCode,
+      extra: {
+        'couponCode': couponCode,
+        'note': note.isNotEmpty ? note : null,
+      },
     );
     if (!mounted || completed != true) return;
 
     // Clear local cart upon successful checkout
+    _notesController.clear();
     context.read<CartCubit>().clearLocalCart();
   }
 }

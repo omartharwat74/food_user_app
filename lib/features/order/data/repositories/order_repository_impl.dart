@@ -120,6 +120,7 @@ class OrderRepositoryImpl implements OrderRepository {
 
   @override
   Future<Either<Failure, void>> submitReview({
+    required int orderId,
     required int storeId,
     required int rating,
     String? comment,
@@ -129,6 +130,7 @@ class OrderRepositoryImpl implements OrderRepository {
   }) async {
     try {
       await remoteDataSource.submitReview(
+        orderId: orderId,
         storeId: storeId,
         rating: rating,
         comment: comment,

@@ -173,6 +173,7 @@
   "cartEmptyMessage": "تم تفريغ السلة مؤقتاً بعد إتمام الدفع.",
   "cartCheckout": "تابع الدفع",
   "cartAddMore": "نزود شيئ",
+  "cartSomethingElse": "حاجة تانية",
   "checkoutTitle": "تابع الدفع",
   "checkoutDeliveryAddress": "عنوان التوصيل",
   "checkoutChangeAddress": "تغيير العنوان",

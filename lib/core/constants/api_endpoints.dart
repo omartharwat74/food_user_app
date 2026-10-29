@@ -86,6 +86,7 @@ class ApiEndpoints {
   // ── Cart ──────────────────────────────────────────────────────────────────
   static const String cart = '/api/v1/cart';
   static const String cartItems = '/api/v1/cart/items';
+  static const String cartExtras = '/api/v1/cart/extras';
   static const String cartCoupon = '/api/v1/cart/coupon';
   static const String applyPromo = '/cart/promo';
 

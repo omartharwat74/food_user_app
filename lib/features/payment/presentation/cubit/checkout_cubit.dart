@@ -14,6 +14,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     int? addressId,
     bool selfPickup = false,
     String? couponCode,
+    String? note,
   }) async {
     emit(const CheckoutState.loading());
     final request = PlaceOrderRequest(
@@ -21,6 +22,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
       addressId: addressId,
       selfPickup: selfPickup,
       couponCode: couponCode,
+      note: note,
     );
     final result = await placeOrderUseCase(request);
     if (isClosed) return;

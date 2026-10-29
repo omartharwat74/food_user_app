@@ -40,10 +40,18 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     );
   }
 
+  bool _isRefreshing = false;
+
   Future<void> refreshOrders({int perPage = 10}) async {
+    if (_isRefreshing) return;
+    _isRefreshing = true;
+
     final result = await _getOrderHistoryUseCase(
       GetOrderHistoryParams(perPage: perPage, page: 1),
     );
+
+    _isRefreshing = false;
+    if (isClosed) return;
 
     result.fold(
       (failure) {

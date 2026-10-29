@@ -17,7 +17,10 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:food_user_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
 import 'package:food_user_app/core/widgets/guest_gate_bottom_sheet.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_cubit.dart';
+import 'package:food_user_app/features/product/presentation/widgets/product_extras_section.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({required this.item, super.key});
@@ -33,12 +36,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   final Map<String, Set<String>> _selectedOptions = {};
   String _notes = '';
   bool _hasInitializedDefaults = false;
+  bool _isSubmittingMainItem = false;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return BlocBuilder<ProductDetailCubit, ProductDetailState>(
+    final content = BlocBuilder<ProductDetailCubit, ProductDetailState>(
       builder: (context, state) {
         // Use the loaded product if available, otherwise fallback to the summary item passed in
         final product = state.maybeWhen(
@@ -95,29 +99,35 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           listener: (context, cartState) {
             cartState.maybeWhen(
               loaded: (cart, promo, _) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppLocalizations.of(context)!.productAddedSuccessfully,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                if (_isSubmittingMainItem) {
+                  _isSubmittingMainItem = false;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context)!.productAddedSuccessfully,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
+                      backgroundColor: AppColors.success,
+                      duration: const Duration(seconds: 3),
                     ),
-                    backgroundColor: Colors.green,
-                    duration: Duration(seconds: 3),
-                  ),
-                );
-                if (Navigator.canPop(context)) {
-                  Navigator.pop(context);
+                  );
+                  if (Navigator.canPop(context)) {
+                    Navigator.pop(context);
+                  }
                 }
               },
               error: (cart, promo, message) {
-                ScaffoldMessenger.of(context).clearSnackBars();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(message), backgroundColor: Colors.red),
-                );
+                if (_isSubmittingMainItem) {
+                  _isSubmittingMainItem = false;
+                  ScaffoldMessenger.of(context).clearSnackBars();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(message), backgroundColor: Colors.red),
+                  );
+                }
               },
               conflict:
                   (
@@ -264,6 +274,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   }
                 });
 
+                setState(() => _isSubmittingMainItem = true);
                 context.read<CartCubit>().addItem(
                   productId: product.id.toString(),
                   quantity: _quantity,
@@ -605,6 +616,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ),
                     ),
+                    const ProductExtrasSection(),
                   ],
                 ),
               ),
@@ -613,6 +625,15 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         );
       },
     );
+
+    if (sl.isRegistered<CartExtrasCubit>()) {
+      return BlocProvider<CartExtrasCubit>(
+        create: (_) => sl<CartExtrasCubit>()..loadExtras(),
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   Future<void> _showNotesDialog() async {

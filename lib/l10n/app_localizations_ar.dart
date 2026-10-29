@@ -503,6 +503,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartAddMore => 'نزود شيئ';
 
   @override
+  String get cartSomethingElse => 'حاجة تانية';
+
+  @override
   String get checkoutTitle => 'تابع الدفع';
 
   @override

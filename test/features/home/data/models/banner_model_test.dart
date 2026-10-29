@@ -63,5 +63,38 @@ void main() {
       expect(banner.menuCategoryId, equals(7));
       expect(banner.productId, isNull);
     });
+
+    test('parses banner with subtitle correctly', () {
+      final json = {
+        'id': 20,
+        'type': 'link',
+        'title': 'عرض خاص',
+        'subtitle': 'خصم كبير',
+        'image': 'https://example.com/banner.png',
+        'link': 'https://example.com/offer',
+      };
+
+      final banner = BannerModel.fromJson(json);
+
+      expect(banner.id, equals(20));
+      expect(banner.title, equals('عرض خاص'));
+      expect(banner.subtitle, equals('خصم كبير'));
+    });
+
+    test('parses banner without subtitle as empty string safely', () {
+      final json = {
+        'id': 21,
+        'type': 'store',
+        'title': 'متجر مميز',
+        'subtitle': null,
+        'image': 'https://example.com/store.png',
+      };
+
+      final banner = BannerModel.fromJson(json);
+
+      expect(banner.id, equals(21));
+      expect(banner.title, equals('متجر مميز'));
+      expect(banner.subtitle, isEmpty);
+    });
   });
 }

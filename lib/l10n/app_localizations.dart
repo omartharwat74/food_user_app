@@ -1058,6 +1058,12 @@ abstract class AppLocalizations {
   /// **'Add more'**
   String get cartAddMore;
 
+  /// No description provided for @cartSomethingElse.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else?'**
+  String get cartSomethingElse;
+
   /// No description provided for @checkoutTitle.
   ///
   /// In en, this message translates to:

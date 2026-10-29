@@ -29,7 +29,7 @@ class BannerItem extends Equatable {
   final int status;
   final int sortOrder;
 
-  // ── Legacy fields kept for UI compatibility ────────────────────────────────
+  // ── Banner subtitle & Legacy fields kept for UI compatibility ──────────────
   final String subtitle;
   final String ctaText;
   final String discountText;
@@ -59,6 +59,7 @@ class BannerItem extends Equatable {
     id,
     type,
     title,
+    subtitle,
     imageUrl,
     link,
     storeId,

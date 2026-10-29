@@ -98,6 +98,27 @@ class OrderDetailCubit extends Cubit<OrderDetailState> {
 
   Future<Either<Failure, void>> submitRating(RateOrderParams params) async {
     final useCase = _rateOrderUseCase ?? di.sl<RateOrderUseCase>();
-    return await useCase(params);
+    final result = await useCase(params);
+    result.fold(
+      (failure) {
+        // Refresh state from server on failure (e.g. 422)
+        if (state.order != null) {
+          loadOrderDetails(state.order!.id.toString());
+        }
+      },
+      (_) {
+        // Locally update is_reviewed = true without full refetch
+        if (state.order != null) {
+          final updatedOrder = state.order!.copyWith(isReviewed: true);
+          emit(state.copyWith(order: updatedOrder));
+          try {
+            if (di.sl.isRegistered<OrderHistoryCubit>()) {
+              di.sl<OrderHistoryCubit>().updateOrder(updatedOrder);
+            }
+          } catch (_) {}
+        }
+      },
+    );
+    return result;
   }
 }

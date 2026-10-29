@@ -44,7 +44,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(const GetOrderHistoryParams());
     registerFallbackValue(const CancelOrderParams(orderId: '1', reason: 'r'));
-    registerFallbackValue(const RateOrderParams(storeId: 1, rating: 5));
+    registerFallbackValue(const RateOrderParams(orderId: 1, storeId: 1, rating: 5));
   });
 
   group('OrderStatus normalization & UI Model mapping', () {
@@ -270,6 +270,7 @@ void main() {
       when(() => mockDio.post(
             ApiEndpoints.reviews,
             data: {
+              'order_id': 10,
               'store_id': 1,
               'rating': 5,
               'comment': 'الأكل ممتاز',
@@ -285,6 +286,7 @@ void main() {
       );
 
       await dataSource.submitReview(
+        orderId: 10,
         storeId: 1,
         rating: 5,
         comment: 'الأكل ممتاز',
@@ -296,6 +298,7 @@ void main() {
       verify(() => mockDio.post(
             ApiEndpoints.reviews,
             data: {
+              'order_id': 10,
               'store_id': 1,
               'rating': 5,
               'comment': 'الأكل ممتاز',
@@ -342,6 +345,7 @@ void main() {
 
     test('submitReview returns Right(null) when remote dataSource succeeds', () async {
       when(() => mockRemote.submitReview(
+            orderId: 10,
             storeId: 1,
             rating: 5,
             comment: 'الأكل ممتاز',
@@ -351,6 +355,7 @@ void main() {
           )).thenAnswer((_) async {});
 
       final result = await repository.submitReview(
+        orderId: 10,
         storeId: 1,
         rating: 5,
         comment: 'الأكل ممتاز',
@@ -364,6 +369,7 @@ void main() {
 
     test('submitReview returns ServerFailure when remote throws DioException', () async {
       when(() => mockRemote.submitReview(
+            orderId: 10,
             storeId: 1,
             rating: 5,
             comment: null,
@@ -384,6 +390,7 @@ void main() {
       );
 
       final result = await repository.submitReview(
+        orderId: 10,
         storeId: 1,
         rating: 5,
       );
@@ -547,7 +554,7 @@ void main() {
     });
 
     test('submitRating calls RateOrderUseCase and returns result', () async {
-      const params = RateOrderParams(storeId: 1, rating: 5);
+      const params = RateOrderParams(orderId: 10, storeId: 1, rating: 5);
       when(() => mockRateOrder(params)).thenAnswer((_) async => const Right(null));
 
       final result = await cubit.submitRating(params);

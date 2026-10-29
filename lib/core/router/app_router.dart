@@ -266,8 +266,16 @@ class AppRouter {
       GoRoute(
         path: RouteNames.checkout,
         builder: (c, s) {
-          final couponCode = s.extra is String ? s.extra as String : null;
-          return CheckoutScreen(couponCode: couponCode);
+          String? couponCode;
+          String? note;
+          if (s.extra is String) {
+            couponCode = s.extra as String;
+          } else if (s.extra is Map) {
+            final map = s.extra as Map;
+            couponCode = map['couponCode'] as String?;
+            note = map['note'] as String?;
+          }
+          return CheckoutScreen(couponCode: couponCode, initialNote: note);
         },
       ),
       GoRoute(

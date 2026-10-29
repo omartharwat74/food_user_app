@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/errors/failures.dart';

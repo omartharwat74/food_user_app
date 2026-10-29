@@ -85,6 +85,17 @@ class _OrderDetailsScreenContent extends StatefulWidget {
 class _OrderDetailsScreenContentState
     extends State<_OrderDetailsScreenContent> {
   bool _hasRated = false;
+  Locale? _lastLocale;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final currentLocale = Localizations.localeOf(context);
+    if (_lastLocale != null && _lastLocale != currentLocale) {
+      context.read<OrderDetailCubit>().loadOrderDetails(widget.orderId);
+    }
+    _lastLocale = currentLocale;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +314,10 @@ class _OrderDetailsScreenContentState
                                       l10n: l10n,
                                     ),
                                   ],
-                                  if (uiModel.showRateAction && !_hasRated) ...[
+                                  if (uiModel.showRateAction &&
+                                      order != null &&
+                                      !order.isReviewed &&
+                                      !_hasRated) ...[
                                     const SizedBox(height: 24),
                                     _PrimaryFilledButton(
                                       label: l10n.rateOrder,
@@ -1092,7 +1106,8 @@ class _CourierDetailsSection extends StatelessWidget {
     );
 
     final courierRating = delivery.rating;
-    final ratingBadge = (courierRating != null && courierRating > 0)
+    final ratingCount = delivery.ratingCount;
+    final ratingBadge = (courierRating != null && courierRating > 0 && ratingCount > 0)
         ? Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
@@ -1718,7 +1733,10 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
         order?.store?.id ?? int.tryParse(order?.branchId ?? '') ?? 1;
     final deliveryId = order?.delivery?.id;
 
+    final orderId = order?.id ?? 0;
+
     final params = RateOrderParams(
+      orderId: orderId,
       storeId: storeId,
       rating: _restaurantRating,
       comment: _restaurantFeedbackController.text.trim().isNotEmpty

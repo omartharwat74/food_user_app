@@ -28,6 +28,7 @@ class PromoBannerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final title = banner.title?.trim() ?? '';
+    final subtitle = banner.subtitle.trim();
     final imageUrl = banner.imageUrl?.trim() ?? '';
 
     return ClipRRect(
@@ -114,26 +115,27 @@ class PromoBannerCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                context.l10n.specialOffer,
-                                textAlign: isRtl ? TextAlign.right : TextAlign.left,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: isHome ? 14 : 13,
-                                  fontFamily: 'ExpoArabic',
-                                  fontFamilyFallback: const ['Expo Arabic'],
-                                  fontWeight: FontWeight.w500,
-                                  height: 1.25,
+                              if (title.isNotEmpty)
+                                Text(
+                                  title,
+                                  textAlign: isRtl ? TextAlign.right : TextAlign.left,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: isHome ? 14 : 13,
+                                    fontFamily: 'ExpoArabic',
+                                    fontFamilyFallback: const ['Expo Arabic'],
+                                    fontWeight: FontWeight.w500,
+                                    height: 1.25,
+                                  ),
                                 ),
-                              ),
-                              if (title.isNotEmpty) ...[
-                                const SizedBox(height: 4),
+                              if (subtitle.isNotEmpty) ...[
+                                if (title.isNotEmpty) const SizedBox(height: 4),
                                 SizedBox(
                                   width: isHome ? 120 : null,
                                   child: Text(
-                                    _formatTitle(title),
+                                    _formatTitle(subtitle),
                                     textAlign: isRtl ? TextAlign.right : TextAlign.left,
                                     maxLines: isHome ? 3 : 2,
                                     overflow: TextOverflow.ellipsis,

@@ -8,22 +8,6 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 
 class CartSummary extends StatelessWidget {
-  const CartSummary({
-    required this.subtotal,
-    required this.delivery,
-    required this.tax,
-    required this.discount,
-    required this.total,
-    required this.onCheckout,
-    required this.onAddMore,
-    this.onApplyPromo,
-    this.isUpdating = false,
-    this.isSelfPickup = false,
-    this.onToggleSelfPickup,
-    this.appliedPromoCode,
-    super.key,
-  });
-
   final double subtotal;
   final double delivery;
   final double tax;
@@ -36,6 +20,24 @@ class CartSummary extends StatelessWidget {
   final bool isSelfPickup;
   final ValueChanged<bool>? onToggleSelfPickup;
   final String? appliedPromoCode;
+  final TextEditingController? notesController;
+
+  const CartSummary({
+    super.key,
+    required this.subtotal,
+    required this.delivery,
+    required this.tax,
+    required this.discount,
+    required this.total,
+    required this.onCheckout,
+    required this.onAddMore,
+    this.onApplyPromo,
+    this.isUpdating = false,
+    this.isSelfPickup = false,
+    this.onToggleSelfPickup,
+    this.appliedPromoCode,
+    this.notesController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,10 @@ class CartSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _NotesBox(hint: l10n.cartNotesHint),
+          _NotesBox(
+            hint: l10n.cartNotesHint,
+            controller: notesController,
+          ),
           const SizedBox(height: 16),
           _DiscountBox(
             l10n: l10n,
@@ -121,9 +126,10 @@ class CartSummary extends StatelessWidget {
 }
 
 class _NotesBox extends StatelessWidget {
-  const _NotesBox({required this.hint});
+  const _NotesBox({required this.hint, this.controller});
 
   final String hint;
+  final TextEditingController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -135,6 +141,9 @@ class _NotesBox extends StatelessWidget {
         border: Border.all(color: AppColors.border(context), width: 0.5),
       ),
       child: TextField(
+        controller: controller,
+        maxLength: 500,
+        buildCounter: (_, {required currentLength, required isFocused, maxLength}) => null,
         minLines: 1,
         maxLines: 2,
         textAlign: TextAlign.start,

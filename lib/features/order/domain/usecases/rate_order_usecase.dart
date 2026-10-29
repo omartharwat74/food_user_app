@@ -5,6 +5,7 @@ import 'package:food_user_app/core/usecases/usecase.dart';
 import '../repositories/order_repository.dart';
 
 class RateOrderParams extends Equatable {
+  final int orderId;
   final int storeId;
   final int rating;
   final String? comment;
@@ -13,6 +14,7 @@ class RateOrderParams extends Equatable {
   final String? deliveryComment;
 
   const RateOrderParams({
+    required this.orderId,
     required this.storeId,
     required this.rating,
     this.comment,
@@ -23,6 +25,7 @@ class RateOrderParams extends Equatable {
 
   @override
   List<Object?> get props => [
+        orderId,
         storeId,
         rating,
         comment,
@@ -40,6 +43,7 @@ class RateOrderUseCase extends UseCase<void, RateOrderParams> {
   @override
   Future<Either<Failure, void>> call(RateOrderParams params) {
     return repository.submitReview(
+      orderId: params.orderId,
       storeId: params.storeId,
       rating: params.rating,
       comment: params.comment,

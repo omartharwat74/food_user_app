@@ -41,6 +41,7 @@ class OrderDto {
   final DateTime? createdAt;
   final String? message;
   final String? notes;
+  final bool isReviewed;
 
   const OrderDto({
     required this.id,
@@ -59,6 +60,7 @@ class OrderDto {
     this.createdAt,
     this.message,
     this.notes,
+    this.isReviewed = false,
   });
 
   factory OrderDto.fromJson(Map<String, dynamic> json, {String? message}) {
@@ -111,6 +113,7 @@ class OrderDto {
       createdAt: parsedCreatedAt,
       message: msg,
       notes: data['notes']?.toString() ?? data['note']?.toString(),
+      isReviewed: _parseBool(data['is_reviewed']),
     );
   }
 
@@ -132,6 +135,7 @@ class OrderDto {
       createdAt: createdAt,
       message: message,
       notes: notes,
+      isReviewed: isReviewed,
     );
   }
 }
@@ -368,6 +372,7 @@ class OrderDeliveryDto {
   final String? image;
   final String? vehicleType;
   final double? rating;
+  final int ratingCount;
 
   const OrderDeliveryDto({
     this.id,
@@ -376,6 +381,7 @@ class OrderDeliveryDto {
     this.image,
     this.vehicleType,
     this.rating,
+    this.ratingCount = 0,
   });
 
   factory OrderDeliveryDto.fromJson(Map<String, dynamic> json) {
@@ -384,6 +390,9 @@ class OrderDeliveryDto {
         json['rating_avg'] ??
         json['average_rating'] ??
         json['avg_rating'];
+    final rawRatingCount = json['rating_count'] ??
+        json['ratings_count'] ??
+        json['count'];
     return OrderDeliveryDto(
       id: json['id'] != null ? _parseInt(json['id']) : null,
       name: json['name']?.toString(),
@@ -391,6 +400,7 @@ class OrderDeliveryDto {
       image: json['image']?.toString(),
       vehicleType: json['vehicle_type']?.toString(),
       rating: rawRating != null ? _parseDouble(rawRating) : null,
+      ratingCount: _parseInt(rawRatingCount),
     );
   }
 
@@ -401,5 +411,6 @@ class OrderDeliveryDto {
     image: image,
     vehicleType: vehicleType,
     rating: rating,
+    ratingCount: ratingCount,
   );
 }

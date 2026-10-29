@@ -8,6 +8,7 @@ import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto
 import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart_extra_item.dart';
 import 'package:food_user_app/features/cart/domain/entities/promo.dart';
 import 'package:food_user_app/features/cart/domain/repositories/cart_repository.dart';
 
@@ -21,6 +22,16 @@ class CartRepositoryImpl implements CartRepository {
     try {
       final dto = await remoteDataSource.getCart();
       return Right(dto.toEntity());
+    } catch (e) {
+      return Left(_mapExceptionToFailure(e));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<CartExtraItem>>> getCartExtras() async {
+    try {
+      final items = await remoteDataSource.getCartExtras();
+      return Right(items);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
     }

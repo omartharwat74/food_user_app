@@ -3,6 +3,9 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:food_user_app/core/di/injection_container.dart' as di;
+import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
+import 'package:food_user_app/features/order/presentation/cubit/order_history_state.dart';
 
 const _kPrefsLocaleCode = 'app_locale';
 
@@ -48,7 +51,17 @@ class LocaleController extends ChangeNotifier {
     }
     _locale = Locale(code);
     Intl.defaultLocale = code;
-    notifyListeners();
     await _prefs.setString(_kPrefsLocaleCode, code);
+    notifyListeners();
+
+    try {
+      if (di.sl.isRegistered<OrderHistoryCubit>()) {
+        final orderHistoryCubit = di.sl<OrderHistoryCubit>();
+        if (orderHistoryCubit.state.status == OrderHistoryStatus.loaded ||
+            orderHistoryCubit.state.orders.isNotEmpty) {
+          orderHistoryCubit.refreshOrders();
+        }
+      }
+    } catch (_) {}
   }
 }

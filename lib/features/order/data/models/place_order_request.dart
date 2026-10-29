@@ -3,12 +3,14 @@ class PlaceOrderRequest {
   final int? addressId;
   final bool selfPickup;
   final String? couponCode;
+  final String? note;
 
   const PlaceOrderRequest({
     required this.paymentMethod,
     this.addressId,
     this.selfPickup = false,
     this.couponCode,
+    this.note,
   });
 
   Map<String, dynamic> toJson() {
@@ -21,6 +23,10 @@ class PlaceOrderRequest {
     }
     if (couponCode != null && couponCode!.trim().isNotEmpty) {
       map['coupon_code'] = couponCode!.trim();
+    }
+    if (note != null && note!.trim().isNotEmpty) {
+      final trimmed = note!.trim();
+      map['note'] = trimmed.length > 500 ? trimmed.substring(0, 500) : trimmed;
     }
     return map;
   }

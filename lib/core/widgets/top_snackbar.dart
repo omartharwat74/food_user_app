@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:food_user_app/core/router/app_router.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
 
 OverlayEntry? _currentTopSnackBarEntry;
 Timer? _currentTopSnackBarTimer;
@@ -11,6 +12,7 @@ void showTopSnackBar(
   BuildContext context,
   String message, {
   bool isError = true,
+  Color? backgroundColor,
   Duration duration = const Duration(seconds: 3),
 }) {
   _currentTopSnackBarTimer?.cancel();
@@ -38,6 +40,7 @@ void showTopSnackBar(
     builder: (context) => _TopSnackBarOverlayWidget(
       message: message,
       isError: isError,
+      backgroundColor: backgroundColor,
       duration: duration,
       onDismissed: () {
         if (_currentTopSnackBarEntry == entry) {
@@ -58,12 +61,14 @@ class _TopSnackBarOverlayWidget extends StatefulWidget {
   const _TopSnackBarOverlayWidget({
     required this.message,
     required this.isError,
+    this.backgroundColor,
     required this.duration,
     required this.onDismissed,
   });
 
   final String message;
   final bool isError;
+  final Color? backgroundColor;
   final Duration duration;
   final VoidCallback onDismissed;
 
@@ -134,9 +139,10 @@ class _TopSnackBarOverlayWidgetState extends State<_TopSnackBarOverlayWidget>
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.paddingOf(context).top;
-    final backgroundColor = widget.isError
-        ? const Color(0xFFD32F2F)
-        : const Color(0xFF2E7D32);
+    final backgroundColor = widget.backgroundColor ??
+        (widget.isError
+            ? const Color(0xFFD32F2F)
+            : AppColors.success);
     final iconData = widget.isError
         ? Icons.error_outline_rounded
         : Icons.check_circle_outline_rounded;

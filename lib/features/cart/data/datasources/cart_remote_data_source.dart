@@ -3,10 +3,12 @@ import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
 import 'package:food_user_app/features/cart/data/models/cart_response_dto.dart';
 import 'package:food_user_app/features/cart/data/models/cart_coupon_response_dto.dart';
+import 'package:food_user_app/features/cart/data/models/cart_extra_item_model.dart';
 import 'package:food_user_app/features/cart/data/models/promo_preview_response_dto.dart';
 
 abstract class CartRemoteDataSource {
   Future<CartResponseDto> getCart();
+  Future<List<CartExtraItemModel>> getCartExtras();
   Future<CartResponseDto> addItem({
     required String productId,
     required int quantity,
@@ -39,6 +41,27 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     try {
       final response = await _dio.get<dynamic>(ApiEndpoints.cart);
       return CartResponseDto.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw DioErrorMapper.map(e);
+    }
+  }
+
+  @override
+  Future<List<CartExtraItemModel>> getCartExtras() async {
+    try {
+      final response = await _dio.get<dynamic>(ApiEndpoints.cartExtras);
+      final data = response.data;
+      if (data is Map<String, dynamic>) {
+        final payload = data['data'];
+        if (payload is Map<String, dynamic> && payload['items'] is List) {
+          final items = payload['items'] as List;
+          return items
+              .whereType<Map<String, dynamic>>()
+              .map(CartExtraItemModel.fromJson)
+              .toList();
+        }
+      }
+      return const [];
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

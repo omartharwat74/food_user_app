@@ -310,6 +310,26 @@ class OrderDelivery extends Equatable {
     this.ratingCount = 0,
   });
 
+  OrderDelivery copyWith({
+    int? id,
+    String? name,
+    String? phone,
+    String? image,
+    String? vehicleType,
+    double? rating,
+    int? ratingCount,
+  }) {
+    return OrderDelivery(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      image: image ?? this.image,
+      vehicleType: vehicleType ?? this.vehicleType,
+      rating: rating ?? this.rating,
+      ratingCount: ratingCount ?? this.ratingCount,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

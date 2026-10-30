@@ -107,18 +107,85 @@ class OrderDetailCubit extends Cubit<OrderDetailState> {
         }
       },
       (_) {
-        // Locally update is_reviewed = true without full refetch
+        // Locally update is_reviewed and courier rating without requiring manual reload
         if (state.order != null) {
-          final updatedOrder = state.order!.copyWith(isReviewed: true);
+          var updatedOrder = state.order!.copyWith(isReviewed: true);
+
+          if (params.deliveryRating != null && updatedOrder.delivery != null) {
+            final currentDelivery = updatedOrder.delivery!;
+            final currentRating = currentDelivery.rating;
+            final currentCount = currentDelivery.ratingCount;
+
+            final double newRating;
+            final int newCount;
+            if (currentRating != null && currentRating > 0 && currentCount > 0) {
+              newCount = currentCount + 1;
+              newRating = double.parse(
+                (((currentRating * currentCount) + params.deliveryRating!) /
+                        newCount)
+                    .toStringAsFixed(1),
+              );
+            } else if (currentRating != null && currentRating > 0) {
+              newCount = 2;
+              newRating = double.parse(
+                (((currentRating * 1) + params.deliveryRating!) / 2)
+                    .toStringAsFixed(1),
+              );
+            } else {
+              newCount = 1;
+              newRating = params.deliveryRating!.toDouble();
+            }
+
+            final updatedDelivery = currentDelivery.copyWith(
+              rating: newRating,
+              ratingCount: newCount,
+            );
+            updatedOrder = updatedOrder.copyWith(delivery: updatedDelivery);
+          }
+
           emit(state.copyWith(order: updatedOrder));
           try {
             if (di.sl.isRegistered<OrderHistoryCubit>()) {
               di.sl<OrderHistoryCubit>().updateOrder(updatedOrder);
             }
           } catch (_) {}
+
+          // Also silently refresh order details from server in the background
+          _refreshOrderDetailsInBackground(state.order!.id.toString());
         }
       },
     );
     return result;
+  }
+
+  Future<void> _refreshOrderDetailsInBackground(String orderId) async {
+    final result = await _getOrderDetailUseCase(orderId);
+    if (isClosed) return;
+    result.fold(
+      (_) {},
+      (order) {
+        if (isClosed) return;
+        final currentDelivery = state.order?.delivery;
+        final serverDelivery = order.delivery;
+        OrderDelivery? mergedDelivery = serverDelivery;
+
+        if (serverDelivery != null && currentDelivery != null) {
+          if ((serverDelivery.rating == null || serverDelivery.rating == 0) &&
+              (currentDelivery.rating != null && currentDelivery.rating! > 0)) {
+            mergedDelivery = serverDelivery.copyWith(
+              rating: currentDelivery.rating,
+              ratingCount: currentDelivery.ratingCount,
+            );
+          }
+        }
+
+        emit(state.copyWith(
+          order: order.copyWith(
+            isReviewed: true,
+            delivery: mergedDelivery,
+          ),
+        ));
+      },
+    );
   }
 }

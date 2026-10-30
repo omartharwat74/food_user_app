@@ -59,6 +59,7 @@ void main() {
       expect(dto.isFavorited, isTrue);
       expect(dto.isOpen, isTrue);
       expect(dto.isAvailable, isTrue);
+      expect(dto.availability, 'open');
       expect(dto.reviews.length, 1);
 
       final review = dto.reviews.first;
@@ -72,7 +73,22 @@ void main() {
       expect(entity.name, 'عز الشام');
       expect(entity.isFavorited, isTrue);
       expect(entity.cuisineType, 'برجر • بيتزا • مشويات');
+      expect(entity.isAvailable, isTrue);
+      expect(entity.availability, 'open');
       expect(entity.reviews.first.userName, 'omar tharwat');
+    });
+
+    test('parses busy and closed availability properly', () {
+      final busyDto = RestaurantDto.fromJson({'id': 2, 'availability': 'busy'});
+      expect(busyDto.availability, 'busy');
+      expect(busyDto.toEntity().availability, 'busy');
+
+      final closedDto =
+          RestaurantDto.fromJson({'id': 3, 'availability': 'closed'});
+      expect(closedDto.availability, 'closed');
+      expect(closedDto.isAvailable, isFalse);
+      expect(closedDto.toEntity().availability, 'closed');
+      expect(closedDto.toEntity().isAvailable, isFalse);
     });
 
     test('ReviewDto handles both string id and int id with user map or user_name', () {

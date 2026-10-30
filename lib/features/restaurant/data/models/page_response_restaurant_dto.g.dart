@@ -22,14 +22,3 @@ _PageResponseRestaurantDto _$PageResponseRestaurantDtoFromJson(
       ? true
       : const IntBoolConverter().fromJson(json['last']),
 );
-
-Map<String, dynamic> _$PageResponseRestaurantDtoToJson(
-  _PageResponseRestaurantDto instance,
-) => <String, dynamic>{
-  'content': instance.content,
-  'page': instance.page,
-  'size': instance.size,
-  'totalElements': instance.totalElements,
-  'totalPages': instance.totalPages,
-  'last': const IntBoolConverter().toJson(instance.last),
-};

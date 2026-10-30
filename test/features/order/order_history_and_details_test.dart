@@ -561,5 +561,48 @@ void main() {
       expect(result.isRight(), isTrue);
       verify(() => mockRateOrder(params)).called(1);
     });
+
+    test('submitRating immediately updates delivery rating and count in state without full reload', () async {
+      const initialDelivery = OrderDelivery(
+        id: 5,
+        name: 'احمد علي',
+        rating: 4.0,
+        ratingCount: 1,
+      );
+      const initialOrder = Order(
+        id: 10,
+        code: 'ORDER10',
+        status: 'delivered',
+        paymentMethod: 'cash',
+        selfPickup: false,
+        items: [],
+        summary: OrderSummary(total: 250),
+        delivery: initialDelivery,
+        isReviewed: false,
+      );
+
+      const params = RateOrderParams(
+        orderId: 10,
+        storeId: 1,
+        rating: 5,
+        deliveryId: 5,
+        deliveryRating: 5,
+      );
+      when(() => mockGetDetail('10')).thenAnswer((_) async => const Right(initialOrder));
+      when(() => mockRateOrder(params)).thenAnswer((_) async => const Right(null));
+
+      cubit.loadOrderDetails('10', initialOrder: initialOrder);
+      expect(cubit.state.order?.delivery?.rating, 4.0);
+      expect(cubit.state.order?.delivery?.ratingCount, 1);
+      expect(cubit.state.order?.isReviewed, false);
+
+      final result = await cubit.submitRating(params);
+      expect(result.isRight(), isTrue);
+
+      // (4.0 * 1 + 5) / 2 = 4.5
+      expect(cubit.state.order?.delivery?.rating, 4.5);
+      expect(cubit.state.order?.delivery?.ratingCount, 2);
+      expect(cubit.state.order?.isReviewed, true);
+    });
   });
 }

@@ -1106,8 +1106,7 @@ class _CourierDetailsSection extends StatelessWidget {
     );
 
     final courierRating = delivery.rating;
-    final ratingCount = delivery.ratingCount;
-    final ratingBadge = (courierRating != null && courierRating > 0 && ratingCount > 0)
+    final ratingBadge = (courierRating != null && courierRating > 0)
         ? Container(
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(

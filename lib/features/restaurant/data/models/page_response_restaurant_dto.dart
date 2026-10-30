@@ -7,7 +7,7 @@ import 'package:food_user_app/core/utils/bool_converter.dart';
 part 'page_response_restaurant_dto.freezed.dart';
 part 'page_response_restaurant_dto.g.dart';
 
-@freezed
+@Freezed(toJson: false)
 abstract class PageResponseRestaurantDto with _$PageResponseRestaurantDto {
   const factory PageResponseRestaurantDto({
     @Default([]) List<RestaurantDto> content,

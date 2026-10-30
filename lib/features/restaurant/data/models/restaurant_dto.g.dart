@@ -35,6 +35,7 @@ _RestaurantDto _$RestaurantDtoFromJson(Map<String, dynamic> json) =>
       reviewsHasMore: const IntBoolConverter().fromJson(
         json['reviews_has_more'],
       ),
+      availability: json['availability'] as String?,
     );
 
 // ignore: unused_element
@@ -76,6 +77,7 @@ Map<String, dynamic> _$RestaurantDtoToJson(_RestaurantDto instance) =>
         instance.reviewsHasMore,
         const IntBoolConverter().toJson,
       ),
+      'availability': instance.availability,
     };
 
 Json? _$JsonConverterToJson<Json, Value>(

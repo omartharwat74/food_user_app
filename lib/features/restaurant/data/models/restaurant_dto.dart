@@ -39,6 +39,7 @@ abstract class RestaurantDto with _$RestaurantDto {
     Map<String, dynamic>? ratingDistribution,
     @Default([]) List<ReviewDto> reviews,
     @IntBoolConverter() @JsonKey(name: 'reviews_has_more') bool? reviewsHasMore,
+    String? availability,
   }) = _RestaurantDto;
 
   factory RestaurantDto.fromJson(Map<String, dynamic> json) {
@@ -58,6 +59,9 @@ abstract class RestaurantDto with _$RestaurantDto {
         map['cuisineType'] = tags;
       }
     }
+    if (map['availability'] == null && map['status'] != null) {
+      map['availability'] = map['status'];
+    }
     if (map['availability'] != null) {
       final avail = map['availability'].toString().toLowerCase();
       map['is_open'] ??= (avail == 'open');
@@ -69,6 +73,15 @@ abstract class RestaurantDto with _$RestaurantDto {
 
 extension RestaurantDtoMapper on RestaurantDto {
   Restaurant toEntity() {
+    final resolvedIsOpen =
+        isOpen ?? (isAvailable ?? (availability?.toLowerCase() == 'open'));
+    final resolvedIsAvailable =
+        isAvailable ?? isOpen ?? (availability?.toLowerCase() == 'open');
+    final resolvedAvailability = availability ??
+        ((resolvedIsOpen == false || resolvedIsAvailable == false)
+            ? 'closed'
+            : 'open');
+
     return Restaurant(
       id: id,
       name: name ?? '',
@@ -85,9 +98,9 @@ extension RestaurantDtoMapper on RestaurantDto {
       deliveryTimeMax: deliveryTimeMax ?? 0,
       deliveryFee: deliveryFee ?? 0.0,
       isFavorited: isFavorited ?? false,
-      isAvailable: isAvailable ?? isOpen ?? true,
-
+      isAvailable: resolvedIsAvailable,
       isMajor: isMajor ?? false,
+      availability: resolvedAvailability,
       address: address ?? '',
       ratingDistribution: ratingDistribution ?? const {},
       reviews: reviews.map((r) => r.toEntity()).toList(),

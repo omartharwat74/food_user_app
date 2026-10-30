@@ -22,8 +22,6 @@ mixin _$PageResponseRestaurantDto {
 @pragma('vm:prefer-inline')
 $PageResponseRestaurantDtoCopyWith<PageResponseRestaurantDto> get copyWith => _$PageResponseRestaurantDtoCopyWithImpl<PageResponseRestaurantDto>(this as PageResponseRestaurantDto, _$identity);
 
-  /// Serializes this PageResponseRestaurantDto to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -211,7 +209,7 @@ return $default(_that.content,_that.page,_that.size,_that.totalElements,_that.to
 }
 
 /// @nodoc
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 
 class _PageResponseRestaurantDto implements PageResponseRestaurantDto {
   const _PageResponseRestaurantDto({final  List<RestaurantDto> content = const [], this.page = 0, this.size = 0, this.totalElements = 0, this.totalPages = 0, @IntBoolConverter() this.last = true}): _content = content;
@@ -236,10 +234,7 @@ class _PageResponseRestaurantDto implements PageResponseRestaurantDto {
 @pragma('vm:prefer-inline')
 _$PageResponseRestaurantDtoCopyWith<_PageResponseRestaurantDto> get copyWith => __$PageResponseRestaurantDtoCopyWithImpl<_PageResponseRestaurantDto>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$PageResponseRestaurantDtoToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {

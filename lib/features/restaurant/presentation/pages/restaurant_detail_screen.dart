@@ -651,7 +651,7 @@ class _RestaurantInfoCard extends StatelessWidget {
                   ? MainAxisAlignment.end
                   : MainAxisAlignment.start,
               children: [
-                if (isArabic) _StatusPill(label: copy.available),
+                if (isArabic) _StatusPill(restaurant: restaurant),
                 if (isArabic) const SizedBox(width: AppSpacing.sm),
                 Flexible(
                   child: Text(
@@ -667,7 +667,7 @@ class _RestaurantInfoCard extends StatelessWidget {
                   ),
                 ),
                 if (!isArabic) const SizedBox(width: AppSpacing.sm),
-                if (!isArabic) _StatusPill(label: copy.available),
+                if (!isArabic) _StatusPill(restaurant: restaurant),
               ],
             ),
             const SizedBox(height: 4),
@@ -799,13 +799,29 @@ class _RestaurantInfoCard extends StatelessWidget {
 }
 
 class _StatusPill extends StatelessWidget {
-  const _StatusPill({required this.label});
+  const _StatusPill({required this.restaurant});
 
-  final String label;
+  final Restaurant restaurant;
 
   @override
   Widget build(BuildContext context) {
-    return AppStatusDotLabel(label: label, color: AppColors.success, gap: 4);
+    final l10n = AppLocalizations.of(context)!;
+    final String label;
+    final Color color;
+
+    final availability = restaurant.availability.toLowerCase();
+    if (!restaurant.isAvailable || availability == 'closed') {
+      label = l10n.statusClosed;
+      color = const Color(0xFFEC2D30);
+    } else if (availability == 'busy') {
+      label = l10n.statusBusy;
+      color = const Color(0xFFEFBE1C);
+    } else {
+      label = l10n.statusOpen;
+      color = const Color(0xFF0C9D61);
+    }
+
+    return AppStatusDotLabel(label: label, color: color, gap: 4);
   }
 }
 
@@ -1291,13 +1307,11 @@ class _SectionProductGrid extends StatelessWidget {
 class _RestaurantDetailCopy {
   const _RestaurantDetailCopy({
     required this.title,
-    required this.available,
     required this.discountSubtitle,
     required this.viewProducts,
   });
 
   final String title;
-  final String available;
   final String discountSubtitle;
   final String viewProducts;
 
@@ -1305,7 +1319,6 @@ class _RestaurantDetailCopy {
     final l10n = AppLocalizations.of(context)!;
     return _RestaurantDetailCopy(
       title: l10n.restaurantDetailsTitle,
-      available: l10n.serviceAvailable,
       discountSubtitle: l10n.restaurantDiscountSubtitle,
       viewProducts: l10n.restaurantViewProducts,
     );

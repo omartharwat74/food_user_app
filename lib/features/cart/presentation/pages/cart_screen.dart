@@ -264,6 +264,10 @@ class _CartScreenState extends State<CartScreen> {
     );
     if (isUpdating) return;
 
+    final cart = state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
+    );
     final couponCode = state.maybeWhen(
       loaded: (_, promo, _) => promo?.code,
       orElse: () => null,
@@ -274,6 +278,9 @@ class _CartScreenState extends State<CartScreen> {
       extra: {
         'couponCode': couponCode,
         'note': note.isNotEmpty ? note : null,
+        'isSelfPickup': _isSelfPickup,
+        'restaurantName': cart?.restaurantName,
+        'restaurantAddress': cart?.restaurantAddress,
       },
     );
     if (!mounted || completed != true) return;

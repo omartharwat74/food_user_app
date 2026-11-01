@@ -136,6 +136,8 @@ flutter:
     - assets/images/icons/cart/
     - assets/images/products/
     - assets/images/icons/products/
+    - assets/images/icons/products/2.0x/
+    - assets/images/icons/products/3.0x/
     - assets/images/orders/
     - assets/images/icons/orders/
     - assets/images/favorites/

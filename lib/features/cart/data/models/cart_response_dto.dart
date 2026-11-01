@@ -131,6 +131,7 @@ class CartStoreBriefDto {
   final num? deliveryFee;
   @JsonKey(name: 'min_order_amount')
   final num? minOrderAmount;
+  final String? address;
 
   CartStoreBriefDto({
     required this.id,
@@ -138,6 +139,7 @@ class CartStoreBriefDto {
     this.image,
     this.deliveryFee,
     this.minOrderAmount,
+    this.address,
   });
 
   factory CartStoreBriefDto.fromJson(Map<String, dynamic> json) =>
@@ -153,6 +155,7 @@ extension CartResponseDtoMapper on CartResponseDto {
       restaurantId:
           data.storeId?.toString() ?? data.store?.id?.toString() ?? '',
       restaurantName: data.store?.name ?? '',
+      restaurantAddress: data.store?.address ?? '',
       items: (data.items ?? [])
           .map(
             (item) => CartItem(

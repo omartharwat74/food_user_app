@@ -691,5 +691,12 @@
   "guestLoginPrompt": "تسجيل الدخول / إنشاء حساب",
   "guestGateTitle": "يرجى تسجيل الدخول",
   "guestGateMessage": "يرجى تسجيل الدخول لتتمكن من إتمام هذه الخطوة",
-  "guestGateLoginButton": "تسجيل الدخول الآن"
+  "guestGateLoginButton": "تسجيل الدخول الآن",
+  "productExtras": "الإضافات",
+  "productSizes": "الأحجام",
+  "pickupBannerTitlePart1": "اطلب واستلم ",
+  "pickupBannerTitlePart2": "بنفسك",
+  "pickupBannerSubtitle": "اطلب منتجاتك أونلاين واستلمها مباشرة من الفرع، بدون الحاجة لخدمة التوصيل.",
+  "branchAddressTitle": "عنوان الفرع :",
+  "defaultBranchAddress": "القاهرة الجديدة، مدينتي، حي الزهور"
 }

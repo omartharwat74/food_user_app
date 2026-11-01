@@ -3661,6 +3661,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login Now'**
   String get guestGateLoginButton;
+
+  /// No description provided for @productExtras.
+  ///
+  /// In en, this message translates to:
+  /// **'Extras'**
+  String get productExtras;
+
+  /// No description provided for @productSizes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sizes'**
+  String get productSizes;
+
+  /// No description provided for @pickupBannerTitlePart1.
+  ///
+  /// In en, this message translates to:
+  /// **'Order & Pick up '**
+  String get pickupBannerTitlePart1;
+
+  /// No description provided for @pickupBannerTitlePart2.
+  ///
+  /// In en, this message translates to:
+  /// **'Yourself'**
+  String get pickupBannerTitlePart2;
+
+  /// No description provided for @pickupBannerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order your products online and pick them up directly from the branch, without the need for delivery service.'**
+  String get pickupBannerSubtitle;
+
+  /// No description provided for @branchAddressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch address :'**
+  String get branchAddressTitle;
+
+  /// No description provided for @defaultBranchAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'New Cairo, Madinaty, Al Zuhour District'**
+  String get defaultBranchAddress;
 }
 
 class _AppLocalizationsDelegate

@@ -28,10 +28,20 @@ import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
 
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key, this.couponCode, this.initialNote});
+  const CheckoutScreen({
+    super.key,
+    this.couponCode,
+    this.initialNote,
+    this.isSelfPickup = false,
+    this.restaurantName,
+    this.restaurantAddress,
+  });
 
   final String? couponCode;
   final String? initialNote;
+  final bool isSelfPickup;
+  final String? restaurantName;
+  final String? restaurantAddress;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -150,6 +160,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
               return BlocBuilder<CartCubit, CartState>(
                 builder: (context, cartState) {
+                  final cart = cartState.maybeWhen(
+                    loaded: (c, _, _) => c,
+                    orElse: () => null,
+                  );
+                  final branchAddress =
+                      (widget.restaurantAddress?.isNotEmpty == true)
+                          ? widget.restaurantAddress!
+                          : (cart?.restaurantAddress?.isNotEmpty == true)
+                              ? cart!.restaurantAddress!
+                              : (widget.restaurantName?.isNotEmpty == true)
+                                  ? widget.restaurantName!
+                                  : (cart?.restaurantName?.isNotEmpty == true)
+                                      ? cart!.restaurantName!
+                                      : l10n.defaultBranchAddress;
+
                   return Column(
                     children: [
                       Padding(
@@ -176,14 +201,21 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              _CurrentAddressCard(
-                                address:
-                                    _selectedAddress?.address ??
-                                    selectedSavedAddress ??
-                                    l10n.deliveryAddress,
-                                onChange: _changeAddress,
-                              ),
-                              const SizedBox(height: 16),
+                              if (widget.isSelfPickup) ...[
+                                const _SelfPickupBanner(),
+                                const SizedBox(height: 16),
+                                _BranchAddressSection(address: branchAddress),
+                                const SizedBox(height: 16),
+                              ] else ...[
+                                _CurrentAddressCard(
+                                  address:
+                                      _selectedAddress?.address ??
+                                      selectedSavedAddress ??
+                                      l10n.deliveryAddress,
+                                  onChange: _changeAddress,
+                                ),
+                                const SizedBox(height: 16),
+                              ],
                               PaymentOptionsSection(
                                 selectedOption: _paymentOption,
                                 onChanged: _handlePaymentOptionSelected,
@@ -227,15 +259,18 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _submitOrder(SavedAddressesController addressesController) {
-    final addressId = _getCurrentAddressId(addressesController);
-    if (addressId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(context.l10n.pleaseSelectDeliveryAddress),
-          backgroundColor: AppColors.error,
-        ),
-      );
-      return;
+    int? addressId;
+    if (!widget.isSelfPickup) {
+      addressId = _getCurrentAddressId(addressesController);
+      if (addressId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(context.l10n.pleaseSelectDeliveryAddress),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
     }
 
     final paymentMethod =
@@ -247,7 +282,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     context.read<CheckoutCubit>().checkout(
       paymentMethod: paymentMethod,
       addressId: addressId,
-      selfPickup: false,
+      selfPickup: widget.isSelfPickup,
       couponCode: _effectiveCouponCode,
       note: note,
     );
@@ -647,6 +682,140 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
           ),
         );
       },
+    );
+  }
+}
+
+class _SelfPickupBanner extends StatelessWidget {
+  const _SelfPickupBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard(context),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.border(context),
+          width: 0.5,
+        ),
+        boxShadow: isDark
+            ? null
+            : const [
+                BoxShadow(
+                  color: Color(0x142C2B2B),
+                  blurRadius: 4,
+                  offset: Offset(0, 0),
+                ),
+              ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            AppAssets.pickupBanner,
+            width: 88,
+            height: 88,
+            fit: BoxFit.contain,
+          ),
+          const SizedBox(height: 12),
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              style: AppTextStyles.body(context).copyWith(
+                color: AppColors.onSurface(context),
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                fontFamily: 'ExpoArabic',
+              ),
+              children: [
+                TextSpan(text: l10n.pickupBannerTitlePart1),
+                TextSpan(
+                  text: l10n.pickupBannerTitlePart2,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.pickupBannerSubtitle,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.caption(context).copyWith(
+              color: AppColors.paragraph(context),
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              height: 1.35,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BranchAddressSection extends StatelessWidget {
+  const _BranchAddressSection({required this.address});
+
+  final String address;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.branchAddressTitle,
+          textAlign: TextAlign.start,
+          style: AppTextStyles.heading4(context).copyWith(
+            color: AppColors.onSurface(context),
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              AppAssets.addressLocationIcon,
+              width: 16,
+              height: 16,
+              colorFilter: ColorFilter.mode(
+                AppColors.paragraph(context),
+                BlendMode.srcIn,
+              ),
+            ),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                address,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.caption(context).copyWith(
+                  color: AppColors.paragraph(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  height: 1.3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

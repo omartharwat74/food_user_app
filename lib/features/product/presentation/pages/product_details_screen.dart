@@ -375,6 +375,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             const SizedBox.shrink()
                           else
                             ...product.options.map((modifier) {
+                              final modifierTitle =
+                                  _formatModifierTitle(context, modifier.name);
+                              final isDark =
+                                  Theme.of(context).brightness == Brightness.dark;
+                              final separatorColor = isDark
+                                  ? const Color(0xFF262626)
+                                  : const Color(0xFFE5E5E5);
+
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 20),
                                 child: Column(
@@ -382,7 +390,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                       CrossAxisAlignment.stretch,
                                   children: [
                                     Text(
-                                      modifier.name,
+                                      modifierTitle,
                                       textAlign: TextAlign.start,
                                       style: AppTextStyles.heading4(context)
                                           .copyWith(
@@ -393,13 +401,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           ),
                                     ),
                                     const SizedBox(height: 12),
-                                    ...modifier.values.map((val) {
+                                    ...modifier.values.asMap().entries.map((entry) {
+                                      final valIndex = entry.key;
+                                      final val = entry.value;
                                       final isSelected =
                                           (_selectedOptions[modifier.id] ??
                                                   <String>{})
                                               .contains(val.id);
 
-                                      return InkWell(
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          if (valIndex > 0)
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(
+                                                vertical: 4,
+                                              ),
+                                              child: Container(
+                                                width: double.infinity,
+                                                decoration: ShapeDecoration(
+                                                  shape: RoundedRectangleBorder(
+                                                    side: BorderSide(
+                                                      width: 0.50,
+                                                      strokeAlign:
+                                                          BorderSide
+                                                              .strokeAlignOutside,
+                                                      color: separatorColor,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          InkWell(
                                         onTap: () {
                                           setState(() {
                                             final current = Set<String>.from(
@@ -461,42 +494,31 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   ),
                                                 )
                                               else
-                                                SizedBox(
-                                                  width: 24,
-                                                  height: 24,
-                                                  child: Checkbox(
-                                                    value: isSelected,
-                                                    onChanged: (_) {
-                                                      setState(() {
-                                                        final current =
-                                                            Set<String>.from(
-                                                              _selectedOptions[modifier
-                                                                      .id] ??
-                                                                  {},
-                                                            );
-                                                        if (isSelected) {
-                                                          current.remove(
-                                                            val.id,
-                                                          );
-                                                        } else if (current
-                                                                .length <
-                                                            modifier
-                                                                .maxSelect) {
-                                                          current.add(val.id);
-                                                        }
+                                                _CustomAddonCheckbox(
+                                                  isSelected: isSelected,
+                                                  onTap: () {
+                                                    setState(() {
+                                                      final current =
+                                                          Set<String>.from(
                                                         _selectedOptions[modifier
-                                                                .id] =
-                                                            current;
-                                                      });
-                                                    },
-                                                    activeColor:
-                                                        AppColors.primary,
-                                                    visualDensity:
-                                                        VisualDensity.compact,
-                                                    materialTapTargetSize:
-                                                        MaterialTapTargetSize
-                                                            .shrinkWrap,
-                                                  ),
+                                                                .id] ??
+                                                            {},
+                                                      );
+                                                      if (isSelected) {
+                                                        current.remove(
+                                                          val.id,
+                                                        );
+                                                      } else if (current
+                                                              .length <
+                                                          modifier
+                                                              .maxSelect) {
+                                                        current.add(val.id);
+                                                      }
+                                                      _selectedOptions[modifier
+                                                              .id] =
+                                                          current;
+                                                    });
+                                                  },
                                                 ),
                                               const SizedBox(width: 8),
                                               Text(
@@ -607,8 +629,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             ],
                                           ),
                                         ),
-                                      );
-                                    }),
+                                      ),
+                                    ],
+                                  );
+                                }),
                                   ],
                                 ),
                               );
@@ -1308,6 +1332,82 @@ class _BottomQuantityControl extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+
+String _formatModifierTitle(BuildContext context, String rawName) {
+  final l10n = AppLocalizations.of(context)!;
+  final trimmed = rawName.trim();
+  final lower = trimmed.toLowerCase();
+  if (lower == 'إضافات' ||
+      lower == 'اضافات' ||
+      lower == 'الإضافات' ||
+      lower == 'الاضافات' ||
+      lower == 'extras' ||
+      lower == 'extra' ||
+      lower == 'addons' ||
+      lower == 'addon' ||
+      lower == 'add-ons' ||
+      lower == 'add-on') {
+    return l10n.productExtras;
+  }
+  if (lower == 'الحجم' ||
+      lower == 'حجم' ||
+      lower == 'الأحجام' ||
+      lower == 'احجام' ||
+      lower == 'size' ||
+      lower == 'sizes') {
+    return l10n.productSizes;
+  }
+  return rawName;
+}
+
+class _CustomAddonCheckbox extends StatelessWidget {
+  const _CustomAddonCheckbox({
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      child: SizedBox(
+        width: 24,
+        height: 24,
+        child: Center(
+          child: isSelected
+              ? Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                )
+              : Image.asset(
+                  AppAssets.productCheckboxUnselected,
+                  width: 20,
+                  height: 20,
+                  color: isDark ? const Color(0xFF383838) : null,
+                ),
+        ),
       ),
     );
   }

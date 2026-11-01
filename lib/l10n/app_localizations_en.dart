@@ -1862,4 +1862,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestGateLoginButton => 'Login Now';
+
+  @override
+  String get productExtras => 'Extras';
+
+  @override
+  String get productSizes => 'Sizes';
+
+  @override
+  String get pickupBannerTitlePart1 => 'Order & Pick up ';
+
+  @override
+  String get pickupBannerTitlePart2 => 'Yourself';
+
+  @override
+  String get pickupBannerSubtitle =>
+      'Order your products online and pick them up directly from the branch, without the need for delivery service.';
+
+  @override
+  String get branchAddressTitle => 'Branch address :';
+
+  @override
+  String get defaultBranchAddress => 'New Cairo, Madinaty, Al Zuhour District';
 }

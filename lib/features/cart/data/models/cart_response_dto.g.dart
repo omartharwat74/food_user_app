@@ -112,6 +112,7 @@ CartStoreBriefDto _$CartStoreBriefDtoFromJson(Map<String, dynamic> json) =>
       image: json['image'] as String?,
       deliveryFee: json['delivery_fee'] as num?,
       minOrderAmount: json['min_order_amount'] as num?,
+      address: json['address'] as String?,
     );
 
 Map<String, dynamic> _$CartStoreBriefDtoToJson(CartStoreBriefDto instance) =>
@@ -121,4 +122,5 @@ Map<String, dynamic> _$CartStoreBriefDtoToJson(CartStoreBriefDto instance) =>
       'image': instance.image,
       'delivery_fee': instance.deliveryFee,
       'min_order_amount': instance.minOrderAmount,
+      'address': instance.address,
     };

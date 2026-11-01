@@ -5,6 +5,7 @@ class Cart extends Equatable {
   final String id;
   final String? restaurantId;
   final String? restaurantName;
+  final String? restaurantAddress;
   final List<CartItem> items;
   final double subtotal;
   final double deliveryFee;
@@ -16,6 +17,7 @@ class Cart extends Equatable {
     required this.id,
     this.restaurantId,
     this.restaurantName,
+    this.restaurantAddress,
     required this.items,
     required this.subtotal,
     required this.deliveryFee,
@@ -28,6 +30,7 @@ class Cart extends Equatable {
     : id = '',
       restaurantId = null,
       restaurantName = null,
+      restaurantAddress = null,
       items = const [],
       subtotal = 0.0,
       deliveryFee = 0.0,
@@ -39,6 +42,7 @@ class Cart extends Equatable {
     String? id,
     String? restaurantId,
     String? restaurantName,
+    String? restaurantAddress,
     List<CartItem>? items,
     double? subtotal,
     double? deliveryFee,
@@ -50,6 +54,7 @@ class Cart extends Equatable {
       id: id ?? this.id,
       restaurantId: restaurantId ?? this.restaurantId,
       restaurantName: restaurantName ?? this.restaurantName,
+      restaurantAddress: restaurantAddress ?? this.restaurantAddress,
       items: items ?? this.items,
       subtotal: subtotal ?? this.subtotal,
       deliveryFee: deliveryFee ?? this.deliveryFee,
@@ -64,6 +69,7 @@ class Cart extends Equatable {
     id,
     restaurantId,
     restaurantName,
+    restaurantAddress,
     items,
     subtotal,
     deliveryFee,

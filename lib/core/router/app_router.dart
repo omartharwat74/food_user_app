@@ -268,14 +268,26 @@ class AppRouter {
         builder: (c, s) {
           String? couponCode;
           String? note;
+          bool isSelfPickup = false;
+          String? restaurantName;
+          String? restaurantAddress;
           if (s.extra is String) {
             couponCode = s.extra as String;
           } else if (s.extra is Map) {
             final map = s.extra as Map;
             couponCode = map['couponCode'] as String?;
             note = map['note'] as String?;
+            isSelfPickup = map['isSelfPickup'] as bool? ?? false;
+            restaurantName = map['restaurantName'] as String?;
+            restaurantAddress = map['restaurantAddress'] as String?;
           }
-          return CheckoutScreen(couponCode: couponCode, initialNote: note);
+          return CheckoutScreen(
+            couponCode: couponCode,
+            initialNote: note,
+            isSelfPickup: isSelfPickup,
+            restaurantName: restaurantName,
+            restaurantAddress: restaurantAddress,
+          );
         },
       ),
       GoRoute(

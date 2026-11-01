@@ -43,6 +43,8 @@ class AppAssets {
   static const productAddonWater = 'assets/images/products/addon_water.png';
   static const productAddonToast = 'assets/images/products/addon_toast.png';
   static const productCloseIcon = 'assets/images/icons/products/close.svg';
+  static const productCheckboxUnselected =
+      'assets/images/icons/products/checkbox_unselected.png';
 
   static const settingsGeneral = 'assets/images/icons/settings/settings-1.svg';
   static const settingsFavorites =
@@ -199,6 +201,7 @@ class AppAssets {
       'assets/images/icons/payment/payment_close.svg';
   static const paymentDeleteDialogIcon =
       'assets/images/icons/payment/payment_delete_dialog.svg';
+  static const pickupBanner = 'assets/images/pickup_banner.png';
 
   static const supportAgentIcon = 'assets/images/icons/support/agent.svg';
   static const supportAdminIcon = 'assets/images/icons/support/support_admin.png';

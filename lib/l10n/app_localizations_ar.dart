@@ -1840,4 +1840,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guestGateLoginButton => 'تسجيل الدخول الآن';
+
+  @override
+  String get productExtras => 'الإضافات';
+
+  @override
+  String get productSizes => 'الأحجام';
+
+  @override
+  String get pickupBannerTitlePart1 => 'اطلب واستلم ';
+
+  @override
+  String get pickupBannerTitlePart2 => 'بنفسك';
+
+  @override
+  String get pickupBannerSubtitle =>
+      'اطلب منتجاتك أونلاين واستلمها مباشرة من الفرع، بدون الحاجة لخدمة التوصيل.';
+
+  @override
+  String get branchAddressTitle => 'عنوان الفرع :';
+
+  @override
+  String get defaultBranchAddress => 'القاهرة الجديدة، مدينتي، حي الزهور';
 }

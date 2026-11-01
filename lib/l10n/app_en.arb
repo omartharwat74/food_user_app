@@ -690,5 +690,12 @@
   "guestLoginPrompt": "Login / Create Account",
   "guestGateTitle": "Login Required",
   "guestGateMessage": "Please log in to complete this action",
-  "guestGateLoginButton": "Login Now"
+  "guestGateLoginButton": "Login Now",
+  "productExtras": "Extras",
+  "productSizes": "Sizes",
+  "pickupBannerTitlePart1": "Order & Pick up ",
+  "pickupBannerTitlePart2": "Yourself",
+  "pickupBannerSubtitle": "Order your products online and pick them up directly from the branch, without the need for delivery service.",
+  "branchAddressTitle": "Branch address :",
+  "defaultBranchAddress": "New Cairo, Madinaty, Al Zuhour District"
 }

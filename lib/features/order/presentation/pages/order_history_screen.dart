@@ -217,6 +217,7 @@ class _OrderCard extends StatelessWidget {
       status: order.status,
       l10n: l10n,
       isDetailScreen: false,
+      isSelfPickup: order.selfPickup,
     );
 
     return GestureDetector(

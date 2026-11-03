@@ -644,6 +644,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderDeliveredShort => 'طلب مغلق';
 
   @override
+  String get orderPickupReadyBadge => 'طلبك جاهز للإستلام';
+
+  @override
+  String get orderPickupReadyTitle => 'تم تجهيز طلبك';
+
+  @override
+  String get orderPickupCompletedTitle => 'تم تسليم طلبك';
+
+  @override
   String get orderCancelled => 'طلب ملغي';
 
   @override

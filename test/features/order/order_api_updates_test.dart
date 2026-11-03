@@ -1,4 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/features/order/data/models/order_dto.dart';
 import 'package:food_user_app/features/order/domain/entities/order.dart';
 import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
@@ -157,6 +159,69 @@ void main() {
 
       expect(pendingUi.showRateAction && !pendingOrder.isReviewed, isFalse);
       expect(courierUi.showRateAction && !courierOnWayOrder.isReviewed, isFalse);
+    });
+  });
+
+  group('Self Pickup Status Mapping Tests', () {
+    final l10n = AppLocalizationsAr();
+
+    test('maps ready status for self pickup: badge "طلبك جاهز للإستلام", title "تم تجهيز طلبك", green color, pickup ready icon', () {
+      final uiModel = OrderStatusUiModel.fromStatus(
+        status: 'ready',
+        l10n: l10n,
+        isSelfPickup: true,
+      );
+
+      expect(uiModel.normalizedStatus, OrderNormalizedStatus.readyForPickup);
+      expect(uiModel.shortStatusLabel, 'طلبك جاهز للإستلام');
+      expect(uiModel.statusLabel, 'تم تجهيز طلبك');
+      expect(uiModel.statusColor, AppColors.success);
+      expect(uiModel.statusIconAsset, AppAssets.orderPickupReadyIcon);
+      expect(uiModel.showCourierSection, isFalse);
+    });
+
+    test('maps ready_for_pickup status for self pickup as readyForPickup', () {
+      final uiModel = OrderStatusUiModel.fromStatus(
+        status: 'ready_for_pickup',
+        l10n: l10n,
+        isSelfPickup: true,
+      );
+
+      expect(uiModel.normalizedStatus, OrderNormalizedStatus.readyForPickup);
+      expect(uiModel.shortStatusLabel, 'طلبك جاهز للإستلام');
+      expect(uiModel.statusLabel, 'تم تجهيز طلبك');
+      expect(uiModel.statusColor, AppColors.success);
+      expect(uiModel.statusIconAsset, AppAssets.orderPickupReadyIcon);
+    });
+
+    test('maps completed/delivered status for self pickup: badge "طلب مغلق", title "تم تسليم طلبك", closed color, pickup completed icon', () {
+      final uiModelCompleted = OrderStatusUiModel.fromStatus(
+        status: 'completed',
+        l10n: l10n,
+        isSelfPickup: true,
+      );
+
+      expect(uiModelCompleted.normalizedStatus, OrderNormalizedStatus.delivered);
+      expect(uiModelCompleted.shortStatusLabel, 'طلب مغلق');
+      expect(uiModelCompleted.statusLabel, 'تم تسليم طلبك');
+      expect(uiModelCompleted.statusColor, AppColors.statusClosed);
+      expect(uiModelCompleted.statusIconAsset, AppAssets.orderPickupCompletedIcon);
+      expect(uiModelCompleted.showCourierSection, isFalse);
+      expect(uiModelCompleted.showRateAction, isTrue);
+
+      final uiModelDelivered = OrderStatusUiModel.fromStatus(
+        status: 'delivered',
+        l10n: l10n,
+        isSelfPickup: true,
+      );
+
+      expect(uiModelDelivered.normalizedStatus, OrderNormalizedStatus.delivered);
+      expect(uiModelDelivered.shortStatusLabel, 'طلب مغلق');
+      expect(uiModelDelivered.statusLabel, 'تم تسليم طلبك');
+      expect(uiModelDelivered.statusColor, AppColors.statusClosed);
+      expect(uiModelDelivered.statusIconAsset, AppAssets.orderPickupCompletedIcon);
+      expect(uiModelDelivered.showCourierSection, isFalse);
+      expect(uiModelDelivered.showRateAction, isTrue);
     });
   });
 }

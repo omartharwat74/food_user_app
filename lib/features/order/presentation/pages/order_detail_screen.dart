@@ -31,6 +31,7 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 enum OrderDetailsStatus {
   waitingAcceptance,
   preparing,
+  readyForPickup,
   courierOnWay,
   delivered,
   cancelled,
@@ -232,20 +233,23 @@ class _OrderDetailsScreenContentState
                       );
                     }
 
+                    final isSelfPickup = order?.selfPickup == true;
                     final uiModel = order != null
                         ? OrderStatusUiModel.fromStatus(
                             status: order.status,
                             l10n: l10n,
                             isDetailScreen: true,
+                            isSelfPickup: isSelfPickup,
                           )
                         : _OrderDetailsConfig.fromStatus(
                             widget.fallbackStatus,
                             l10n,
                           );
 
-                    final showCourier = order != null
-                        ? (order.delivery != null)
-                        : uiModel.showCourierSection;
+                    final showCourier = !isSelfPickup &&
+                        (order != null
+                            ? (order.delivery != null)
+                            : uiModel.showCourierSection);
 
                     return Column(
                       children: [
@@ -338,17 +342,6 @@ class _OrderDetailsScreenContentState
                                       l10n: l10n,
                                     ),
                                   ],
-                                  if (uiModel.showRateAction &&
-                                      order != null &&
-                                      !order.isReviewed &&
-                                      !_hasRated) ...[
-                                    const SizedBox(height: 24),
-                                    _PrimaryFilledButton(
-                                      label: l10n.rateOrder,
-                                      onTap: () =>
-                                          _showRatingSheet(context, order),
-                                    ),
-                                  ],
                                 ],
                               ),
                             ),
@@ -361,6 +354,15 @@ class _OrderDetailsScreenContentState
                                 OrderDetailScreenStatus.cancelling,
                             onTap: () =>
                                 _showCancelOrderDialog(context, order),
+                          ),
+                        if (uiModel.showRateAction &&
+                            order != null &&
+                            !order.isReviewed &&
+                            !_hasRated)
+                          _BottomRateBar(
+                            label: l10n.rateOrder,
+                            onTap: () =>
+                                _showRatingSheet(context, order),
                           ),
                       ],
                     );
@@ -579,33 +581,45 @@ class _OrderDetailsScreenContentState
 class _OrderDetailsConfig {
   static OrderStatusUiModel fromStatus(
     OrderDetailsStatus status,
-    AppLocalizations l10n,
-  ) {
+    AppLocalizations l10n, {
+    bool isSelfPickup = false,
+  }) {
     return switch (status) {
       OrderDetailsStatus.waitingAcceptance => OrderStatusUiModel.fromStatus(
           status: 'pending',
           l10n: l10n,
           isDetailScreen: true,
+          isSelfPickup: isSelfPickup,
         ),
       OrderDetailsStatus.preparing => OrderStatusUiModel.fromStatus(
           status: 'confirmed',
           l10n: l10n,
           isDetailScreen: true,
+          isSelfPickup: isSelfPickup,
+        ),
+      OrderDetailsStatus.readyForPickup => OrderStatusUiModel.fromStatus(
+          status: 'ready',
+          l10n: l10n,
+          isDetailScreen: true,
+          isSelfPickup: true,
         ),
       OrderDetailsStatus.courierOnWay => OrderStatusUiModel.fromStatus(
           status: 'assigned',
           l10n: l10n,
           isDetailScreen: true,
+          isSelfPickup: isSelfPickup,
         ),
       OrderDetailsStatus.delivered => OrderStatusUiModel.fromStatus(
           status: 'delivered',
           l10n: l10n,
           isDetailScreen: true,
+          isSelfPickup: isSelfPickup,
         ),
       OrderDetailsStatus.cancelled => OrderStatusUiModel.fromStatus(
           status: 'cancelled',
           l10n: l10n,
           isDetailScreen: true,
+          isSelfPickup: isSelfPickup,
         ),
     };
   }
@@ -1684,6 +1698,39 @@ class _BottomCancelBar extends StatelessWidget {
   }
 }
 
+class _BottomRateBar extends StatelessWidget {
+  const _BottomRateBar({
+    required this.label,
+    required this.onTap,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomSafe = MediaQuery.of(context).padding.bottom;
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsetsDirectional.fromSTEB(16, 16, 16, bottomSafe + 20),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard(context),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withValues(alpha: 0.08),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: _PrimaryFilledButton(
+        label: label,
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
 class _PrimaryFilledButton extends StatelessWidget {
   const _PrimaryFilledButton({
     required this.label,
@@ -1769,7 +1816,8 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
   Future<void> _submitRating() async {
     final l10n = AppLocalizations.of(context)!;
     final order = widget.order;
-    final hasCourier = order?.delivery != null;
+    final isSelfPickup = order?.selfPickup == true;
+    final hasCourier = !isSelfPickup && order?.delivery != null;
 
     if (_restaurantRating == 0) {
       showTopSnackBar(context, l10n.rateStoreRequired, isError: true);
@@ -1786,7 +1834,7 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
 
     final storeId =
         order?.store?.id ?? int.tryParse(order?.branchId ?? '') ?? 1;
-    final deliveryId = order?.delivery?.id;
+    final deliveryId = hasCourier ? order?.delivery?.id : null;
 
     final orderId = order?.id ?? 0;
 
@@ -1827,7 +1875,8 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
     final bottomSafe = MediaQuery.paddingOf(context).bottom;
     final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
     final order = widget.order;
-    final hasCourier = order?.delivery != null;
+    final isSelfPickup = order?.selfPickup == true;
+    final hasCourier = !isSelfPickup && order?.delivery != null;
 
     final storeName = (order?.store?.name.isNotEmpty == true)
         ? order!.store!.name
@@ -1916,7 +1965,7 @@ class _OrderRatingSheetState extends State<_OrderRatingSheet> {
                 16,
                 16,
                 16,
-                16 + bottomSafe,
+                bottomSafe + 20,
               ),
               decoration: BoxDecoration(
                 color: AppColors.surfaceCard(context),

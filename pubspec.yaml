@@ -140,6 +140,8 @@ flutter:
     - assets/images/icons/products/3.0x/
     - assets/images/orders/
     - assets/images/icons/orders/
+    - assets/images/icons/orders/2.0x/
+    - assets/images/icons/orders/3.0x/
     - assets/images/favorites/
     - assets/images/icons/favorites/
     - assets/images/restaurant/

@@ -1334,6 +1334,24 @@ abstract class AppLocalizations {
   /// **'Closed order'**
   String get orderDeliveredShort;
 
+  /// No description provided for @orderPickupReadyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is ready for pickup'**
+  String get orderPickupReadyBadge;
+
+  /// No description provided for @orderPickupReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been prepared'**
+  String get orderPickupReadyTitle;
+
+  /// No description provided for @orderPickupCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been delivered'**
+  String get orderPickupCompletedTitle;
+
   /// No description provided for @orderCancelled.
   ///
   /// In en, this message translates to:

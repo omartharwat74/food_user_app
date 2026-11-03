@@ -7,22 +7,31 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 enum OrderNormalizedStatus {
   waitingAcceptance,
   preparing,
+  readyForPickup,
   courierOnWay,
   delivered,
   cancelled,
 }
 
-OrderNormalizedStatus normalizeOrderStatus(String? status) {
+OrderNormalizedStatus normalizeOrderStatus(String? status, {bool isSelfPickup = false}) {
   switch (status?.toLowerCase()) {
     case 'pending':
       return OrderNormalizedStatus.waitingAcceptance;
     case 'confirmed':
-    case 'ready_for_pickup':
+    case 'preparing':
       return OrderNormalizedStatus.preparing;
+    case 'ready':
+    case 'ready_for_pickup':
+      return isSelfPickup
+          ? OrderNormalizedStatus.readyForPickup
+          : OrderNormalizedStatus.preparing;
     case 'assigned':
     case 'on_the_way':
-      return OrderNormalizedStatus.courierOnWay;
+      return isSelfPickup
+          ? OrderNormalizedStatus.readyForPickup
+          : OrderNormalizedStatus.courierOnWay;
     case 'delivered':
+    case 'completed':
       return OrderNormalizedStatus.delivered;
     case 'cancelled':
     case 'rejected':
@@ -37,6 +46,8 @@ OrderDetailsStatus toOrderDetailsStatus(OrderNormalizedStatus normalized) {
       return OrderDetailsStatus.waitingAcceptance;
     case OrderNormalizedStatus.preparing:
       return OrderDetailsStatus.preparing;
+    case OrderNormalizedStatus.readyForPickup:
+      return OrderDetailsStatus.readyForPickup;
     case OrderNormalizedStatus.courierOnWay:
       return OrderDetailsStatus.courierOnWay;
     case OrderNormalizedStatus.delivered:
@@ -83,8 +94,9 @@ class OrderStatusUiModel {
     required String? status,
     required AppLocalizations l10n,
     bool isDetailScreen = false,
+    bool isSelfPickup = false,
   }) {
-    final normalized = normalizeOrderStatus(status);
+    final normalized = normalizeOrderStatus(status, isSelfPickup: isSelfPickup);
 
     switch (normalized) {
       case OrderNormalizedStatus.waitingAcceptance:
@@ -96,7 +108,7 @@ class OrderStatusUiModel {
           statusColor: AppColors.statusWarning,
           statusIconAsset: AppAssets.orderReceiptRollIcon,
           progressStep: 0,
-          showEta: true,
+          showEta: !isSelfPickup,
           isClosed: false,
           cancelled: false,
           showCourierSection: false,
@@ -116,7 +128,25 @@ class OrderStatusUiModel {
           statusColor: isDetailScreen ? AppColors.success : AppColors.primary,
           statusIconAsset: AppAssets.orderAcceptedIcon,
           progressStep: 1,
-          showEta: true,
+          showEta: !isSelfPickup,
+          isClosed: false,
+          cancelled: false,
+          showCourierSection: false,
+          showCancelAction: false,
+          showCancellationReason: false,
+          showRateAction: false,
+        );
+
+      case OrderNormalizedStatus.readyForPickup:
+        return OrderStatusUiModel(
+          normalizedStatus: normalized,
+          shortStatusLabel: l10n.orderPickupReadyBadge,
+          statusLabel: l10n.orderPickupReadyTitle,
+          badgeLabel: l10n.orderPickupReadyBadge,
+          statusColor: AppColors.success,
+          statusIconAsset: AppAssets.orderPickupReadyIcon,
+          progressStep: 2,
+          showEta: false,
           isClosed: false,
           cancelled: false,
           showCourierSection: false,
@@ -139,7 +169,7 @@ class OrderStatusUiModel {
           showEta: true,
           isClosed: false,
           cancelled: false,
-          showCourierSection: true,
+          showCourierSection: !isSelfPickup,
           showCancelAction: false,
           showCancellationReason: false,
           showRateAction: false,
@@ -149,15 +179,19 @@ class OrderStatusUiModel {
         return OrderStatusUiModel(
           normalizedStatus: normalized,
           shortStatusLabel: l10n.orderDeliveredShort,
-          statusLabel: l10n.orderDelivered,
+          statusLabel: isSelfPickup
+              ? l10n.orderPickupCompletedTitle
+              : l10n.orderDelivered,
           badgeLabel: l10n.orderDeliveredShort,
           statusColor: AppColors.statusClosed,
-          statusIconAsset: AppAssets.orderDeliveredStatus,
+          statusIconAsset: isSelfPickup
+              ? AppAssets.orderPickupCompletedIcon
+              : AppAssets.orderDeliveredStatus,
           progressStep: null,
           showEta: false,
           isClosed: true,
           cancelled: false,
-          showCourierSection: true,
+          showCourierSection: !isSelfPickup,
           showCancelAction: false,
           showCancellationReason: false,
           showRateAction: true,

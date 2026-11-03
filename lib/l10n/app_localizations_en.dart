@@ -651,6 +651,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderDeliveredShort => 'Closed order';
 
   @override
+  String get orderPickupReadyBadge => 'Your order is ready for pickup';
+
+  @override
+  String get orderPickupReadyTitle => 'Your order has been prepared';
+
+  @override
+  String get orderPickupCompletedTitle => 'Your order has been delivered';
+
+  @override
   String get orderCancelled => 'Order cancelled';
 
   @override

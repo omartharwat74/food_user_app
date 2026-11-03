@@ -2,7 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:food_user_app/core/constants/app_assets.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
@@ -11,6 +11,9 @@ import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_controller.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -41,6 +44,7 @@ void main() {
   );
 
   setUp(() {
+    StoreAddressCache.clear();
     mockCheckoutCubit = MockCheckoutCubit();
     mockCartCubit = MockCartCubit();
     mockAddressesController = MockSavedAddressesController();
@@ -174,6 +178,224 @@ void main() {
             couponCode: any(named: 'couponCode'),
             note: any(named: 'note'),
           )).called(1);
+    });
+
+    testWidgets('hides delivery fee row from order summary when self-pickup is active', (tester) async {
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: true),
+        ),
+      );
+      await tester.pump();
+
+      // Find and tap total to expand summary
+      final totalFinder = find.byIcon(Icons.keyboard_arrow_up);
+      expect(totalFinder, findsOneWidget);
+      await tester.tap(totalFinder);
+      await tester.pumpAndSettle();
+
+      // Verify 'ملخص الطلب :' appears
+      expect(find.text('ملخص الطلب :'), findsOneWidget);
+      // 'قيمة الطلب' appears
+      expect(find.text('قيمة الطلب'), findsOneWidget);
+      // 'التوصيل' should NOT appear
+      expect(find.text('التوصيل'), findsNothing);
+    });
+
+    testWidgets('shows delivery fee row from order summary when delivery is active', (tester) async {
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: false),
+        ),
+      );
+      await tester.pump();
+
+      // Find and tap total to expand summary
+      final totalFinder = find.byIcon(Icons.keyboard_arrow_up);
+      expect(totalFinder, findsOneWidget);
+      await tester.tap(totalFinder);
+      await tester.pumpAndSettle();
+
+      // 'التوصيل' should appear
+      expect(find.text('التوصيل'), findsOneWidget);
+    });
+
+    testWidgets('relies on cart.isSelfPickup from GET /cart even if widget.isSelfPickup is false', (tester) async {
+      const pickupCart = Cart(
+        id: 'cart-1',
+        restaurantId: 'rest-1',
+        restaurantName: 'عز الشام',
+        restaurantAddress: 'مدينتي، القاهرة الجديدة',
+        items: [],
+        subtotal: 100.0,
+        deliveryFee: 0.0,
+        tax: 14.0,
+        discount: 0.0,
+        total: 114.0,
+        isSelfPickup: true,
+      );
+
+      when(() => mockCartCubit.state).thenReturn(
+        const CartState.loaded(cart: pickupCart),
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: false),
+        ),
+      );
+      await tester.pump();
+
+      // Self-pickup banner should be visible because cart.isSelfPickup is true
+      expect(find.text('عنوان الفرع :'), findsOneWidget);
+      expect(find.text('تغيير العنوان'), findsNothing);
+    });
+
+    testWidgets('falls back to StoreDetailCubit.lastLoadedStore address when cart address is null', (tester) async {
+      const cartWithoutAddress = Cart(
+        id: 'cart-1',
+        restaurantId: 'rest-1',
+        restaurantName: 'عز الشام',
+        restaurantAddress: null,
+        items: [],
+        subtotal: 100.0,
+        deliveryFee: 0.0,
+        tax: 14.0,
+        discount: 0.0,
+        total: 114.0,
+        isSelfPickup: true,
+      );
+
+      when(() => mockCartCubit.state).thenReturn(
+        const CartState.loaded(cart: cartWithoutAddress),
+      );
+
+      // Set lastLoadedStore in StoreDetailCubit
+      StoreDetailCubit.lastLoadedStore = const Restaurant(
+        id: '1',
+        name: 'عز الشام',
+        cuisineType: 'وجبات سريعة',
+        coverImageUrl: '',
+        rating: 4.5,
+        deliveryTimeMin: 20,
+        deliveryTimeMax: 40,
+        deliveryFee: 15,
+        isFavorited: false,
+        address: 'شارع الثورة، مصر الجديدة',
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: true),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('شارع الثورة، مصر الجديدة'), findsOneWidget);
+
+      StoreDetailCubit.lastLoadedStore = null;
+    });
+
+    testWidgets('shows loading skeleton when address is not yet loaded and no cached address exists', (tester) async {
+      StoreDetailCubit.lastLoadedStore = null;
+      RestaurantDetailCubit.lastLoadedRestaurant = null;
+      StoreAddressCache.clear();
+
+      const cartWithoutAddress = Cart(
+        id: 'cart-1',
+        restaurantId: 'rest-1',
+        restaurantName: 'شاورما الريم',
+        restaurantAddress: null,
+        items: [],
+        subtotal: 100.0,
+        deliveryFee: 0.0,
+        tax: 14.0,
+        discount: 0.0,
+        total: 114.0,
+        isSelfPickup: true,
+      );
+
+      when(() => mockCartCubit.state).thenReturn(
+        const CartState.loaded(cart: cartWithoutAddress),
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: true),
+        ),
+      );
+      await tester.pump();
+
+      // Does NOT show fake default branch address
+      expect(find.text('القاهرة الجديدة، مدينتي، حي الزهور'), findsNothing);
+      expect(find.text('عنوان الفرع :'), findsOneWidget);
+    });
+
+    testWidgets('uses cached store address instantly when available in StoreAddressCache', (tester) async {
+      StoreDetailCubit.lastLoadedStore = null;
+      RestaurantDetailCubit.lastLoadedRestaurant = null;
+      StoreAddressCache.set('rest-1', 'مدينتي، القاهرة');
+
+      const cartWithoutAddress = Cart(
+        id: 'cart-1',
+        restaurantId: 'rest-1',
+        restaurantName: 'شاورما الريم',
+        restaurantAddress: null,
+        items: [],
+        subtotal: 100.0,
+        deliveryFee: 0.0,
+        tax: 14.0,
+        discount: 0.0,
+        total: 114.0,
+        isSelfPickup: true,
+      );
+
+      when(() => mockCartCubit.state).thenReturn(
+        const CartState.loaded(cart: cartWithoutAddress),
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: true),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('مدينتي، القاهرة'), findsOneWidget);
+    });
+
+    testWidgets('hides delivery fee row when deliveryFee is 0 even if isSelfPickup is false', (tester) async {
+      const freeDeliveryCart = Cart(
+        id: 'cart-1',
+        restaurantId: 'rest-1',
+        restaurantName: 'عز الشام',
+        items: [],
+        subtotal: 100.0,
+        deliveryFee: 0.0, // 0 delivery fee
+        tax: 14.0,
+        discount: 0.0,
+        total: 114.0,
+        isSelfPickup: false,
+      );
+
+      when(() => mockCartCubit.state).thenReturn(
+        const CartState.loaded(cart: freeDeliveryCart),
+      );
+
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const CheckoutScreen(isSelfPickup: false),
+        ),
+      );
+      await tester.pump();
+
+      // Tap total to expand summary
+      final totalFinder = find.byIcon(Icons.keyboard_arrow_up);
+      await tester.tap(totalFinder);
+      await tester.pumpAndSettle();
+
+      // 'التوصيل' should NOT appear because deliveryFee == 0
+      expect(find.text('التوصيل'), findsNothing);
     });
   });
 }

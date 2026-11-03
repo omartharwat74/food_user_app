@@ -50,6 +50,7 @@ class CartCubit extends Cubit<CartState> {
     required int quantity,
     required List<int> optionValueIds,
     String? note,
+    bool? isPickupIntent,
   }) async {
     final currentCart = state.maybeWhen(
       loaded: (cart, promo, _) => cart,
@@ -61,6 +62,10 @@ class CartCubit extends Cubit<CartState> {
       error: (cart, promo, message) => promo,
       orElse: () => null,
     );
+
+    final bool effectiveSelfPickup = currentCart.items.isNotEmpty
+        ? currentCart.isSelfPickup
+        : (isPickupIntent ?? false);
 
     final resolvedProductId = int.tryParse(productId);
     emit(
@@ -77,6 +82,7 @@ class CartCubit extends Cubit<CartState> {
         quantity: quantity,
         optionValueIds: optionValueIds,
         note: note,
+        selfPickup: effectiveSelfPickup,
       ),
     );
 
@@ -128,6 +134,7 @@ class CartCubit extends Cubit<CartState> {
     required int quantity,
     List<Map<String, dynamic>>? selectedModifiers,
     String? notes,
+    bool? isPickupIntent,
   }) async {
     final currentCart = state.maybeWhen(
       loaded: (cart, promo, _) => cart,
@@ -173,6 +180,8 @@ class CartCubit extends Cubit<CartState> {
           productId: menuItemId,
           quantity: quantity,
           optionValueIds: optionValueIds,
+          note: notes,
+          isPickupIntent: isPickupIntent,
         );
       },
     );
@@ -366,6 +375,7 @@ class CartCubit extends Cubit<CartState> {
             cart: cart.copyWith(
               deliveryFee: newDeliveryFee,
               total: newTotal > 0 ? newTotal : 0.0,
+              isSelfPickup: selfPickup,
             ),
             appliedPromo: promo,
             updatingProductId: updatingId,

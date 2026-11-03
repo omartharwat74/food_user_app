@@ -75,13 +75,13 @@ class CartSummary extends StatelessWidget {
             label: l10n.orderSubtotal,
             value: l10n.cartPrice((subtotal).toFormattedPrice()),
           ),
-          const SizedBox(height: 12),
-          _SummaryRow(
-            label: l10n.orderDeliveryFee,
-            value: isSelfPickup
-                ? l10n.cartPrice((0.0).toFormattedPrice())
-                : l10n.cartPrice((delivery).toFormattedPrice()),
-          ),
+          if (!isSelfPickup && delivery > 0) ...[
+            const SizedBox(height: 12),
+            _SummaryRow(
+              label: l10n.orderDeliveryFee,
+              value: l10n.cartPrice((delivery).toFormattedPrice()),
+            ),
+          ],
           const SizedBox(height: 12),
           _SummaryRow(
             label: AppLocalizations.of(context)!.tax,

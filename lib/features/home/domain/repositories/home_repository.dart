@@ -16,7 +16,7 @@ abstract class HomeRepository {
   /// `GET /api/v1/tags?section_id={id}`
   Future<Either<Failure, List<Tag>>> getTags({int? sectionId});
 
-  /// `GET /api/v1/stores` with optional search/tag filters and pagination.
+  /// `GET /api/v1/stores` or `GET /api/v1/stores/self-pickup` with optional search/tag filters and pagination.
   Future<Either<Failure, StoreListResult>> getStores({
     int? sectionId,
     String? search,
@@ -26,6 +26,7 @@ abstract class HomeRepository {
     int? fastPrep,
     int? topRated,
     int? hasOffers,
+    bool isSelfPickup = false,
   });
 
   /// `GET /api/v1/stores/major` — featured stores for a section.

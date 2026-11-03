@@ -58,6 +58,7 @@ class HomeRepositoryImpl implements HomeRepository {
     int? fastPrep,
     int? topRated,
     int? hasOffers,
+    bool isSelfPickup = false,
   }) async {
     try {
       final result = await remoteDataSource.getStores(
@@ -69,6 +70,7 @@ class HomeRepositoryImpl implements HomeRepository {
         fastPrep: fastPrep,
         topRated: topRated,
         hasOffers: hasOffers,
+        isSelfPickup: isSelfPickup,
       );
       return Right(result);
     } catch (e) {

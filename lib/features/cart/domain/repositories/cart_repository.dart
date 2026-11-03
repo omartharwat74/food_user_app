@@ -13,6 +13,7 @@ abstract class CartRepository {
     required int quantity,
     required List<int> optionValueIds,
     String? note,
+    bool selfPickup = false,
   });
   Future<Either<Failure, Cart>> updateCartItem({
     required String itemId,

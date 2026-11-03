@@ -53,6 +53,7 @@ class GetStoresParams extends Equatable {
   final int? fastPrep;
   final int? topRated;
   final int? hasOffers;
+  final bool isSelfPickup;
 
   const GetStoresParams({
     this.sectionId,
@@ -63,6 +64,7 @@ class GetStoresParams extends Equatable {
     this.fastPrep,
     this.topRated,
     this.hasOffers,
+    this.isSelfPickup = false,
   });
 
   @override
@@ -75,10 +77,11 @@ class GetStoresParams extends Equatable {
     fastPrep,
     topRated,
     hasOffers,
+    isSelfPickup,
   ];
 }
 
-/// `GET /api/v1/stores`
+/// `GET /api/v1/stores` or `GET /api/v1/stores/self-pickup`
 class GetStoresUseCase extends UseCase<StoreListResult, GetStoresParams> {
   GetStoresUseCase(this._repository);
   final HomeRepository _repository;
@@ -94,6 +97,7 @@ class GetStoresUseCase extends UseCase<StoreListResult, GetStoresParams> {
       fastPrep: params.fastPrep,
       topRated: params.topRated,
       hasOffers: params.hasOffers,
+      isSelfPickup: params.isSelfPickup,
     );
   }
 }

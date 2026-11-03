@@ -15,12 +15,14 @@ class ProductCard extends StatelessWidget {
   final MenuItem item;
   final bool isGridMode;
   final String? storeId;
+  final bool isPickupIntent;
 
   const ProductCard({
     super.key,
     required this.item,
     this.isGridMode = false,
     this.storeId,
+    this.isPickupIntent = false,
   });
 
   @override
@@ -39,6 +41,7 @@ class ProductCard extends StatelessWidget {
           child: ProductDetailsScreen(
             item: item,
             storeId: item.storeId ?? storeId,
+            isPickupIntent: isPickupIntent,
           ),
         ),
       ),

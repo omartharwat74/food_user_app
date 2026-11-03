@@ -16,7 +16,6 @@ class PlaceOrderRequest {
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{
       'payment_method': paymentMethod,
-      'self_pickup': selfPickup,
     };
     if (addressId != null) {
       map['address_id'] = addressId;

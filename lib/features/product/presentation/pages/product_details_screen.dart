@@ -26,11 +26,13 @@ class ProductDetailsScreen extends StatefulWidget {
   const ProductDetailsScreen({
     required this.item,
     this.storeId,
+    this.isPickupIntent = false,
     super.key,
   });
 
   final MenuItem item;
   final String? storeId;
+  final bool isPickupIntent;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -315,6 +317,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   quantity: _quantity,
                   optionValueIds: modifierIdsList,
                   note: _notes.trim().isNotEmpty ? _notes.trim() : null,
+                  isPickupIntent: widget.isPickupIntent,
                 );
               },
             ),

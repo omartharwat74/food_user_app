@@ -23,7 +23,7 @@ abstract class HomeRemoteDataSource {
   /// `GET /api/v1/tags?section_id={sectionId}` — tags for a section.
   Future<List<TagModel>> getTags({int? sectionId});
 
-  /// `GET /api/v1/stores` — paginated store list with optional filters.
+  /// `GET /api/v1/stores` or `GET /api/v1/stores/self-pickup`
   Future<StoreListResultModel> getStores({
     int? sectionId,
     String? search,
@@ -33,6 +33,7 @@ abstract class HomeRemoteDataSource {
     int? fastPrep,
     int? topRated,
     int? hasOffers,
+    bool isSelfPickup = false,
   });
 
   /// `GET /api/v1/stores/major` — major/featured stores for a section.
@@ -145,12 +146,15 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     int? fastPrep,
     int? topRated,
     int? hasOffers,
+    bool isSelfPickup = false,
   }) async {
     try {
+      final effectiveSectionId =
+          (isSelfPickup && sectionId == 4) ? null : sectionId;
       final Map<String, dynamic> params = {
-        'section_id': ?sectionId,
         'page': page,
         'per_page': perPage,
+        'section_id': ?effectiveSectionId,
         if (search != null && search.isNotEmpty) 'search': search,
         'fast_prep': ?fastPrep,
         'top_rated': ?topRated,
@@ -160,8 +164,11 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
       if (tagIds != null && tagIds.isNotEmpty) {
         params['tag_ids[]'] = tagIds;
       }
+      final endpoint = isSelfPickup
+          ? ApiEndpoints.selfPickupStores
+          : ApiEndpoints.stores;
       final response = await _dio.get<dynamic>(
-        ApiEndpoints.stores,
+        endpoint,
         queryParameters: params,
       );
       final data = _extractData(response);

@@ -144,6 +144,7 @@ class OrderStoreDto {
   final int id;
   final String name;
   final String? logo;
+  final String? address;
   final String? availability;
   final bool unavailable;
   final String? unavailableReason;
@@ -153,6 +154,7 @@ class OrderStoreDto {
     required this.id,
     required this.name,
     this.logo,
+    this.address,
     this.availability,
     this.unavailable = false,
     this.unavailableReason,
@@ -164,6 +166,7 @@ class OrderStoreDto {
       id: _parseInt(json['id']),
       name: json['name']?.toString() ?? '',
       logo: json['logo']?.toString(),
+      address: json['address']?.toString() ?? json['branch_address']?.toString(),
       availability: json['availability']?.toString(),
       unavailable: _parseBool(json['unavailable']),
       unavailableReason: json['unavailable_reason']?.toString(),
@@ -175,6 +178,7 @@ class OrderStoreDto {
     id: id,
     name: name,
     logo: logo,
+    address: address,
     availability: availability,
     unavailable: unavailable,
     unavailableReason: unavailableReason,

@@ -9,6 +9,7 @@ class RestaurantDetailArgs {
     required this.coverAsset,
     this.deliveryFee,
     this.initialFavorite = false,
+    this.isPickupIntent = false,
   });
 
   final String id;
@@ -20,4 +21,5 @@ class RestaurantDetailArgs {
   final String coverAsset;
   final String? deliveryFee;
   final bool initialFavorite;
+  final bool isPickupIntent;
 }

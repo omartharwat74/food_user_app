@@ -29,6 +29,7 @@ CartSummaryDetailsDto _$CartSummaryDetailsDtoFromJson(
   delivery: json['delivery'] as num?,
   tax: json['tax'] as num?,
   total: json['total'] as num?,
+  selfPickup: const IntBoolConverter().fromJson(json['self_pickup']),
 );
 
 Map<String, dynamic> _$CartSummaryDetailsDtoToJson(
@@ -40,6 +41,7 @@ Map<String, dynamic> _$CartSummaryDetailsDtoToJson(
   'delivery': instance.delivery,
   'tax': instance.tax,
   'total': instance.total,
+  'self_pickup': const IntBoolConverter().toJson(instance.selfPickup ?? false),
 };
 
 CartSummaryDto _$CartSummaryDtoFromJson(Map<String, dynamic> json) =>
@@ -53,6 +55,7 @@ CartSummaryDto _$CartSummaryDtoFromJson(Map<String, dynamic> json) =>
               json['summary'] as Map<String, dynamic>,
             ),
       couponCode: json['coupon_code'] as String?,
+      selfPickup: const IntBoolConverter().fromJson(json['self_pickup']),
       items:
           (json['items'] as List<dynamic>?)
               ?.map((e) => CartItemDto.fromJson(e as Map<String, dynamic>))
@@ -70,6 +73,7 @@ Map<String, dynamic> _$CartSummaryDtoToJson(CartSummaryDto instance) =>
       'store_id': instance.storeId,
       'summary': instance.summary,
       'coupon_code': instance.couponCode,
+      'self_pickup': const IntBoolConverter().toJson(instance.selfPickup ?? false),
       'items': instance.items,
       'store': instance.store,
     };

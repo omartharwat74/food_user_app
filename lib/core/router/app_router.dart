@@ -176,12 +176,19 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.restaurantDetail,
-        builder: (c, s) => RestaurantDetailScreen(
-          restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
-          restaurant: s.extra is RestaurantDetailArgs
-              ? s.extra as RestaurantDetailArgs
-              : null,
-        ),
+        builder: (c, s) {
+          final isPickup = s.uri.queryParameters['is_pickup'] == 'true' ||
+              (s.extra is RestaurantDetailArgs &&
+                  (s.extra as RestaurantDetailArgs).isPickupIntent) ||
+              (s.extra is Map && (s.extra as Map)['isPickupIntent'] == true);
+          return RestaurantDetailScreen(
+            restaurantId: s.pathParameters['id'] ?? 'az-al-sham',
+            restaurant: s.extra is RestaurantDetailArgs
+                ? s.extra as RestaurantDetailArgs
+                : null,
+            isPickupIntent: isPickup,
+          );
+        },
       ),
 
       GoRoute(
@@ -245,6 +252,8 @@ class AppRouter {
         path: RouteNames.productDetails,
         builder: (c, s) {
           String? storeId = s.uri.queryParameters['store_id'];
+          final isPickup = s.uri.queryParameters['is_pickup'] == 'true' ||
+              (s.extra is Map && (s.extra as Map)['isPickupIntent'] == true);
           MenuItem item;
           if (s.extra is MenuItem) {
             item = s.extra as MenuItem;
@@ -268,7 +277,11 @@ class AppRouter {
           return BlocProvider<ProductDetailCubit>(
             create: (context) =>
                 sl<ProductDetailCubit>()..fetchProductDetails(item.id),
-            child: ProductDetailsScreen(item: item, storeId: storeId),
+            child: ProductDetailsScreen(
+              item: item,
+              storeId: storeId,
+              isPickupIntent: isPickup,
+            ),
           );
         },
       ),
@@ -280,6 +293,7 @@ class AppRouter {
           bool isSelfPickup = false;
           String? restaurantName;
           String? restaurantAddress;
+          String? storeId;
           if (s.extra is String) {
             couponCode = s.extra as String;
           } else if (s.extra is Map) {
@@ -289,6 +303,7 @@ class AppRouter {
             isSelfPickup = map['isSelfPickup'] as bool? ?? false;
             restaurantName = map['restaurantName'] as String?;
             restaurantAddress = map['restaurantAddress'] as String?;
+            storeId = map['storeId']?.toString();
           }
           return CheckoutScreen(
             couponCode: couponCode,
@@ -296,6 +311,7 @@ class AppRouter {
             isSelfPickup: isSelfPickup,
             restaurantName: restaurantName,
             restaurantAddress: restaurantAddress,
+            storeId: storeId,
           );
         },
       ),

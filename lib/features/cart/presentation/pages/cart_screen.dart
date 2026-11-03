@@ -6,6 +6,7 @@ import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/router/route_names.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'package:food_user_app/core/widgets/keyboard_dismiss_on_tap.dart';
 import 'package:food_user_app/core/widgets/top_snackbar.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/features/profile/presentation/controllers/saved_addresses_scope.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key, this.isActive = true});
@@ -69,6 +72,11 @@ class _CartScreenState extends State<CartScreen> {
           child: BlocListener<CartCubit, CartState>(
             listener: (context, state) {
               state.maybeWhen(
+                loaded: (cart, promo, _) {
+                  if (_isSelfPickup != cart.isSelfPickup) {
+                    setState(() => _isSelfPickup = cart.isSelfPickup);
+                  }
+                },
                 error: (cart, promo, message) {
                   showTopSnackBar(context, message, isError: true);
                 },
@@ -177,7 +185,7 @@ class _CartScreenState extends State<CartScreen> {
                           discount: discount,
                           total: total,
                           isUpdating: isUpdating,
-                          isSelfPickup: _isSelfPickup,
+                          isSelfPickup: cart.isSelfPickup || _isSelfPickup,
                           appliedPromoCode: state.maybeWhen(
                             loaded: (_, promo, _) => promo?.code,
                             orElse: () => null,
@@ -273,14 +281,29 @@ class _CartScreenState extends State<CartScreen> {
       orElse: () => null,
     );
     final note = _notesController.text.trim();
+    final storeId = cart?.store?.id?.toString() ??
+        cart?.restaurantId ??
+        RestaurantDetailCubit.lastLoadedRestaurant?.id ??
+        StoreDetailCubit.lastLoadedStore?.id;
     final completed = await context.push<bool>(
       RouteNames.checkout,
       extra: {
         'couponCode': couponCode,
         'note': note.isNotEmpty ? note : null,
-        'isSelfPickup': _isSelfPickup,
-        'restaurantName': cart?.restaurantName,
-        'restaurantAddress': cart?.restaurantAddress,
+        'isSelfPickup': cart?.isSelfPickup == true || _isSelfPickup,
+        'restaurantName': cart?.store?.name ?? cart?.restaurantName,
+        'restaurantAddress': (cart?.store?.address?.trim().isNotEmpty == true)
+            ? cart!.store!.address!.trim()
+            : (cart?.restaurantAddress?.trim().isNotEmpty == true)
+                ? cart!.restaurantAddress!.trim()
+                : (StoreAddressCache.get(storeId)?.isNotEmpty == true)
+                    ? StoreAddressCache.get(storeId)!
+                    : (RestaurantDetailCubit.lastLoadedRestaurant?.address.trim().isNotEmpty == true)
+                        ? RestaurantDetailCubit.lastLoadedRestaurant!.address.trim()
+                        : (StoreDetailCubit.lastLoadedStore?.address.trim().isNotEmpty == true)
+                            ? StoreDetailCubit.lastLoadedStore!.address.trim()
+                            : null,
+        'storeId': storeId,
       },
     );
     if (!mounted || completed != true) return;

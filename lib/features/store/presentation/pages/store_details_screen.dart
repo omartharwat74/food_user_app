@@ -22,8 +22,13 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 
 class StoreDetailsScreen extends StatelessWidget {
   final String storeId;
+  final bool isPickupIntent;
 
-  const StoreDetailsScreen({super.key, required this.storeId});
+  const StoreDetailsScreen({
+    super.key,
+    required this.storeId,
+    this.isPickupIntent = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -332,7 +337,10 @@ class StoreDetailsScreen extends StatelessWidget {
               width:
                   125, // Adjusted to match Figma visual proportions (cards are smaller)
               margin: const EdgeInsets.only(right: 12),
-              child: ProductCard(item: featuredProducts[index]),
+              child: ProductCard(
+                item: featuredProducts[index],
+                isPickupIntent: isPickupIntent,
+              ),
             );
           },
         ),

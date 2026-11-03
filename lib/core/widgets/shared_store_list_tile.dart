@@ -11,9 +11,14 @@ import 'package:food_user_app/features/service_listing/presentation/models/servi
 import 'package:food_user_app/features/restaurant/presentation/models/restaurant_detail_args.dart';
 
 class SharedStoreListTile extends StatelessWidget {
-  const SharedStoreListTile({required this.item, super.key});
+  const SharedStoreListTile({
+    required this.item,
+    this.isPickupIntent = false,
+    super.key,
+  });
 
   final ServicePlaceData item;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
@@ -38,12 +43,13 @@ class SharedStoreListTile extends StatelessWidget {
               debugPrint(
                 '🛠️ Tapped Store: ${item.name} | isMajor: ${item.isMajor}',
               );
+              final pickupParam = isPickupIntent ? '?is_pickup=true' : '';
               if (item.isMajor == true) {
-                context.push(RouteNames.marketDetailsFor(storeId.toString()));
+                context.push('${RouteNames.marketDetailsFor(storeId.toString())}$pickupParam');
               } else {
                 context.push(
-                  RouteNames.restaurantDetailFor(storeId.toString()),
-                  extra: _toRestaurantDetailArgs(item),
+                  '${RouteNames.restaurantDetailFor(storeId.toString())}$pickupParam',
+                  extra: _toRestaurantDetailArgs(item, isPickupIntent: isPickupIntent),
                 );
               }
             },
@@ -173,7 +179,10 @@ class SharedStoreListTile extends StatelessWidget {
     return normalized.isEmpty ? 'service-place' : normalized;
   }
 
-  RestaurantDetailArgs _toRestaurantDetailArgs(ServicePlaceData item) {
+  RestaurantDetailArgs _toRestaurantDetailArgs(
+    ServicePlaceData item, {
+    bool isPickupIntent = false,
+  }) {
     return RestaurantDetailArgs(
       id: item.id ?? _detailId(item.name),
       name: item.name,
@@ -182,6 +191,7 @@ class SharedStoreListTile extends StatelessWidget {
       rating: double.tryParse(item.rating) ?? 4.5,
       logoAsset: item.imageAsset,
       coverAsset: item.imageAsset,
+      isPickupIntent: isPickupIntent,
     );
   }
 }

@@ -2,13 +2,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/branch.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_category.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/offer.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/restaurant_repository.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:food_user_app/core/errors/failures.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'restaurant_detail_state.dart';
 
 class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
+  static Restaurant? lastLoadedRestaurant;
+
   final RestaurantRepository restaurantRepository;
   final MenuRepository menuRepository;
 
@@ -38,6 +42,9 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
         final branches = branchesResult.fold((_) => <Branch>[], (list) => list);
         final offers = offersResult.fold((_) => <Offer>[], (list) => list);
 
+        lastLoadedRestaurant = restaurant;
+        StoreAddressCache.set(restaurant.id, restaurant.address);
+        StoreAddressCache.set(id, restaurant.address);
         emit(
           RestaurantDetailState.loaded(
             restaurant: restaurant,
@@ -67,6 +74,9 @@ class RestaurantDetailCubit extends Cubit<RestaurantDetailState> {
     storeResult.fold(
       (failure) => emit(RestaurantDetailState.error(failure.message)),
       (restaurant) {
+        lastLoadedRestaurant = restaurant;
+        StoreAddressCache.set(restaurant.id, restaurant.address);
+        StoreAddressCache.set(storeId, restaurant.address);
         final menuCategories = menuResult.fold(
           (_) => <MenuCategory>[],
           (cats) => cats as List<MenuCategory>,

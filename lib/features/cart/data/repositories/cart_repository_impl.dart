@@ -43,6 +43,7 @@ class CartRepositoryImpl implements CartRepository {
     required int quantity,
     required List<int> optionValueIds,
     String? note,
+    bool selfPickup = false,
   }) async {
     try {
       final dto = await remoteDataSource.addItem(
@@ -50,6 +51,7 @@ class CartRepositoryImpl implements CartRepository {
         quantity: quantity,
         optionValueIds: optionValueIds,
         note: note,
+        selfPickup: selfPickup,
       );
       return Right(dto.toEntity());
     } catch (e) {

@@ -41,10 +41,15 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
   entity_tag.Tag? _selectedTag;
   final Set<ServiceFilterId> _selectedFilters = {};
 
+  bool get _isPickup =>
+      widget.type == ServiceListingType.pickup || widget.sectionId == 4;
+
   @override
   void initState() {
     super.initState();
-    context.read<TagsCubit>().fetchTags(sectionId: widget.sectionId);
+    context.read<TagsCubit>().fetchTags(
+      sectionId: _isPickup ? null : widget.sectionId,
+    );
     _fetchFilteredStores();
   }
 
@@ -60,12 +65,13 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
         : null;
 
     context.read<StoresCubit>().fetchStores(
-      sectionId: widget.sectionId,
+      sectionId: _isPickup && widget.sectionId == 4 ? null : widget.sectionId,
       search: _searchController.text.isNotEmpty ? _searchController.text : null,
       tagIds: _selectedTag != null ? [_selectedTag!.id] : null,
       fastPrep: fastPrep,
       topRated: topRated,
       hasOffers: hasOffers,
+      isSelfPickup: _isPickup,
     );
   }
 
@@ -249,13 +255,16 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                                 .map((t) => t.name)
                                                 .toList(),
                                           );
+                                          final isPickupIntent = _isPickup;
                                           return HypermarketMiniCard(
                                             market: mappedRestaurant,
                                             onTap: () {
                                               context.push(
-                                                RouteNames.marketDetailsFor(
-                                                  mappedRestaurant.id,
-                                                ),
+                                                isPickupIntent
+                                                    ? '${RouteNames.marketDetailsFor(mappedRestaurant.id)}?is_pickup=true'
+                                                    : RouteNames.marketDetailsFor(
+                                                        mappedRestaurant.id,
+                                                      ),
                                               );
                                             },
                                           );
@@ -270,6 +279,7 @@ class _ServiceListingScreenState extends State<ServiceListingScreen> {
                                     _SectionTitle(title: l10n.serviceAllPlaces),
                                     const SizedBox(height: 12),
                                     _ServicePlaceCollection(
+                                      isPickupIntent: _isPickup,
                                       items: normalStores
                                           .map(
                                             (s) => ServicePlaceData.store(
@@ -597,27 +607,38 @@ class _ServiceFilterChip extends StatelessWidget {
 }
 
 class _ServicePlaceCollection extends StatelessWidget {
-  const _ServicePlaceCollection({required this.items});
+  const _ServicePlaceCollection({
+    required this.items,
+    this.isPickupIntent = false,
+  });
 
   final List<ServicePlaceData> items;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
-    return _PlaceList(items: items);
+    return _PlaceList(items: items, isPickupIntent: isPickupIntent);
   }
 }
 
 class _PlaceList extends StatelessWidget {
-  const _PlaceList({required this.items});
+  const _PlaceList({
+    required this.items,
+    this.isPickupIntent = false,
+  });
 
   final List<ServicePlaceData> items;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         for (var index = 0; index < items.length; index++) ...[
-          SharedStoreListTile(item: items[index]),
+          SharedStoreListTile(
+            item: items[index],
+            isPickupIntent: isPickupIntent,
+          ),
           if (index != items.length - 1)
             Divider(
               height: 24,

@@ -14,7 +14,7 @@ void main() {
       final json = request.toJson();
       expect(json['payment_method'], 'cash');
       expect(json['address_id'], 3);
-      expect(json['self_pickup'], false);
+      expect(json.containsKey('self_pickup'), false);
       expect(json.containsKey('coupon_code'), false);
     });
 
@@ -29,7 +29,7 @@ void main() {
       final json = request.toJson();
       expect(json['payment_method'], 'wallet');
       expect(json['address_id'], 5);
-      expect(json['self_pickup'], false);
+      expect(json.containsKey('self_pickup'), false);
       expect(json['coupon_code'], 'SAVE10');
     });
 
@@ -42,7 +42,7 @@ void main() {
 
       final json = request.toJson();
       expect(json['payment_method'], 'cash');
-      expect(json['self_pickup'], true);
+      expect(json.containsKey('self_pickup'), false);
       expect(json.containsKey('address_id'), false);
       expect(json.containsKey('coupon_code'), false);
     });

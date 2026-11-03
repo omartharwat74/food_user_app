@@ -22,6 +22,7 @@ class Store extends Equatable {
   final int? ratingCount;
   final String availability;
   final double? deliveryPrice;
+  final bool allowsSelfPickup;
 
   const Store({
     required this.id,
@@ -38,6 +39,7 @@ class Store extends Equatable {
     this.ratingCount,
     this.availability = 'open',
     this.deliveryPrice,
+    this.allowsSelfPickup = false,
   });
 
   @override
@@ -56,6 +58,7 @@ class Store extends Equatable {
     ratingCount,
     availability,
     deliveryPrice,
+    allowsSelfPickup,
   ];
 }
 

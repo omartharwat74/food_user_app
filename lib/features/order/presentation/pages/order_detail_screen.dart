@@ -22,6 +22,10 @@ import 'package:food_user_app/features/order/presentation/cubit/order_detail_sta
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
 import 'package:food_user_app/features/order/presentation/widgets/order_item_tile.dart';
+import 'package:food_user_app/features/restaurant/domain/repositories/restaurant_repository.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 enum OrderDetailsStatus {
@@ -80,6 +84,46 @@ class _OrderDetailsScreenContentState
     extends State<_OrderDetailsScreenContent> {
   bool _hasRated = false;
   Locale? _lastLocale;
+  String? _storeAddress;
+  bool _isFetchingStoreAddress = false;
+
+  void _fetchStoreAddressIfNeeded(Order? order) {
+    if (order == null || !order.selfPickup) return;
+    if (_storeAddress != null) return;
+    final storeId = (order.store?.id != null && order.store!.id != 0)
+        ? order.store!.id.toString()
+        : (order.branchId.isNotEmpty && order.branchId != '0')
+            ? order.branchId
+            : null;
+    if (storeId == null || storeId.isEmpty) return;
+
+    final cached = StoreAddressCache.get(storeId);
+    if (cached != null && cached.isNotEmpty) {
+      _storeAddress = cached;
+      return;
+    }
+
+    if (_isFetchingStoreAddress) return;
+
+    if (di.sl.isRegistered<RestaurantRepository>()) {
+      _isFetchingStoreAddress = true;
+      di.sl<RestaurantRepository>().getStoreDetails(storeId).then((result) {
+        _isFetchingStoreAddress = false;
+        result.fold(
+          (_) {},
+          (restaurant) {
+            StoreAddressCache.set(storeId, restaurant.address);
+            StoreAddressCache.set(restaurant.id, restaurant.address);
+            if (mounted && restaurant.address.trim().isNotEmpty) {
+              setState(() {
+                _storeAddress = restaurant.address.trim();
+              });
+            }
+          },
+        );
+      });
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -108,6 +152,14 @@ class _OrderDetailsScreenContentState
       child: BlocBuilder<OrderDetailCubit, OrderDetailState>(
         builder: (context, state) {
           final order = state.order;
+          if (order != null &&
+              order.selfPickup &&
+              _storeAddress == null &&
+              !_isFetchingStoreAddress) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _fetchStoreAddressIfNeeded(order);
+            });
+          }
 
           return PopScope<Order?>(
             canPop: true,
@@ -252,6 +304,7 @@ class _OrderDetailsScreenContentState
                                   _DeliveryAddressSection(
                                     order: order,
                                     l10n: l10n,
+                                    storeAddress: _storeAddress,
                                   ),
                                   const SizedBox(height: 16),
                                   _OrderItemsSection(
@@ -1144,16 +1197,33 @@ class _DeliveryAddressSection extends StatelessWidget {
   const _DeliveryAddressSection({
     required this.order,
     required this.l10n,
+    this.storeAddress,
   });
 
   final Order? order;
   final AppLocalizations l10n;
+  final String? storeAddress;
 
   @override
   Widget build(BuildContext context) {
     final isSelfPickup = order?.selfPickup == true;
+    final title = isSelfPickup ? l10n.branchAddressTitle : l10n.deliverTo;
+
+    final resolvedStoreAddress = (storeAddress?.trim().isNotEmpty == true)
+        ? storeAddress!.trim()
+        : (order?.store?.address?.trim().isNotEmpty == true)
+            ? order!.store!.address!.trim()
+            : (StoreAddressCache.get(order?.store?.id.toString())?.isNotEmpty == true)
+                ? StoreAddressCache.get(order!.store!.id.toString())!
+                : (StoreDetailCubit.lastLoadedStore?.address.trim().isNotEmpty == true)
+                    ? StoreDetailCubit.lastLoadedStore!.address.trim()
+                    : (RestaurantDetailCubit.lastLoadedRestaurant?.address.trim().isNotEmpty == true)
+                        ? RestaurantDetailCubit.lastLoadedRestaurant!.address.trim()
+                        : null;
+
+    final hasResolvedAddress = isSelfPickup ? (resolvedStoreAddress != null) : true;
     final addressText = isSelfPickup
-        ? context.l10n.orderSelfPickupFromStore
+        ? (resolvedStoreAddress ?? '')
         : (order?.address?.fullAddress ??
             order?.address?.name ??
             l10n.deliveryAddress);
@@ -1162,7 +1232,7 @@ class _DeliveryAddressSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          l10n.deliverTo,
+          title,
           textAlign: TextAlign.start,
           style: AppTextStyles.heading4(context).copyWith(
             color: AppColors.onSurface(context),
@@ -1173,25 +1243,40 @@ class _DeliveryAddressSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Row(
-          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              AppAssets.orderLocationIcon,
-              width: 16,
-              height: 16,
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0),
+              child: SvgPicture.asset(
+                AppAssets.orderLocationIcon,
+                width: 16,
+                height: 16,
+              ),
             ),
             const SizedBox(width: 4),
             Expanded(
-              child: Text(
-                addressText,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.body(context).copyWith(
-                  color: AppColors.paragraph(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.3,
-                ),
-              ),
+              child: isSelfPickup && !hasResolvedAddress
+                  ? Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        width: 120,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: AppColors.border(context),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    )
+                  : Text(
+                      addressText,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.body(context).copyWith(
+                        color: AppColors.paragraph(context),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -1415,13 +1500,13 @@ class _PaymentSummarySection extends StatelessWidget {
           label: l10n.orderSubtotal,
           value: context.l10n.priceWithCurrency(_formatAmount(subtotal)),
         ),
-        const SizedBox(height: 12),
-        _SummaryRow(
-          label: l10n.orderDeliveryFee,
-          value: order!.selfPickup
-              ? context.l10n.priceWithCurrency('0')
-              : context.l10n.priceWithCurrency(_formatAmount(deliveryFee)),
-        ),
+        if (!order!.selfPickup && deliveryFee > 0) ...[
+          const SizedBox(height: 12),
+          _SummaryRow(
+            label: l10n.orderDeliveryFee,
+            value: context.l10n.priceWithCurrency(_formatAmount(deliveryFee)),
+          ),
+        ],
         if (discount > 0) ...[
           const SizedBox(height: 12),
           _SummaryRow(

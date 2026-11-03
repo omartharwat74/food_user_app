@@ -54,11 +54,13 @@ class RestaurantDetailScreen extends StatefulWidget {
   const RestaurantDetailScreen({
     this.restaurantId = 'az-al-sham',
     this.restaurant,
+    this.isPickupIntent = false,
     super.key,
   });
 
   final String restaurantId;
   final RestaurantDetailArgs? restaurant;
+  final bool isPickupIntent;
 
   @override
   State<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
@@ -232,6 +234,8 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           child: _MenuSections(
                             sections: menuCategories,
                             sectionKeys: _sectionKeys,
+                            isPickupIntent: widget.isPickupIntent ||
+                                (widget.restaurant?.isPickupIntent ?? false),
                           ),
                         ),
                       ),
@@ -1225,10 +1229,15 @@ class _MenuTab extends StatelessWidget {
 }
 
 class _MenuSections extends StatelessWidget {
-  const _MenuSections({required this.sections, required this.sectionKeys});
+  const _MenuSections({
+    required this.sections,
+    required this.sectionKeys,
+    this.isPickupIntent = false,
+  });
 
   final List<MenuCategory> sections;
   final List<GlobalKey> sectionKeys;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
@@ -1236,7 +1245,11 @@ class _MenuSections extends StatelessWidget {
       children: [
         for (var i = 0; i < sections.length; i++) ...[
           if (i > 0) const SizedBox(height: 24),
-          _MenuSection(key: sectionKeys[i], section: sections[i]),
+          _MenuSection(
+            key: sectionKeys[i],
+            section: sections[i],
+            isPickupIntent: isPickupIntent,
+          ),
         ],
       ],
     );
@@ -1244,9 +1257,14 @@ class _MenuSections extends StatelessWidget {
 }
 
 class _MenuSection extends StatelessWidget {
-  const _MenuSection({required this.section, super.key});
+  const _MenuSection({
+    required this.section,
+    this.isPickupIntent = false,
+    super.key,
+  });
 
   final MenuCategory section;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
@@ -1260,16 +1278,23 @@ class _MenuSection extends StatelessWidget {
           ).copyWith(fontSize: 15, height: 1.4),
         ),
         const SizedBox(height: 20),
-        _SectionProductGrid(items: section.items),
+        _SectionProductGrid(
+          items: section.items,
+          isPickupIntent: isPickupIntent,
+        ),
       ],
     );
   }
 }
 
 class _SectionProductGrid extends StatelessWidget {
-  const _SectionProductGrid({required this.items});
+  const _SectionProductGrid({
+    required this.items,
+    this.isPickupIntent = false,
+  });
 
   final List<MenuItem> items;
+  final bool isPickupIntent;
 
   @override
   Widget build(BuildContext context) {
@@ -1281,14 +1306,23 @@ class _SectionProductGrid extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(
-              child: SizedBox(height: 164, child: ProductCard(item: items[i])),
+              child: SizedBox(
+                height: 164,
+                child: ProductCard(
+                  item: items[i],
+                  isPickupIntent: isPickupIntent,
+                ),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: i + 1 < items.length
                   ? SizedBox(
                       height: 164,
-                      child: ProductCard(item: items[i + 1]),
+                      child: ProductCard(
+                        item: items[i + 1],
+                        isPickupIntent: isPickupIntent,
+                      ),
                     )
                   : const SizedBox.shrink(),
             ),

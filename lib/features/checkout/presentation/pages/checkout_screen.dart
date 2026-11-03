@@ -22,10 +22,15 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/core/widgets/app_directional_icons.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_cubit.dart';
 import 'package:food_user_app/features/payment/presentation/cubit/checkout_state.dart';
+import 'package:food_user_app/features/restaurant/domain/repositories/restaurant_repository.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/restaurant_detail_cubit.dart';
+import 'package:food_user_app/features/store/presentation/cubit/store_detail_cubit.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({
@@ -35,6 +40,7 @@ class CheckoutScreen extends StatefulWidget {
     this.isSelfPickup = false,
     this.restaurantName,
     this.restaurantAddress,
+    this.storeId,
   });
 
   final String? couponCode;
@@ -42,6 +48,7 @@ class CheckoutScreen extends StatefulWidget {
   final bool isSelfPickup;
   final String? restaurantName;
   final String? restaurantAddress;
+  final String? storeId;
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -50,6 +57,114 @@ class CheckoutScreen extends StatefulWidget {
 class _CheckoutScreenState extends State<CheckoutScreen> {
   CheckoutPaymentOption _paymentOption = CheckoutPaymentOption.cash;
   MapPickerResult? _selectedAddress;
+  String? _fetchedStoreAddress;
+  bool _isFetchingStoreAddress = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initInitialAddress();
+    _fetchStoreAddressIfNeeded();
+  }
+
+  String? _resolveStoreId(Cart? cart) {
+    if (widget.storeId != null &&
+        widget.storeId!.isNotEmpty &&
+        widget.storeId != '0') {
+      return widget.storeId;
+    }
+    if (cart?.store?.id != null && cart!.store!.id != 0) {
+      return cart.store!.id.toString();
+    }
+    if (cart?.restaurantId != null &&
+        cart!.restaurantId!.isNotEmpty &&
+        cart.restaurantId != '0') {
+      return cart.restaurantId;
+    }
+    if (StoreDetailCubit.lastLoadedStore?.id != null &&
+        StoreDetailCubit.lastLoadedStore!.id.isNotEmpty &&
+        StoreDetailCubit.lastLoadedStore!.id != '0') {
+      return StoreDetailCubit.lastLoadedStore!.id;
+    }
+    if (RestaurantDetailCubit.lastLoadedRestaurant?.id != null &&
+        RestaurantDetailCubit.lastLoadedRestaurant!.id.isNotEmpty &&
+        RestaurantDetailCubit.lastLoadedRestaurant!.id != '0') {
+      return RestaurantDetailCubit.lastLoadedRestaurant!.id;
+    }
+    return null;
+  }
+
+  void _initInitialAddress() {
+    if (widget.restaurantAddress != null &&
+        widget.restaurantAddress!.trim().isNotEmpty) {
+      _fetchedStoreAddress = widget.restaurantAddress!.trim();
+      return;
+    }
+    final cart = context.read<CartCubit>().state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
+    );
+    final storeId = _resolveStoreId(cart);
+    final cached = StoreAddressCache.get(storeId);
+    if (cached != null && cached.isNotEmpty) {
+      _fetchedStoreAddress = cached;
+      return;
+    }
+    final storeAddress = StoreDetailCubit.lastLoadedStore?.address.trim();
+    if (storeAddress != null && storeAddress.isNotEmpty) {
+      _fetchedStoreAddress = storeAddress;
+      return;
+    }
+    final restaurantAddress =
+        RestaurantDetailCubit.lastLoadedRestaurant?.address.trim();
+    if (restaurantAddress != null && restaurantAddress.isNotEmpty) {
+      _fetchedStoreAddress = restaurantAddress;
+      return;
+    }
+  }
+
+  Future<void> _fetchStoreAddressIfNeeded() async {
+    final cart = context.read<CartCubit>().state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
+    );
+    final storeId = _resolveStoreId(cart);
+
+    if (storeId != null && storeId.isNotEmpty && storeId != '0') {
+      final cached = StoreAddressCache.get(storeId);
+      if (cached != null && cached.isNotEmpty) {
+        if (_fetchedStoreAddress != cached && mounted) {
+          setState(() {
+            _fetchedStoreAddress = cached;
+          });
+        }
+        return;
+      }
+
+      if (_isFetchingStoreAddress || _fetchedStoreAddress != null) return;
+
+      if (di.sl.isRegistered<RestaurantRepository>()) {
+        _isFetchingStoreAddress = true;
+        final result =
+            await di.sl<RestaurantRepository>().getStoreDetails(storeId);
+        result.fold(
+          (_) {
+            _isFetchingStoreAddress = false;
+          },
+          (restaurant) {
+            _isFetchingStoreAddress = false;
+            StoreAddressCache.set(storeId, restaurant.address);
+            StoreAddressCache.set(restaurant.id, restaurant.address);
+            if (mounted && restaurant.address.trim().isNotEmpty) {
+              setState(() {
+                _fetchedStoreAddress = restaurant.address.trim();
+              });
+            }
+          },
+        );
+      }
+    }
+  }
 
   String? get _effectiveCouponCode {
     if (widget.couponCode != null && widget.couponCode!.trim().isNotEmpty) {
@@ -164,16 +279,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     loaded: (c, _, _) => c,
                     orElse: () => null,
                   );
-                  final branchAddress =
-                      (widget.restaurantAddress?.isNotEmpty == true)
-                          ? widget.restaurantAddress!
-                          : (cart?.restaurantAddress?.isNotEmpty == true)
-                              ? cart!.restaurantAddress!
-                              : (widget.restaurantName?.isNotEmpty == true)
-                                  ? widget.restaurantName!
-                                  : (cart?.restaurantName?.isNotEmpty == true)
-                                      ? cart!.restaurantName!
-                                      : l10n.defaultBranchAddress;
+                  final effectiveSelfPickup =
+                      (cart?.isSelfPickup == true) || widget.isSelfPickup;
+                  final branchAddress = _resolveBranchAddress(
+                    cart: cart,
+                    l10n: l10n,
+                  );
 
                   return Column(
                     children: [
@@ -201,7 +312,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              if (widget.isSelfPickup) ...[
+                              if (effectiveSelfPickup) ...[
                                 const _SelfPickupBanner(),
                                 const SizedBox(height: 16),
                                 _BranchAddressSection(address: branchAddress),
@@ -227,6 +338,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       _CheckoutBottomBar(
                         label: l10n.checkoutConfirmOrder,
                         isLoading: isPlacingOrder,
+                        isSelfPickup: effectiveSelfPickup,
                         onTap: isPlacingOrder
                             ? null
                             : () => _submitOrder(addressesController),
@@ -259,8 +371,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _submitOrder(SavedAddressesController addressesController) {
+    final cart = context.read<CartCubit>().state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
+    );
+    final effectiveSelfPickup =
+        (cart?.isSelfPickup == true) || widget.isSelfPickup;
+
     int? addressId;
-    if (!widget.isSelfPickup) {
+    if (!effectiveSelfPickup) {
       addressId = _getCurrentAddressId(addressesController);
       if (addressId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -282,7 +401,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     context.read<CheckoutCubit>().checkout(
       paymentMethod: paymentMethod,
       addressId: addressId,
-      selfPickup: widget.isSelfPickup,
+      selfPickup: effectiveSelfPickup,
       couponCode: _effectiveCouponCode,
       note: note,
     );
@@ -297,6 +416,54 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final addressesController = SavedAddressesScope.of(context);
     await addressesController.loadAddresses();
     if (mounted) setState(() {});
+  }
+
+  String? _resolveBranchAddress({
+    required Cart? cart,
+    required AppLocalizations l10n,
+  }) {
+    // 1. Direct from fetched store details API
+    if (_fetchedStoreAddress != null && _fetchedStoreAddress!.trim().isNotEmpty) {
+      return _fetchedStoreAddress!.trim();
+    }
+
+    // 2. Direct from widget.restaurantAddress
+    final widgetAddress = widget.restaurantAddress?.trim();
+    if (widgetAddress != null && widgetAddress.isNotEmpty) {
+      return widgetAddress;
+    }
+
+    // 3. Direct from cart.store?.address or cart.restaurantAddress
+    final cartStoreAddress = cart?.store?.address?.trim();
+    if (cartStoreAddress != null && cartStoreAddress.isNotEmpty) {
+      return cartStoreAddress;
+    }
+
+    final cartRestaurantAddress = cart?.restaurantAddress?.trim();
+    if (cartRestaurantAddress != null && cartRestaurantAddress.isNotEmpty) {
+      return cartRestaurantAddress;
+    }
+
+    // 4. Memory cache by storeId
+    final storeId = _resolveStoreId(cart);
+    final cached = StoreAddressCache.get(storeId);
+    if (cached != null && cached.isNotEmpty) {
+      return cached;
+    }
+
+    // 5. Fallback to StoreDetailCubit / RestaurantDetailCubit State
+    final storeAddress = StoreDetailCubit.lastLoadedStore?.address.trim();
+    if (storeAddress != null && storeAddress.isNotEmpty) {
+      return storeAddress;
+    }
+
+    final restaurantAddress =
+        RestaurantDetailCubit.lastLoadedRestaurant?.address.trim();
+    if (restaurantAddress != null && restaurantAddress.isNotEmpty) {
+      return restaurantAddress;
+    }
+
+    return null;
   }
 }
 
@@ -473,11 +640,13 @@ class _CheckoutBottomBar extends StatefulWidget {
     required this.label,
     required this.onTap,
     this.isLoading = false,
+    this.isSelfPickup = false,
   });
 
   final String label;
   final VoidCallback? onTap;
   final bool isLoading;
+  final bool isSelfPickup;
 
   @override
   State<_CheckoutBottomBar> createState() => _CheckoutBottomBarState();
@@ -537,6 +706,8 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
           orElse: () => null,
         );
 
+        final isPickup =
+            (cart?.isSelfPickup == true) || widget.isSelfPickup;
         final subtotal = cart?.subtotal ?? 0.0;
         final deliveryFee = cart?.deliveryFee ?? 0.0;
         final tax = cart?.tax ?? 0.0;
@@ -586,13 +757,15 @@ class _CheckoutBottomBarState extends State<_CheckoutBottomBar> {
                             l10n.orderValue,
                             l10n.priceWithCurrency(subtotal.toFormattedPrice()),
                           ),
-                          _buildSummaryRow(
-                            context,
-                            l10n.delivery,
-                            l10n.priceWithCurrency(
-                              deliveryFee.toFormattedPrice(),
-                            ),
-                          ),
+                          (!isPickup && deliveryFee > 0)
+                              ? _buildSummaryRow(
+                                  context,
+                                  l10n.delivery,
+                                  l10n.priceWithCurrency(
+                                    deliveryFee.toFormattedPrice(),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                           _buildSummaryRow(
                             context,
                             l10n.tax,
@@ -763,13 +936,14 @@ class _SelfPickupBanner extends StatelessWidget {
 }
 
 class _BranchAddressSection extends StatelessWidget {
-  const _BranchAddressSection({required this.address});
+  const _BranchAddressSection({this.address});
 
-  final String address;
+  final String? address;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final hasAddress = address != null && address!.trim().isNotEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -786,32 +960,44 @@ class _BranchAddressSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SvgPicture.asset(
-              AppAssets.addressLocationIcon,
-              width: 16,
-              height: 16,
-              colorFilter: ColorFilter.mode(
-                AppColors.paragraph(context),
-                BlendMode.srcIn,
+            Padding(
+              padding: const EdgeInsets.only(top: 2.0),
+              child: SvgPicture.asset(
+                AppAssets.addressLocationIcon,
+                width: 16,
+                height: 16,
+                colorFilter: ColorFilter.mode(
+                  AppColors.paragraph(context),
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             const SizedBox(width: 6),
-            Flexible(
-              child: Text(
-                address,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.caption(context).copyWith(
-                  color: AppColors.paragraph(context),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  height: 1.3,
-                ),
-              ),
+            Expanded(
+              child: hasAddress
+                  ? Text(
+                      address!,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.caption(context).copyWith(
+                        color: AppColors.paragraph(context),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        height: 1.3,
+                      ),
+                    )
+                  : Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Container(
+                        width: 120,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: AppColors.border(context),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
             ),
           ],
         ),

@@ -35,6 +35,9 @@ class CartSummaryDetailsDto {
   final num? delivery;
   final num? tax;
   final num? total;
+  @JsonKey(name: 'self_pickup')
+  @IntBoolConverter()
+  final bool? selfPickup;
 
   CartSummaryDetailsDto({
     this.itemsSubtotal,
@@ -43,6 +46,7 @@ class CartSummaryDetailsDto {
     this.delivery,
     this.tax,
     this.total,
+    this.selfPickup,
   });
 
   factory CartSummaryDetailsDto.fromJson(Map<String, dynamic> json) =>
@@ -64,6 +68,10 @@ class CartSummaryDto {
   @JsonKey(name: 'coupon_code')
   final String? couponCode;
 
+  @JsonKey(name: 'self_pickup')
+  @IntBoolConverter()
+  final bool? selfPickup;
+
   @JsonKey(defaultValue: [])
   final List<CartItemDto>? items;
 
@@ -75,6 +83,7 @@ class CartSummaryDto {
     this.storeId,
     this.summary,
     this.couponCode,
+    this.selfPickup,
     required this.items,
     this.store,
   });
@@ -138,6 +147,8 @@ class CartItemDto {
   Map<String, dynamic> toJson() => _$CartItemDtoToJson(this);
 }
 
+typedef CartStoreDto = CartStoreBriefDto;
+
 @JsonSerializable()
 class CartStoreBriefDto {
   final int? id;
@@ -162,6 +173,15 @@ class CartStoreBriefDto {
       _$CartStoreBriefDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$CartStoreBriefDtoToJson(this);
+
+  CartStore toEntity() => CartStore(
+    id: id,
+    name: name,
+    image: image,
+    address: address,
+    deliveryFee: deliveryFee,
+    minOrderAmount: minOrderAmount,
+  );
 }
 
 extension CartResponseDtoMapper on CartResponseDto {
@@ -172,6 +192,7 @@ extension CartResponseDtoMapper on CartResponseDto {
           data.storeId?.toString() ?? data.store?.id?.toString() ?? '',
       restaurantName: data.store?.name ?? '',
       restaurantAddress: data.store?.address ?? '',
+      store: data.store?.toEntity(),
       items: (data.items ?? [])
           .map(
             (item) => CartItem(
@@ -198,6 +219,7 @@ extension CartResponseDtoMapper on CartResponseDto {
                   (data.summary?.couponDiscount ?? 0))
               .toDouble(),
       total: (data.summary?.total ?? 0).toDouble(),
+      isSelfPickup: (data.selfPickup ?? data.summary?.selfPickup ?? false),
     );
   }
 }

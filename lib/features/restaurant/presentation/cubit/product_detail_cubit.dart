@@ -1,8 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'product_detail_state.dart';
 
 class ProductDetailCubit extends Cubit<ProductDetailState> {
+  static MenuItem? lastLoadedProduct;
+
   final MenuRepository _menuRepository;
 
   ProductDetailCubit({required MenuRepository menuRepository})
@@ -14,7 +17,10 @@ class ProductDetailCubit extends Cubit<ProductDetailState> {
     final result = await _menuRepository.getProductDetail(productId);
     result.fold(
       (failure) => emit(ProductDetailState.error(failure.message)),
-      (product) => emit(ProductDetailState.loaded(product)),
+      (product) {
+        lastLoadedProduct = product;
+        emit(ProductDetailState.loaded(product));
+      },
     );
   }
 }

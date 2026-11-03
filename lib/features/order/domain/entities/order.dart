@@ -123,6 +123,7 @@ class OrderStore extends Equatable {
   final int id;
   final String name;
   final String? logo;
+  final String? address;
   final String? availability;
   final bool unavailable;
   final String? unavailableReason;
@@ -132,6 +133,7 @@ class OrderStore extends Equatable {
     required this.id,
     required this.name,
     this.logo,
+    this.address,
     this.availability,
     this.unavailable = false,
     this.unavailableReason,
@@ -143,6 +145,7 @@ class OrderStore extends Equatable {
     id,
     name,
     logo,
+    address,
     availability,
     unavailable,
     unavailableReason,

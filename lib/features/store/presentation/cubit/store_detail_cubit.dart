@@ -1,10 +1,14 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
+import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/menu_repository.dart';
 import 'package:food_user_app/features/restaurant/domain/repositories/restaurant_repository.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'store_detail_state.dart';
 
 class StoreDetailCubit extends Cubit<StoreDetailState> {
+  static Restaurant? lastLoadedStore;
+
   final RestaurantRepository _restaurantRepository;
   final MenuRepository _menuRepository;
 
@@ -28,6 +32,9 @@ class StoreDetailCubit extends Cubit<StoreDetailState> {
       restaurantResult.fold(
         (failure) => emit(StoreDetailState.error(failure.message)),
         (restaurant) {
+          lastLoadedStore = restaurant;
+          StoreAddressCache.set(restaurant.id, restaurant.address);
+          StoreAddressCache.set(storeId, restaurant.address);
           menuResult.fold(
             (failure) => emit(StoreDetailState.error(failure.message)),
             (categories) {

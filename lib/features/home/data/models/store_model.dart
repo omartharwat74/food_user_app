@@ -35,6 +35,7 @@ class StoreModel extends Store {
     super.ratingCount,
     super.availability,
     super.deliveryPrice,
+    super.allowsSelfPickup,
   });
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
@@ -83,6 +84,7 @@ class StoreModel extends Store {
           : (json['delivery_fee'] != null
               ? (json['delivery_fee'] as num).toDouble()
               : null),
+      allowsSelfPickup: parseBoolFromJson(json['allows_self_pickup']),
     );
   }
 }

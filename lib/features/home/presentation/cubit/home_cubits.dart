@@ -127,8 +127,8 @@ class TagsLoading extends TagsState {
 
 class TagsLoaded extends TagsState {
   final List<Tag> tags;
-  final int sectionId;
-  const TagsLoaded({required this.tags, required this.sectionId});
+  final int? sectionId;
+  const TagsLoaded({required this.tags, this.sectionId});
   @override
   List<Object?> get props => [tags, sectionId];
 }
@@ -145,7 +145,7 @@ class TagsCubit extends Cubit<TagsState> {
 
   final GetTagsUseCase getTagsUseCase;
 
-  Future<void> fetchTags({required int sectionId}) async {
+  Future<void> fetchTags({int? sectionId}) async {
     emit(const TagsLoading());
     final result = await getTagsUseCase(GetTagsParams(sectionId: sectionId));
     if (isClosed) return;
@@ -208,6 +208,7 @@ class StoresCubit extends Cubit<StoresState> {
     int? fastPrep,
     int? topRated,
     int? hasOffers,
+    bool isSelfPickup = false,
   }) async {
     emit(const StoresLoading());
     final result = await getStoresUseCase(
@@ -220,6 +221,7 @@ class StoresCubit extends Cubit<StoresState> {
         fastPrep: fastPrep,
         topRated: topRated,
         hasOffers: hasOffers,
+        isSelfPickup: isSelfPickup,
       ),
     );
     if (isClosed) return;

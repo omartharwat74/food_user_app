@@ -14,6 +14,7 @@ abstract class CartRemoteDataSource {
     required int quantity,
     required List<int> optionValueIds,
     String? note,
+    bool selfPickup = false,
   });
   Future<CartResponseDto> updateCartItem({
     required String itemId,
@@ -77,11 +78,13 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     required int quantity,
     required List<int> optionValueIds,
     String? note,
+    bool selfPickup = false,
   }) async {
     try {
       final data = <String, dynamic>{
         'product_id': productId,
         'quantity': quantity,
+        'self_pickup': selfPickup,
       };
       if (optionValueIds.isNotEmpty) {
         data['option_value_ids'] = optionValueIds;
@@ -91,7 +94,6 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       }
       final response = await _dio.post<dynamic>(
         ApiEndpoints.cartItems,
-        queryParameters: {'self_pickup': 0},
         data: data,
       );
       return CartResponseDto.fromJson(response.data as Map<String, dynamic>);

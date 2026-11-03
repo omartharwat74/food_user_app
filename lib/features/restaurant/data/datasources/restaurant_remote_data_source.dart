@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/network/dio_error_mapper.dart';
+import 'package:food_user_app/core/utils/store_address_cache.dart';
 import 'package:food_user_app/features/restaurant/data/models/branch_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/offer_dto.dart';
 import 'package:food_user_app/features/restaurant/data/models/page_response_restaurant_dto.dart';
@@ -67,7 +68,10 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
       if (raw is! Map<String, dynamic>) {
         throw const FormatException('Expected restaurant object');
       }
-      return RestaurantDto.fromJson(raw);
+      final dto = RestaurantDto.fromJson(raw);
+      StoreAddressCache.set(id, dto.address);
+      StoreAddressCache.set(dto.id, dto.address);
+      return dto;
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }
@@ -84,7 +88,10 @@ class RestaurantRemoteDataSourceImpl implements RestaurantRemoteDataSource {
       if (raw is! Map<String, dynamic> || !raw.containsKey('data')) {
         throw const FormatException('Expected store details envelope');
       }
-      return RestaurantDto.fromJson(raw['data'] as Map<String, dynamic>);
+      final dto = RestaurantDto.fromJson(raw['data'] as Map<String, dynamic>);
+      StoreAddressCache.set(storeId, dto.address);
+      StoreAddressCache.set(dto.id, dto.address);
+      return dto;
     } on DioException catch (e) {
       throw DioErrorMapper.map(e);
     }

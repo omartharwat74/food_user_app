@@ -139,6 +139,7 @@ class _CategoryTile extends StatelessWidget {
         section.name.toLowerCase().contains('store'))
       return ServiceListingType.stores;
     if (section.id == 4 ||
+        section.name.contains('استلم بنفسك') ||
         section.name.contains('توصيل') ||
         section.name.toLowerCase().contains('pickup'))
       return ServiceListingType.pickup;

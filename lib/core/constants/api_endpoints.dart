@@ -138,6 +138,9 @@ class ApiEndpoints {
   /// `GET /api/v1/stores?section_id={id}&search=&tag_ids[]=&page=&per_page=`
   static const String stores = '/api/v1/stores';
 
+  /// `GET /api/v1/stores/self-pickup?section_id=&search=&tag_ids[]=&has_offers=&fast_prep=&top_rated=&page=&per_page=`
+  static const String selfPickupStores = '/api/v1/stores/self-pickup';
+
   /// `GET /api/v1/stores/major?section_id={id}&page=&per_page=`
   static const String majorStores = '/api/v1/stores/major';
 

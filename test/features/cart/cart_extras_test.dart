@@ -117,12 +117,12 @@ void main() {
     blocTest<CartExtrasCubit, CartExtrasState>(
       'loadExtras emits [loading, loaded] on success',
       build: () {
-        when(() => mockGetCartExtrasUseCase(any())).thenAnswer(
+        when(() => mockGetCartExtrasUseCase('12')).thenAnswer(
           (_) async => const Right([testItem]),
         );
         return cubit;
       },
-      act: (cubit) => cubit.loadExtras(),
+      act: (cubit) => cubit.loadExtras('12'),
       expect: () => [
         const CartExtrasState(isLoading: true),
         const CartExtrasState(
@@ -132,19 +132,19 @@ void main() {
         ),
       ],
       verify: (_) {
-        verify(() => mockGetCartExtrasUseCase(any())).called(1);
+        verify(() => mockGetCartExtrasUseCase('12')).called(1);
       },
     );
 
     blocTest<CartExtrasCubit, CartExtrasState>(
       'loadExtras emits empty items on failure without throwing (silent error)',
       build: () {
-        when(() => mockGetCartExtrasUseCase(any())).thenAnswer(
+        when(() => mockGetCartExtrasUseCase('12')).thenAnswer(
           (_) async => const Left(ServerFailure('Failed to fetch extras')),
         );
         return cubit;
       },
-      act: (cubit) => cubit.loadExtras(),
+      act: (cubit) => cubit.loadExtras('12'),
       expect: () => [
         const CartExtrasState(isLoading: true),
         const CartExtrasState(
@@ -159,9 +159,12 @@ void main() {
       when(() => mockAddToCartUseCase(any())).thenAnswer(
         (_) async => const Right(Cart.empty()),
       );
-      when(() => mockGetCartExtrasUseCase(any())).thenAnswer(
+      when(() => mockGetCartExtrasUseCase('12')).thenAnswer(
         (_) async => const Right([]),
       );
+
+      // Pre-set the current store ID
+      await cubit.loadExtras('12');
 
       var successCalled = false;
       var errorCalled = false;
@@ -185,7 +188,7 @@ void main() {
           ),
         ),
       ).called(1);
-      verify(() => mockGetCartExtrasUseCase(any())).called(1);
+      verify(() => mockGetCartExtrasUseCase('12')).called(2);
     });
 
     test('addExtra invokes onError and does not refresh when AddToCartUseCase fails', () async {

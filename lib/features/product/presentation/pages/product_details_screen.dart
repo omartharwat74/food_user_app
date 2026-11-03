@@ -23,9 +23,14 @@ import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_cubit
 import 'package:food_user_app/features/product/presentation/widgets/product_extras_section.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
-  const ProductDetailsScreen({required this.item, super.key});
+  const ProductDetailsScreen({
+    required this.item,
+    this.storeId,
+    super.key,
+  });
 
   final MenuItem item;
+  final String? storeId;
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -37,12 +42,42 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String _notes = '';
   bool _hasInitializedDefaults = false;
   bool _isSubmittingMainItem = false;
+  CartExtrasCubit? _cartExtrasCubit;
+
+  @override
+  void initState() {
+    super.initState();
+    if (sl.isRegistered<CartExtrasCubit>()) {
+      _cartExtrasCubit = sl<CartExtrasCubit>();
+      final initialStoreId = widget.storeId ?? widget.item.storeId;
+      if (initialStoreId != null && initialStoreId.isNotEmpty) {
+        _cartExtrasCubit!.loadExtras(initialStoreId);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _cartExtrasCubit?.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    final content = BlocBuilder<ProductDetailCubit, ProductDetailState>(
+    final content = BlocConsumer<ProductDetailCubit, ProductDetailState>(
+      listener: (context, state) {
+        state.maybeWhen(
+          loaded: (p) {
+            final sId = widget.storeId ?? p.storeId ?? widget.item.storeId;
+            if (sId != null && sId.isNotEmpty) {
+              _cartExtrasCubit?.loadExtras(sId);
+            }
+          },
+          orElse: () {},
+        );
+      },
       builder: (context, state) {
         // Use the loaded product if available, otherwise fallback to the summary item passed in
         final product = state.maybeWhen(
@@ -140,6 +175,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     modifiers,
                     notes,
                   ) {
+                    if (_isSubmittingMainItem) {
+                      _isSubmittingMainItem = false;
+                    }
                     showDialog(
                       context: context,
                       builder: (ctx) => Dialog(
@@ -249,6 +287,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             bottomNavigationBar: _ProductBottomBar(
               quantity: _quantity,
               total: total,
+              isSubmitting: _isSubmittingMainItem,
               onIncrement: () => setState(() => _quantity++),
               onDecrement: () =>
                   setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
@@ -258,11 +297,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   showGuestGate(context);
                   return;
                 }
-                final isLoading = context.read<CartCubit>().state.maybeWhen(
-                  loading: () => true,
-                  orElse: () => false,
-                );
-                if (isLoading) return;
+                if (_isSubmittingMainItem) return;
 
                 final List<int> modifierIdsList = [];
                 _selectedOptions.forEach((modId, selectedIds) {
@@ -279,6 +314,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   productId: product.id.toString(),
                   quantity: _quantity,
                   optionValueIds: modifierIdsList,
+                  note: _notes.trim().isNotEmpty ? _notes.trim() : null,
                 );
               },
             ),
@@ -650,9 +686,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       },
     );
 
-    if (sl.isRegistered<CartExtrasCubit>()) {
-      return BlocProvider<CartExtrasCubit>(
-        create: (_) => sl<CartExtrasCubit>()..loadExtras(),
+    if (_cartExtrasCubit != null) {
+      return BlocProvider<CartExtrasCubit>.value(
+        value: _cartExtrasCubit!,
         child: content,
       );
     }
@@ -1147,6 +1183,7 @@ class _ProductBottomBar extends StatelessWidget {
     required this.onIncrement,
     required this.onDecrement,
     required this.onSubmit,
+    this.isSubmitting = false,
   });
 
   final int quantity;
@@ -1154,11 +1191,15 @@ class _ProductBottomBar extends StatelessWidget {
   final VoidCallback onIncrement;
   final VoidCallback onDecrement;
   final VoidCallback onSubmit;
+  final bool isSubmitting;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final enabled = quantity > 0;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isButtonActive = enabled && !isSubmitting;
+
     return DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
@@ -1179,89 +1220,77 @@ class _ProductBottomBar extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                child: BlocBuilder<CartCubit, CartState>(
-                  builder: (context, state) {
-                    final isLoading = state.maybeWhen(
-                      loading: () => true,
-                      orElse: () => false,
-                    );
-                    final isDark =
-                        Theme.of(context).brightness == Brightness.dark;
-                    final isButtonActive = enabled && !isLoading;
-
-                    return GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: isButtonActive ? onSubmit : null,
-                      child: Container(
-                        height: 48,
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                          16,
-                          0,
-                          16,
-                          0,
-                        ),
-                        decoration: BoxDecoration(
-                          color: isButtonActive
-                              ? AppColors.primary
-                              : AppColors.disabledButtonBackground(context),
-                          borderRadius: BorderRadius.circular(10),
-                          border: (!isButtonActive && isDark)
-                              ? Border.all(
-                                  color: AppColors.border(context),
-                                  width: 0.5,
-                                )
-                              : null,
-                        ),
-                        child: isLoading
-                            ? const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                ),
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      l10n.productAddToCart,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          AppTextStyles.buttonHeading(
-                                            context,
-                                          ).copyWith(
-                                            color: isButtonActive
-                                                ? AppColors.text
-                                                : AppColors.paragraph(context),
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.25,
-                                          ),
-                                    ),
-                                  ),
-                                  Text(
-                                    l10n.cartPrice((total).toFormattedPrice()),
-                                    style: AppTextStyles.buttonHeading(context)
-                                        .copyWith(
-                                          color: isButtonActive
-                                              ? AppColors.text
-                                              : AppColors.paragraph(context),
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w500,
-                                          height: 1.25,
-                                        ),
-                                  ),
-                                ],
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: isButtonActive ? onSubmit : null,
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      16,
+                      0,
+                      16,
+                      0,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isButtonActive
+                          ? AppColors.primary
+                          : AppColors.disabledButtonBackground(context),
+                      borderRadius: BorderRadius.circular(10),
+                      border: (!isButtonActive && isDark)
+                          ? Border.all(
+                              color: AppColors.border(context),
+                              width: 0.5,
+                            )
+                          : null,
+                    ),
+                    child: isSubmitting
+                        ? const Center(
+                            child: SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
                               ),
-                      ),
-                    );
-                  },
+                            ),
+                          )
+                        : Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  l10n.productAddToCart,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style:
+                                      AppTextStyles.buttonHeading(
+                                        context,
+                                      ).copyWith(
+                                        color: isButtonActive
+                                            ? AppColors.text
+                                            : AppColors.paragraph(context),
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.25,
+                                      ),
+                                ),
+                              ),
+                              Text(
+                                l10n.cartPrice((total).toFormattedPrice()),
+                                style: AppTextStyles.buttonHeading(context)
+                                    .copyWith(
+                                      color: isButtonActive
+                                          ? AppColors.text
+                                          : AppColors.paragraph(context),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                      height: 1.25,
+                                    ),
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
               ),
             ],
@@ -1287,7 +1316,6 @@ class _BottomQuantityControl extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 48,
-      padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 12, 12),
       decoration: BoxDecoration(
         color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(8),
@@ -1299,36 +1327,47 @@ class _BottomQuantityControl extends StatelessWidget {
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onIncrement,
-            child: SvgPicture.asset(
-              AppAssets.cartPlusIcon,
-              width: 20,
-              height: 20,
-            ),
-          ),
-          const SizedBox(width: 14),
-          SizedBox(
-            width: 13,
-            child: Text(
-              '$quantity',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.body(context).copyWith(
-                color: AppColors.onSurface(context),
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-                height: 1.35,
+            child: Container(
+              width: 36,
+              height: 48,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                AppAssets.cartPlusIcon,
+                width: 20,
+                height: 20,
               ),
             ),
           ),
-          const SizedBox(width: 14),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: SizedBox(
+              width: 20,
+              child: Text(
+                '$quantity',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  height: 1.35,
+                ),
+              ),
+            ),
+          ),
           GestureDetector(
             behavior: HitTestBehavior.opaque,
             onTap: onDecrement,
-            child: SvgPicture.asset(
-              quantity <= 1
-                  ? AppAssets.cartDeleteIcon
-                  : AppAssets.cartMinusIcon,
-              width: 20,
-              height: 20,
+            child: Container(
+              width: 36,
+              height: 48,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                quantity <= 1
+                    ? AppAssets.cartDeleteIcon
+                    : AppAssets.cartMinusIcon,
+                width: 20,
+                height: 20,
+              ),
             ),
           ),
         ],

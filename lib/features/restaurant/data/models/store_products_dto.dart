@@ -49,6 +49,9 @@ class StoreProductsDto {
       final categoryName = cat['name'] as String? ?? '';
 
       // Parse products
+      final rawStoreId = (data is Map<String, dynamic>)
+          ? (data['id']?.toString() ?? data['store_id']?.toString())
+          : null;
       final rawProducts = section['products'] as List<dynamic>? ?? [];
       final products = rawProducts.map((rawProduct) {
         final p = rawProduct as Map<String, dynamic>;
@@ -57,9 +60,11 @@ class StoreProductsDto {
         final discountValue =
             (offer?['discount_value'] as num?)?.toDouble() ?? 0.0;
         final discountType = offer?['discount_type'] as String? ?? '';
+        final storeId = p['store_id']?.toString() ?? rawStoreId;
 
         return MenuItem(
           id: p['id']?.toString() ?? '',
+          storeId: storeId,
           name: p['name'] as String? ?? '',
           description: p['description'] as String? ?? '',
           price:

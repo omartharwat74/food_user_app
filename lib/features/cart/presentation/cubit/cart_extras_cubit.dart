@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:food_user_app/core/usecases/usecase.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_extra_item.dart';
 import 'package:food_user_app/features/cart/domain/usecases/add_to_cart_usecase.dart';
 import 'package:food_user_app/features/cart/domain/usecases/get_cart_extras_usecase.dart';
@@ -8,6 +7,7 @@ import 'cart_extras_state.dart';
 class CartExtrasCubit extends Cubit<CartExtrasState> {
   final GetCartExtrasUseCase _getCartExtrasUseCase;
   final AddToCartUseCase _addToCartUseCase;
+  String? _currentStoreId;
 
   CartExtrasCubit({
     required GetCartExtrasUseCase getCartExtrasUseCase,
@@ -16,13 +16,17 @@ class CartExtrasCubit extends Cubit<CartExtrasState> {
         _addToCartUseCase = addToCartUseCase,
         super(const CartExtrasState());
 
-  Future<void> loadExtras() async {
+  Future<void> loadExtras([String? storeId]) async {
+    final sId = storeId ?? _currentStoreId;
+    if (sId == null || sId.trim().isEmpty) return;
+    _currentStoreId = sId;
+
     emit(state.copyWith(isLoading: true));
-    final result = await _getCartExtrasUseCase(NoParams());
+    final result = await _getCartExtrasUseCase(sId);
     if (isClosed) return;
     result.fold(
       (failure) {
-        // Silently hide section on failure without breaking the cart screen
+        // Silently hide section on failure without breaking the screen
         emit(state.copyWith(
           isLoading: false,
           items: const [],

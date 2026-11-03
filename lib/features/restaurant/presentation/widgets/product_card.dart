@@ -14,8 +14,14 @@ import 'package:food_user_app/l10n/app_localizations.dart';
 class ProductCard extends StatelessWidget {
   final MenuItem item;
   final bool isGridMode;
+  final String? storeId;
 
-  const ProductCard({super.key, required this.item, this.isGridMode = false});
+  const ProductCard({
+    super.key,
+    required this.item,
+    this.isGridMode = false,
+    this.storeId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,10 @@ class ProductCard extends StatelessWidget {
         useSafeArea: true,
         builder: (ctx) => BlocProvider<ProductDetailCubit>(
           create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
-          child: ProductDetailsScreen(item: item),
+          child: ProductDetailsScreen(
+            item: item,
+            storeId: item.storeId ?? storeId,
+          ),
         ),
       ),
       child: Container(

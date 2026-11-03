@@ -8,11 +8,12 @@ import 'package:food_user_app/features/cart/data/models/promo_preview_response_d
 
 abstract class CartRemoteDataSource {
   Future<CartResponseDto> getCart();
-  Future<List<CartExtraItemModel>> getCartExtras();
+  Future<List<CartExtraItemModel>> getCartExtras({required String storeId});
   Future<CartResponseDto> addItem({
     required String productId,
     required int quantity,
     required List<int> optionValueIds,
+    String? note,
   });
   Future<CartResponseDto> updateCartItem({
     required String itemId,
@@ -47,9 +48,12 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
   }
 
   @override
-  Future<List<CartExtraItemModel>> getCartExtras() async {
+  Future<List<CartExtraItemModel>> getCartExtras({required String storeId}) async {
     try {
-      final response = await _dio.get<dynamic>(ApiEndpoints.cartExtras);
+      final response = await _dio.get<dynamic>(
+        ApiEndpoints.cartExtras,
+        queryParameters: {'store_id': storeId},
+      );
       final data = response.data;
       if (data is Map<String, dynamic>) {
         final payload = data['data'];
@@ -72,6 +76,7 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
     required String productId,
     required int quantity,
     required List<int> optionValueIds,
+    String? note,
   }) async {
     try {
       final data = <String, dynamic>{
@@ -80,6 +85,9 @@ class CartRemoteDataSourceImpl implements CartRemoteDataSource {
       };
       if (optionValueIds.isNotEmpty) {
         data['option_value_ids'] = optionValueIds;
+      }
+      if (note != null && note.trim().isNotEmpty) {
+        data['note'] = note.trim();
       }
       final response = await _dio.post<dynamic>(
         ApiEndpoints.cartItems,

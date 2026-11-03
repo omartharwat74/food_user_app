@@ -86,6 +86,7 @@ class ProductDetailDto {
 
     return MenuItem(
       id: p['id']?.toString() ?? '',
+      storeId: p['store_id']?.toString() ?? p['store']?['id']?.toString(),
       name: p['name'] as String? ?? '',
       description: p['description'] as String? ?? '',
       price:

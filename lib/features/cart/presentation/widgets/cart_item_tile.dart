@@ -100,6 +100,22 @@ class CartItemTile extends StatelessWidget {
                   height: 1.4,
                 ),
               ),
+              if (item.notes != null && item.notes!.trim().isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  item.notes!.trim(),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.caption(context).copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? AppColors.paragraph(context)
+                        : const Color(0xFF787878),
+                    fontSize: 11,
+                    height: 1.3,
+                  ),
+                ),
+              ],
             ],
           ),
         ),

@@ -99,6 +99,7 @@ class CartItemDto {
   final num? totalPrice;
   final String? name;
   final String? image;
+  final String? note;
 
   @JsonKey(name: 'option_value_ids', defaultValue: [])
   final List<int>? optionValueIds;
@@ -113,11 +114,26 @@ class CartItemDto {
     this.totalPrice,
     required this.name,
     this.image,
+    this.note,
     required this.optionValueIds,
   });
 
-  factory CartItemDto.fromJson(Map<String, dynamic> json) =>
-      _$CartItemDtoFromJson(json);
+  factory CartItemDto.fromJson(Map<String, dynamic> json) {
+    final item = _$CartItemDtoFromJson(json);
+    return CartItemDto(
+      id: item.id,
+      productId: item.productId,
+      quantity: item.quantity,
+      price: item.price,
+      unitPrice: item.unitPrice,
+      total: item.total,
+      totalPrice: item.totalPrice,
+      name: item.name,
+      image: item.image,
+      note: json['note']?.toString() ?? json['notes']?.toString(),
+      optionValueIds: item.optionValueIds,
+    );
+  }
 
   Map<String, dynamic> toJson() => _$CartItemDtoToJson(this);
 }
@@ -170,7 +186,7 @@ extension CartResponseDtoMapper on CartResponseDto {
               selectedModifiers: (item.optionValueIds ?? [])
                   .map((id) => <String, dynamic>{'option_id': id})
                   .toList(),
-              notes: '',
+              notes: item.note ?? '',
             ),
           )
           .toList(),

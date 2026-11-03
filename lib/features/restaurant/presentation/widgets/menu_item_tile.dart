@@ -12,9 +12,10 @@ import 'package:food_user_app/features/product/presentation/pages/product_detail
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 class MenuItemTile extends StatelessWidget {
-  const MenuItemTile({super.key, required this.item});
+  const MenuItemTile({super.key, required this.item, this.storeId});
 
   final MenuItem item;
+  final String? storeId;
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +202,10 @@ class MenuItemTile extends StatelessWidget {
       builder: (context) => BlocProvider<ProductDetailCubit>(
         create: (context) =>
             sl<ProductDetailCubit>()..fetchProductDetails(item.id),
-        child: ProductDetailsScreen(item: item),
+        child: ProductDetailsScreen(
+          item: item,
+          storeId: item.storeId ?? storeId,
+        ),
       ),
     );
   }

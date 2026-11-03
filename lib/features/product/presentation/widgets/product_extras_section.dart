@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,9 +9,11 @@ import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/utils/extensions/context_ext.dart';
 import 'package:food_user_app/core/utils/price_extension.dart';
-import 'package:food_user_app/core/widgets/top_snackbar.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_extra_item.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_state.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -74,9 +78,8 @@ class ProductExtrasSection extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final item = state.items[index];
                     return _ProductExtraCard(
+                      key: ValueKey(item.id),
                       item: item,
-                      isAdding: state.addingProductId == item.id,
-                      isAnyAdding: state.addingProductId != null,
                     );
                   },
                 ),
@@ -89,43 +92,180 @@ class ProductExtrasSection extends StatelessWidget {
   }
 }
 
-class _ProductExtraCard extends StatelessWidget {
+class _ProductExtraCard extends StatefulWidget {
   const _ProductExtraCard({
+    super.key,
     required this.item,
-    required this.isAdding,
-    required this.isAnyAdding,
   });
 
   final CartExtraItem item;
-  final bool isAdding;
-  final bool isAnyAdding;
 
-  void _onAdd(BuildContext context) {
-    if (isAnyAdding) return;
+  @override
+  State<_ProductExtraCard> createState() => _ProductExtraCardState();
+}
 
-    context.read<CartExtrasCubit>().addExtra(
-      item: item,
-      onSuccess: () {
-        showTopSnackBar(
-          context,
-          AppLocalizations.of(context)!.productAddedSuccessfully,
-          isError: false,
-          backgroundColor: AppColors.success,
-        );
-        try {
-          context.read<CartCubit>().loadCart();
-        } catch (_) {}
-      },
-      onError: (message) {
-        showTopSnackBar(context, message, isError: true);
-      },
+class _ProductExtraCardState extends State<_ProductExtraCard> {
+  int? _optimisticQuantity;
+  Timer? _debounceTimer;
+  bool _isSyncing = false;
+  late CartCubit _cartCubit;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _cartCubit = context.read<CartCubit>();
+  }
+
+  @override
+  void dispose() {
+    if (_debounceTimer?.isActive == true && _optimisticQuantity != null) {
+      _debounceTimer?.cancel();
+      _syncPending(_optimisticQuantity!);
+    } else {
+      _debounceTimer?.cancel();
+    }
+    super.dispose();
+  }
+
+  CartItem? _findCartItem(Cart? cart) {
+    if (cart == null) return null;
+    for (final ci in cart.items) {
+      if (ci.productId == widget.item.id ||
+          ci.menuItemId == widget.item.id.toString()) {
+        return ci;
+      }
+    }
+    return null;
+  }
+
+  void _onIncrement(int currentQuantity) {
+    final nextQuantity = (_optimisticQuantity ?? currentQuantity) + 1;
+    setState(() {
+      _optimisticQuantity = nextQuantity;
+    });
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 350), _triggerSync);
+  }
+
+  void _onDecrement(int currentQuantity) {
+    final current = _optimisticQuantity ?? currentQuantity;
+    if (current <= 0) return;
+    final nextQuantity = current - 1;
+    setState(() {
+      _optimisticQuantity = nextQuantity;
+    });
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 350), _triggerSync);
+  }
+
+  Future<void> _triggerSync() async {
+    if (!mounted) return;
+    if (_isSyncing) {
+      _debounceTimer?.cancel();
+      _debounceTimer = Timer(const Duration(milliseconds: 150), _triggerSync);
+      return;
+    }
+
+    final target = _optimisticQuantity;
+    if (target == null) return;
+
+    final currentCart = _cartCubit.state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
     );
+    final cartItem = _findCartItem(currentCart);
+    final serverQty = cartItem?.quantity ?? 0;
+
+    if (target == serverQty) {
+      if (mounted && (_debounceTimer == null || !_debounceTimer!.isActive)) {
+        setState(() => _optimisticQuantity = null);
+      }
+      return;
+    }
+
+    _isSyncing = true;
+    try {
+      if (target == 0) {
+        if (cartItem != null) {
+          await _cartCubit.updateItemQuantity(
+            cartItem.id,
+            0,
+            productId: widget.item.id,
+          );
+        }
+      } else if (cartItem != null) {
+        await _cartCubit.updateItemQuantity(
+          cartItem.id,
+          target,
+          productId: widget.item.id,
+        );
+      } else {
+        await _cartCubit.addItem(
+          productId: widget.item.id.toString(),
+          quantity: target,
+          optionValueIds: const [],
+        );
+      }
+    } catch (_) {
+      // Cart errors handled by CartCubit
+    } finally {
+      _isSyncing = false;
+      if (mounted) {
+        if (_debounceTimer == null || !_debounceTimer!.isActive) {
+          setState(() {
+            _optimisticQuantity = null;
+          });
+        }
+      }
+    }
+  }
+
+  void _syncPending(int targetQuantity) {
+    try {
+      final currentCart = _cartCubit.state.maybeWhen(
+        loaded: (c, _, _) => c,
+        orElse: () => null,
+      );
+      final cartItem = _findCartItem(currentCart);
+      final serverQty = cartItem?.quantity ?? 0;
+      if (targetQuantity == serverQty) return;
+
+      if (targetQuantity == 0) {
+        if (cartItem != null) {
+          _cartCubit.updateItemQuantity(
+            cartItem.id,
+            0,
+            productId: widget.item.id,
+          );
+        }
+      } else if (cartItem != null) {
+        _cartCubit.updateItemQuantity(
+          cartItem.id,
+          targetQuantity,
+          productId: widget.item.id,
+        );
+      } else {
+        _cartCubit.addItem(
+          productId: widget.item.id.toString(),
+          quantity: targetQuantity,
+          optionValueIds: const [],
+        );
+      }
+    } catch (_) {}
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final image = item.mainImage?.trim() ?? '';
+    final image = widget.item.mainImage?.trim() ?? '';
+
+    final cart = context.watch<CartCubit>().state.maybeWhen(
+      loaded: (c, _, _) => c,
+      orElse: () => null,
+    );
+    final cartItem = _findCartItem(cart);
+    final serverQuantity = cartItem?.quantity ?? 0;
+    final displayQuantity = _optimisticQuantity ?? serverQuantity;
 
     return Container(
       width: 134,
@@ -167,42 +307,9 @@ class _ProductExtraCard extends StatelessWidget {
                 PositionedDirectional(
                   end: 8,
                   bottom: 8,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: isAnyAdding ? null : () => _onAdd(context),
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceCard(context),
-                        borderRadius: BorderRadius.circular(4),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.12),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: isAdding
-                          ? const SizedBox(
-                              width: 14,
-                              height: 14,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.primary,
-                                ),
-                              ),
-                            )
-                          : SvgPicture.asset(
-                              AppAssets.cartPlusIcon,
-                              width: 18,
-                              height: 18,
-                            ),
-                    ),
-                  ),
+                  child: displayQuantity > 0
+                      ? _buildCounter(displayQuantity)
+                      : _buildAddButton(),
                 ),
               ],
             ),
@@ -219,7 +326,7 @@ class _ProductExtraCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  item.name,
+                  widget.item.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.caption(context).copyWith(
@@ -236,7 +343,7 @@ class _ProductExtraCard extends StatelessWidget {
                   children: [
                     Text(
                       AppLocalizations.of(context)!.priceWithCurrency(
-                        item.priceAfterDiscount.toFormattedPrice(),
+                        widget.item.priceAfterDiscount.toFormattedPrice(),
                       ),
                       style: AppTextStyles.textLink(context).copyWith(
                         color: AppColors.onSurface(context),
@@ -245,10 +352,10 @@ class _ProductExtraCard extends StatelessWidget {
                         height: 1.3,
                       ),
                     ),
-                    if (item.hasDiscount)
+                    if (widget.item.hasDiscount)
                       Text(
                         AppLocalizations.of(context)!.priceWithCurrency(
-                          item.basePrice.toFormattedPrice(),
+                          widget.item.basePrice.toFormattedPrice(),
                         ),
                         style: TextStyle(
                           fontSize: 10,
@@ -260,6 +367,109 @@ class _ProductExtraCard extends StatelessWidget {
                   ],
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return GestureDetector(
+      key: ValueKey('extra_add_${widget.item.id}'),
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _onIncrement(0),
+      child: Container(
+        width: 28,
+        height: 28,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard(context),
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: SvgPicture.asset(
+          AppAssets.cartPlusIcon,
+          width: 18,
+          height: 18,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCounter(int quantity) {
+    return Container(
+      height: 30,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceCard(context),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: AppColors.border(context),
+          width: 0.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            key: ValueKey('extra_increment_${widget.item.id}'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _onIncrement(quantity),
+            child: Container(
+              width: 28,
+              height: 30,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                AppAssets.cartPlusIcon,
+                width: 14,
+                height: 14,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: SizedBox(
+              width: 20,
+              child: Text(
+                '$quantity',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.body(context).copyWith(
+                  color: AppColors.onSurface(context),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  height: 1.2,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            key: ValueKey('extra_decrement_${widget.item.id}'),
+            behavior: HitTestBehavior.opaque,
+            onTap: () => _onDecrement(quantity),
+            child: Container(
+              width: 28,
+              height: 30,
+              alignment: Alignment.center,
+              child: SvgPicture.asset(
+                quantity == 1
+                    ? AppAssets.cartDeleteIcon
+                    : AppAssets.cartMinusIcon,
+                width: 14,
+                height: 14,
+              ),
             ),
           ),
         ],

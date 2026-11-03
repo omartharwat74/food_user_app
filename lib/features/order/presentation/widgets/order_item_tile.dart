@@ -251,6 +251,16 @@ class OrderItemTile extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    SvgPicture.asset(
+                      AppAssets.orderNoteEditIcon,
+                      width: 16,
+                      height: 16,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
                     Text(
                       l10n.productYourNotes,
                       style: TextStyle(
@@ -259,16 +269,6 @@ class OrderItemTile extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                         height: 12.5 / 10.0,
                         color: AppColors.onSurface(context),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                      AppAssets.orderNoteEditIcon,
-                      width: 16,
-                      height: 16,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.primary,
-                        BlendMode.srcIn,
                       ),
                     ),
                   ],

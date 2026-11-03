@@ -16,6 +16,7 @@ class AddToCartUseCase implements UseCase<Cart, AddToCartParams> {
       productId: params.productId,
       quantity: params.quantity,
       optionValueIds: params.optionValueIds,
+      note: params.note,
     );
   }
 }
@@ -24,13 +25,15 @@ class AddToCartParams extends Equatable {
   final String productId;
   final int quantity;
   final List<int> optionValueIds;
+  final String? note;
 
   const AddToCartParams({
     required this.productId,
     required this.quantity,
     required this.optionValueIds,
+    this.note,
   });
 
   @override
-  List<Object?> get props => [productId, quantity, optionValueIds];
+  List<Object?> get props => [productId, quantity, optionValueIds, note];
 }

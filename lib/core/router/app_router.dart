@@ -244,22 +244,31 @@ class AppRouter {
       GoRoute(
         path: RouteNames.productDetails,
         builder: (c, s) {
-          final item = s.extra is MenuItem
-              ? s.extra as MenuItem
-              : const MenuItem(
-                  id: 'burger-combo',
-                  name: 'Burger meal with fries offer',
-                  description:
-                      'Fresh burger sandwich with grilled beef and special sauce, served with fries.',
-                  price: 200,
-                  originalPrice: 200,
-                  imageUrl: '',
-                  available: true,
-                );
+          String? storeId = s.uri.queryParameters['store_id'];
+          MenuItem item;
+          if (s.extra is MenuItem) {
+            item = s.extra as MenuItem;
+            storeId ??= item.storeId;
+          } else if (s.extra is Map<String, dynamic>) {
+            final map = s.extra as Map<String, dynamic>;
+            item = map['item'] as MenuItem;
+            storeId ??= map['store_id']?.toString() ?? item.storeId;
+          } else {
+            item = const MenuItem(
+              id: 'burger-combo',
+              name: 'Burger meal with fries offer',
+              description:
+                  'Fresh burger sandwich with grilled beef and special sauce, served with fries.',
+              price: 200,
+              originalPrice: 200,
+              imageUrl: '',
+              available: true,
+            );
+          }
           return BlocProvider<ProductDetailCubit>(
             create: (context) =>
                 sl<ProductDetailCubit>()..fetchProductDetails(item.id),
-            child: ProductDetailsScreen(item: item),
+            child: ProductDetailsScreen(item: item, storeId: storeId),
           );
         },
       ),

@@ -28,9 +28,9 @@ class CartRepositoryImpl implements CartRepository {
   }
 
   @override
-  Future<Either<Failure, List<CartExtraItem>>> getCartExtras() async {
+  Future<Either<Failure, List<CartExtraItem>>> getCartExtras({required String storeId}) async {
     try {
-      final items = await remoteDataSource.getCartExtras();
+      final items = await remoteDataSource.getCartExtras(storeId: storeId);
       return Right(items);
     } catch (e) {
       return Left(_mapExceptionToFailure(e));
@@ -42,12 +42,14 @@ class CartRepositoryImpl implements CartRepository {
     required String productId,
     required int quantity,
     required List<int> optionValueIds,
+    String? note,
   }) async {
     try {
       final dto = await remoteDataSource.addItem(
         productId: productId,
         quantity: quantity,
         optionValueIds: optionValueIds,
+        note: note,
       );
       return Right(dto.toEntity());
     } catch (e) {

@@ -49,6 +49,7 @@ class CartCubit extends Cubit<CartState> {
     required String productId,
     required int quantity,
     required List<int> optionValueIds,
+    String? note,
   }) async {
     final currentCart = state.maybeWhen(
       loaded: (cart, promo, _) => cart,
@@ -61,13 +62,21 @@ class CartCubit extends Cubit<CartState> {
       orElse: () => null,
     );
 
-    emit(const CartState.loading());
+    final resolvedProductId = int.tryParse(productId);
+    emit(
+      CartState.loaded(
+        cart: currentCart,
+        appliedPromo: currentPromo,
+        updatingProductId: resolvedProductId,
+      ),
+    );
 
     final result = await addToCartUseCase(
       AddToCartParams(
         productId: productId,
         quantity: quantity,
         optionValueIds: optionValueIds,
+        note: note,
       ),
     );
 
@@ -92,7 +101,7 @@ class CartCubit extends Cubit<CartState> {
               selectedModifiers: optionValueIds
                   .map((id) => {'option_id': id.toString()})
                   .toList(),
-              notes: null,
+              notes: note,
             ),
           );
           return;

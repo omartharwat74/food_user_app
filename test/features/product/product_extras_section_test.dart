@@ -2,15 +2,20 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:food_user_app/features/cart/domain/entities/cart.dart';
 import 'package:food_user_app/features/cart/domain/entities/cart_extra_item.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_cubit.dart';
 import 'package:food_user_app/features/cart/presentation/cubit/cart_extras_state.dart';
+import 'package:food_user_app/features/cart/presentation/cubit/cart_state.dart';
 import 'package:food_user_app/features/product/presentation/widgets/product_extras_section.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockCartExtrasCubit extends MockCubit<CartExtrasState>
     implements CartExtrasCubit {}
+
+class MockCartCubit extends MockCubit<CartState> implements CartCubit {}
 
 class FakeCartExtraItem extends Fake implements CartExtraItem {}
 
@@ -20,9 +25,14 @@ void main() {
   });
 
   late MockCartExtrasCubit mockCartExtrasCubit;
+  late MockCartCubit mockCartCubit;
 
   setUp(() {
     mockCartExtrasCubit = MockCartExtrasCubit();
+    mockCartCubit = MockCartCubit();
+    when(() => mockCartCubit.state).thenReturn(
+      const CartState.loaded(cart: Cart.empty()),
+    );
   });
 
   Widget buildTestableWidget(Widget child) {
@@ -31,8 +41,11 @@ void main() {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: BlocProvider<CartExtrasCubit>.value(
-          value: mockCartExtrasCubit,
+        body: MultiBlocProvider(
+          providers: [
+            BlocProvider<CartExtrasCubit>.value(value: mockCartExtrasCubit),
+            BlocProvider<CartCubit>.value(value: mockCartCubit),
+          ],
           child: child,
         ),
       ),
@@ -86,28 +99,6 @@ void main() {
       expect(find.text('بطاطس مقلية'), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator on the card currently being added', (tester) async {
-      const items = [
-        CartExtraItem(
-          id: 1,
-          name: 'مياه معدنية',
-          basePrice: 15.0,
-          priceAfterDiscount: 10.0,
-        ),
-      ];
-
-      when(() => mockCartExtrasCubit.state).thenReturn(
-        const CartExtrasState(items: items, addingProductId: 1),
-      );
-
-      await tester.pumpWidget(
-        buildTestableWidget(const ProductExtrasSection()),
-      );
-      await tester.pump();
-
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    });
-
     testWidgets('renders add button as a 28x28 rectangle with rounded corners', (tester) async {
       const items = [
         CartExtraItem(
@@ -141,7 +132,7 @@ void main() {
       expect(decoration.borderRadius, equals(BorderRadius.circular(4)));
     });
 
-    testWidgets('tapping add button triggers addExtra and shows success snackbar on success', (tester) async {
+    testWidgets('tapping add button increments quantity optimistically and calls CartCubit.addItem after debounce', (tester) async {
       const items = [
         CartExtraItem(
           id: 1,
@@ -156,38 +147,34 @@ void main() {
       );
 
       when(
-        () => mockCartExtrasCubit.addExtra(
-          item: any(named: 'item'),
-          onSuccess: any(named: 'onSuccess'),
-          onError: any(named: 'onError'),
+        () => mockCartCubit.addItem(
+          productId: any(named: 'productId'),
+          quantity: any(named: 'quantity'),
+          optionValueIds: any(named: 'optionValueIds'),
         ),
-      ).thenAnswer((invocation) async {
-        final onSuccess = invocation.namedArguments[#onSuccess] as VoidCallback;
-        onSuccess();
-        return true;
-      });
+      ).thenAnswer((_) async {});
 
       await tester.pumpWidget(
         buildTestableWidget(const ProductExtrasSection()),
       );
       await tester.pump();
 
-      final button = find.byType(GestureDetector).last;
+      final button = find.byKey(const ValueKey('extra_add_1'));
       await tester.tap(button);
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 100));
 
-      expect(find.text('تم إضافة المنتج للسلة بنجاح'), findsOneWidget);
+      // Shows quantity 1 optimistically
+      expect(find.text('1'), findsOneWidget);
 
-      // Verify that the snackbar container background color is #0C9D61
-      final snackbarContainers = tester.widgetList<Container>(find.byType(Container)).where((container) {
-        final decoration = container.decoration;
-        if (decoration is BoxDecoration) {
-          return decoration.color == const Color(0xFF0C9D61);
-        }
-        return false;
-      });
-      expect(snackbarContainers, isNotEmpty);
+      await tester.pump(const Duration(milliseconds: 600));
+
+      verify(
+        () => mockCartCubit.addItem(
+          productId: '1',
+          quantity: 1,
+          optionValueIds: [],
+        ),
+      ).called(1);
     });
   });
 }

@@ -1,3 +1,4 @@
+import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/features/cart/presentation/widgets/cart_floating_banner.dart';
 import 'package:food_user_app/features/restaurant/presentation/widgets/product_card.dart';
 
@@ -738,11 +739,13 @@ class _RestaurantInfoCard extends StatelessWidget {
                       Expanded(
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantDeliveryScooterIcon,
-                          label: isArabic
-                              ? AppLocalizations.of(context)!.priceWithCurrency(
-                                  restaurant.deliveryFee.toString(),
-                                )
-                              : 'EGP ${restaurant.deliveryFee}',
+                          label: restaurant.deliveryFee <= 0
+                              ? AppLocalizations.of(context)!.free
+                              : (isArabic
+                                  ? AppLocalizations.of(context)!.priceWithCurrency(
+                                      restaurant.deliveryFee.toFormattedPrice(),
+                                    )
+                                  : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}'),
                           iconOnRight: true,
                         ),
                       ),
@@ -779,11 +782,13 @@ class _RestaurantInfoCard extends StatelessWidget {
                       Expanded(
                         child: _InfoMetric(
                           assetName: AppAssets.restaurantDeliveryScooterIcon,
-                          label: isArabic
-                              ? AppLocalizations.of(context)!.priceWithCurrency(
-                                  restaurant.deliveryFee.toString(),
-                                )
-                              : 'EGP ${restaurant.deliveryFee}',
+                          label: restaurant.deliveryFee <= 0
+                              ? AppLocalizations.of(context)!.free
+                              : (isArabic
+                                  ? AppLocalizations.of(context)!.priceWithCurrency(
+                                      restaurant.deliveryFee.toFormattedPrice(),
+                                    )
+                                  : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}'),
                           iconOnRight: false,
                         ),
                       ),

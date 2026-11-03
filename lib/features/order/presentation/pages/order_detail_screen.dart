@@ -22,7 +22,6 @@ import 'package:food_user_app/features/order/presentation/cubit/order_detail_sta
 import 'package:food_user_app/features/order/presentation/cubit/order_history_cubit.dart';
 import 'package:food_user_app/features/order/presentation/utils/order_status_mapper.dart';
 import 'package:food_user_app/features/order/presentation/widgets/order_item_tile.dart';
-import 'package:food_user_app/features/support/presentation/cubit/support_ticket_cubit.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
 
 enum OrderDetailsStatus {
@@ -52,14 +51,9 @@ class OrderDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (_) => di.sl<SupportTicketCubit>()),
-        BlocProvider(
-          create: (_) => di.sl<OrderDetailCubit>()
-            ..loadOrderDetails(orderId, initialOrder: initialOrder),
-        ),
-      ],
+    return BlocProvider(
+      create: (_) => di.sl<OrderDetailCubit>()
+        ..loadOrderDetails(orderId, initialOrder: initialOrder),
       child: _OrderDetailsScreenContent(
         orderId: orderId,
         fallbackStatus: status,
@@ -101,33 +95,16 @@ class _OrderDetailsScreenContentState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<SupportTicketCubit, SupportTicketState>(
-          listener: (context, state) {
-            state.maybeWhen(
-              success: (ticket) {
-                context.push(RouteNames.helpSupport, extra: ticket.id);
-              },
-              error: (message) {
-                di.sl<SnackbarService>().showError(message);
-              },
-              orElse: () {},
-            );
-          },
-        ),
-        BlocListener<OrderDetailCubit, OrderDetailState>(
-          listener: (context, state) {
-            if (state.status == OrderDetailScreenStatus.cancelSuccess) {
-              final msg = state.successMessage ?? l10n.orderCancelDesignOnly;
-              di.sl<SnackbarService>().showSuccess(msg);
-            } else if (state.status == OrderDetailScreenStatus.error &&
-                state.errorMessage != null) {
-              di.sl<SnackbarService>().showError(state.errorMessage!);
-            }
-          },
-        ),
-      ],
+    return BlocListener<OrderDetailCubit, OrderDetailState>(
+      listener: (context, state) {
+        if (state.status == OrderDetailScreenStatus.cancelSuccess) {
+          final msg = state.successMessage ?? l10n.orderCancelDesignOnly;
+          di.sl<SnackbarService>().showSuccess(msg);
+        } else if (state.status == OrderDetailScreenStatus.error &&
+            state.errorMessage != null) {
+          di.sl<SnackbarService>().showError(state.errorMessage!);
+        }
+      },
       child: BlocBuilder<OrderDetailCubit, OrderDetailState>(
         builder: (context, state) {
           final order = state.order;
@@ -252,14 +229,8 @@ class _OrderDetailsScreenContentState
                                       }
                                     },
                                     onSupport: () {
-                                      context
-                                          .read<SupportTicketCubit>()
-                                          .createTicket(
-                                            subject:
-                                                'Order #${order?.code ?? widget.orderId}',
-                                            message:
-                                                'I need help with order #${order?.code ?? widget.orderId}',
-                                          );
+                                      final rawId = order?.id ?? int.tryParse(widget.orderId);
+                                      context.push(RouteNames.helpSupport, extra: rawId);
                                     },
                                   ),
                                   const SizedBox(

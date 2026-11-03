@@ -47,6 +47,14 @@ abstract class RestaurantDto with _$RestaurantDto {
     if (!map.containsKey('is_favorited') && map.containsKey('is_fav')) {
       map['is_favorited'] = map['is_fav'];
     }
+    if (map['delivery_price'] != null) {
+      final dp = map['delivery_price'];
+      if (dp is num) {
+        map['delivery_fee'] = dp.toDouble();
+      } else if (dp is String) {
+        map['delivery_fee'] = double.tryParse(dp);
+      }
+    }
     if ((map['cuisineType'] == null ||
             map['cuisineType'].toString().trim().isEmpty) &&
         map['tags'] is List) {

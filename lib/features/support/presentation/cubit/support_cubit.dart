@@ -20,8 +20,19 @@ class SupportCubit extends Cubit<SupportState> {
 
   StreamSubscription<DatabaseEvent>? _firebaseSub;
   int? _listeningConversationId;
+  int? _orderId;
 
   // ── Public API ─────────────────────────────────────────────────────────────
+
+  /// Sets the optional order ID when opened from the Order Details screen.
+  void setInitialOrderId(int? orderId) {
+    _orderId = orderId;
+  }
+
+  /// Clears any pending order ID.
+  void clearOrderData() {
+    _orderId = null;
+  }
 
   /// Loads the active support conversation from `GET /api/v1/support`.
   /// If no conversation exists, clears state and stops any Firebase listener.
@@ -45,6 +56,12 @@ class SupportCubit extends Cubit<SupportState> {
       final conversation = dto.toEntity();
       final msgs = List<SupportChatMsg>.from(conversation.messages);
       msgs.sort((a, b) => a.id.compareTo(b.id));
+
+      // If the conversation already exists and has prior messages,
+      // it is strictly forbidden to send order_id to prevent a 422 error.
+      if (msgs.isNotEmpty) {
+        _orderId = null;
+      }
 
       final maxId = _maxId(msgs);
 
@@ -76,12 +93,18 @@ class SupportCubit extends Cubit<SupportState> {
   /// Instantly appends the returned message and updates [lastMessageId].
   Future<void> sendMessage({String? text, File? image}) async {
     if (isClosed) return;
+    if (state.isLoading || state.isSending) return;
     if ((text == null || text.trim().isEmpty) && image == null) return;
+
+    final int? orderIdToSend = _orderId;
+    // Clear immediately so any subsequent message never sends order_id again
+    _orderId = null;
 
     emit(state.copyWith(isSending: true, clearError: true));
     try {
       final formData = FormData.fromMap({
         if (text != null && text.trim().isNotEmpty) 'body': text.trim(),
+        'order_id': ?orderIdToSend,
         if (image != null)
           'attachment': await MultipartFile.fromFile(
             image.path,
@@ -135,6 +158,9 @@ class SupportCubit extends Cubit<SupportState> {
         _startFirebaseListener(updatedConv.id);
       }
     } on DioException catch (e) {
+      if (e.response?.statusCode != 422 && orderIdToSend != null) {
+        _orderId = orderIdToSend;
+      }
       if (!isClosed) {
         emit(
           state.copyWith(isSending: false, errorMessage: _extractDioError(e)),

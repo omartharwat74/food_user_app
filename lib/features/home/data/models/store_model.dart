@@ -34,6 +34,7 @@ class StoreModel extends Store {
     super.ratingAvg,
     super.ratingCount,
     super.availability,
+    super.deliveryPrice,
   });
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
@@ -77,6 +78,11 @@ class StoreModel extends Store {
           ? (json['rating_count'] as num).toInt()
           : null,
       availability: json['availability']?.toString() ?? 'open',
+      deliveryPrice: json['delivery_price'] != null
+          ? (json['delivery_price'] as num).toDouble()
+          : (json['delivery_fee'] != null
+              ? (json['delivery_fee'] as num).toDouble()
+              : null),
     );
   }
 }

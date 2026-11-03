@@ -460,7 +460,23 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.helpSupport,
-        builder: (c, s) => const HelpSupportScreen(),
+        builder: (c, s) {
+          int? orderId;
+          final extra = s.extra;
+          if (extra is int) {
+            orderId = extra;
+          } else if (extra is String) {
+            orderId = int.tryParse(extra);
+          } else if (extra is Map) {
+            final raw = extra['order_id'] ?? extra['orderId'];
+            if (raw is int) {
+              orderId = raw;
+            } else if (raw is String) {
+              orderId = int.tryParse(raw);
+            }
+          }
+          return HelpSupportScreen(orderId: orderId);
+        },
       ),
       GoRoute(path: RouteNames.about, builder: (c, s) => const AboutScreen()),
     ],

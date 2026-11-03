@@ -42,12 +42,14 @@ class SupportChatMessage {
 }
 
 class HelpSupportScreen extends StatelessWidget {
-  const HelpSupportScreen({super.key});
+  const HelpSupportScreen({super.key, this.orderId});
+
+  final int? orderId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => di.sl<SupportCubit>(),
+      create: (_) => di.sl<SupportCubit>()..setInitialOrderId(orderId),
       child: const _HelpSupportScreenContent(),
     );
   }
@@ -68,6 +70,7 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
   static const _composerBottomPadding = 20.0;
   static const _messageHorizontalPadding = 16.0;
 
+  late final SupportCubit _supportCubit;
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   File? _selectedImage;
@@ -75,14 +78,16 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
   @override
   void initState() {
     super.initState();
+    _supportCubit = context.read<SupportCubit>();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) context.read<SupportCubit>().loadInitialSupport();
+      if (mounted) _supportCubit.loadInitialSupport();
     });
   }
 
   @override
   void dispose() {
-    context.read<SupportCubit>().cleanupListeners();
+    _supportCubit.cleanupListeners();
+    _supportCubit.clearOrderData();
     _controller.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -99,9 +104,10 @@ class _HelpSupportScreenContentState extends State<_HelpSupportScreenContent> {
   }
 
   void _sendText() {
+    if (_supportCubit.state.isLoading || _supportCubit.state.isSending) return;
     final text = _controller.text.trim();
     if (text.isEmpty && _selectedImage == null) return;
-    context.read<SupportCubit>().sendMessage(text: text, image: _selectedImage);
+    _supportCubit.sendMessage(text: text, image: _selectedImage);
     _controller.clear();
     setState(() {
       _selectedImage = null;

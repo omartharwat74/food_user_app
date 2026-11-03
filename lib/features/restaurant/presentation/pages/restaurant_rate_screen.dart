@@ -460,11 +460,13 @@ class _RestaurantFacts extends StatelessWidget {
       children: [
         _FactRow(
           label: copy.deliveryPrice,
-          value: isArabic
-              ? AppLocalizations.of(
-                  context,
-                )!.priceWithCurrency(restaurant.deliveryFee.toFormattedPrice())
-              : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}',
+          value: restaurant.deliveryFee <= 0
+              ? AppLocalizations.of(context)!.free
+              : (isArabic
+                  ? AppLocalizations.of(
+                      context,
+                    )!.priceWithCurrency(restaurant.deliveryFee.toFormattedPrice())
+                  : 'EGP ${restaurant.deliveryFee.toFormattedPrice()}'),
         ),
         _FactRow(
           label: copy.minimumOrder,

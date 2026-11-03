@@ -13,6 +13,7 @@ class Restaurant extends Equatable {
   final int deliveryTimeMin;
   final int deliveryTimeMax;
   final double deliveryFee;
+  double get deliveryPrice => deliveryFee;
   final bool isFavorited;
   final bool isAvailable;
   final bool isMajor;

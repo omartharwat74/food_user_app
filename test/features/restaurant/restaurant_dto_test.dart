@@ -152,5 +152,45 @@ void main() {
       expect(dto.sections.first.items.first.originalPrice, 55.0);
       expect(dto.sections.first.items.first.available, isTrue);
     });
+
+    test('parses delivery_price correctly in RestaurantDto and maps to entity', () {
+      final jsonWithNum = {
+        "id": 1,
+        "name": "عز الشام",
+        "delivery_price": 20,
+        "prep_time_from": 30,
+        "prep_time_to": 45,
+      };
+
+      final dto1 = RestaurantDto.fromJson(jsonWithNum);
+      expect(dto1.deliveryFee, 20.0);
+      final entity1 = dto1.toEntity();
+      expect(entity1.deliveryFee, 20.0);
+      expect(entity1.deliveryPrice, 20.0);
+
+      final jsonWithString = {
+        "id": 2,
+        "name": "كينج برجر",
+        "delivery_price": "25.50",
+      };
+
+      final dto2 = RestaurantDto.fromJson(jsonWithString);
+      expect(dto2.deliveryFee, 25.50);
+      final entity2 = dto2.toEntity();
+      expect(entity2.deliveryFee, 25.50);
+      expect(entity2.deliveryPrice, 25.50);
+
+      final jsonWithZero = {
+        "id": 3,
+        "name": "مطعم مجاني",
+        "delivery_price": 0,
+      };
+
+      final dto3 = RestaurantDto.fromJson(jsonWithZero);
+      expect(dto3.deliveryFee, 0.0);
+      final entity3 = dto3.toEntity();
+      expect(entity3.deliveryFee, 0.0);
+      expect(entity3.deliveryPrice, 0.0);
+    });
   });
 }

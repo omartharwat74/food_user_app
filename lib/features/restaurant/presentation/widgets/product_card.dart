@@ -36,6 +36,9 @@ class ProductCard extends StatelessWidget {
         context: context,
         isScrollControlled: true,
         useSafeArea: true,
+        isDismissible: true,
+        enableDrag: true,
+        backgroundColor: Colors.transparent,
         builder: (ctx) => BlocProvider<ProductDetailCubit>(
           create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(item.id),
           child: ProductDetailsScreen(

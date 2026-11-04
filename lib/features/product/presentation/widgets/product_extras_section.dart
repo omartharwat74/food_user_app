@@ -39,9 +39,8 @@ class ProductExtrasSection extends StatelessWidget {
         }
 
         return Container(
-          margin: const EdgeInsetsDirectional.only(top: 20),
           width: double.infinity,
-          padding: const EdgeInsetsDirectional.fromSTEB(16, 16, 16, 20),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 16),
           color: AppColors.surfaceCard(context),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

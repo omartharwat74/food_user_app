@@ -149,8 +149,12 @@ class AppTextStyles {
     fontWeight: FontWeight.w400,
   );
 
-  static TextStyle otpDigitActive(BuildContext context) =>
-      TextStyle(fontSize: 12, color: AppColors.onSurface(context), height: 1.3);
+  static TextStyle otpDigitActive(BuildContext context) => TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.onSurface(context),
+    height: 1.3,
+  );
 
   static TextStyle otpDigitInactive(BuildContext context) =>
       TextStyle(fontSize: 12, color: AppColors.paragraph(context), height: 1.3);

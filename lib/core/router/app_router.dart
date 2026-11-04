@@ -274,13 +274,29 @@ class AppRouter {
               available: true,
             );
           }
-          return BlocProvider<ProductDetailCubit>(
-            create: (context) =>
-                sl<ProductDetailCubit>()..fetchProductDetails(item.id),
-            child: ProductDetailsScreen(
-              item: item,
-              storeId: storeId,
-              isPickupIntent: isPickup,
+          return Scaffold(
+            backgroundColor: Colors.black54,
+            body: SafeArea(
+              bottom: false,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => c.pop(),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: GestureDetector(
+                    onTap: () {},
+                    child: BlocProvider<ProductDetailCubit>(
+                      create: (context) =>
+                          sl<ProductDetailCubit>()..fetchProductDetails(item.id),
+                      child: ProductDetailsScreen(
+                        item: item,
+                        storeId: storeId,
+                        isPickupIntent: isPickup,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           );
         },

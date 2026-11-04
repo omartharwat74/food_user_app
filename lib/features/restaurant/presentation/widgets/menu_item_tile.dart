@@ -205,6 +205,9 @@ class MenuItemTile extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
+      isDismissible: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => BlocProvider<ProductDetailCubit>(
         create: (context) =>
             sl<ProductDetailCubit>()..fetchProductDetails(item.id),

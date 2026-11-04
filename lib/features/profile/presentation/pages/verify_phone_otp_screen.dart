@@ -431,6 +431,8 @@ class _OtpDigitBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFilled = !_isPlaceholder;
+
     return Container(
       width: size,
       height: 48,
@@ -439,23 +441,21 @@ class _OtpDigitBox extends StatelessWidget {
         color: AppColors.surfaceCard(context),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: active
+          color: isFilled
               ? AppColors.otpActiveBorder(context)
               : AppColors.border(context),
-          width: 0.5,
+          width: isFilled ? 1.0 : 0.5,
         ),
       ),
       child: Text(
         char,
         textAlign: TextAlign.center,
-        style: AppTextStyles.otpDigitActive(context).copyWith(
-          color: _isPlaceholder
-              ? AppColors.paragraph(context)
-              : AppColors.onSurface(context),
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-          height: 1.3,
-        ),
+        style: isFilled
+            ? AppTextStyles.otpDigitActive(context).copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              )
+            : AppTextStyles.otpDigitInactive(context),
       ),
     );
   }
@@ -491,7 +491,8 @@ class _ResendCodeRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textDirection: Directionality.of(context),
                 style: AppTextStyles.footerSecondary(context).copyWith(
-                  color: enabled ? AppColors.primary : Colors.grey,
+                  color:
+                      enabled ? AppColors.primary : AppColors.paragraph(context),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   height: 1.25,

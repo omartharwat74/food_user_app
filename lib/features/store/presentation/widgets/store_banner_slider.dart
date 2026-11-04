@@ -76,6 +76,9 @@ class _StoreBannerSliderState extends State<StoreBannerSlider> {
           context: context,
           isScrollControlled: true,
           useSafeArea: true,
+          isDismissible: true,
+          enableDrag: true,
+          backgroundColor: Colors.transparent,
           builder: (ctx) => BlocProvider<ProductDetailCubit>(
             create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(productId),
             child: ProductDetailsScreen(

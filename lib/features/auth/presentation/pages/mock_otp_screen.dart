@@ -205,7 +205,11 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
                     style: AppTextStyles.subtitle(context),
                   ),
                   const SizedBox(height: 32),
-                  _OtpBoxes(controller: _controller, focusNode: _focusNode),
+                  _OtpBoxes(
+                    controller: _controller,
+                    focusNode: _focusNode,
+                    onSubmitted: _verify,
+                  ),
                   const SizedBox(height: 20),
                   BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (prev, curr) =>
@@ -235,10 +239,15 @@ class _MockOtpScreenState extends State<MockOtpScreen> {
 }
 
 class _OtpBoxes extends StatelessWidget {
-  const _OtpBoxes({required this.controller, required this.focusNode});
+  const _OtpBoxes({
+    required this.controller,
+    required this.focusNode,
+    this.onSubmitted,
+  });
 
   final TextEditingController controller;
   final FocusNode focusNode;
+  final VoidCallback? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -268,21 +277,23 @@ class _OtpBoxes extends StatelessWidget {
                 decoration: const InputDecoration(
                   border: InputBorder.none,
                   counterText: '',
+                  contentPadding: EdgeInsets.zero,
                 ),
+                onSubmitted: onSubmitted != null ? (_) => onSubmitted!() : null,
               ),
             ),
           ),
           AnimatedBuilder(
             animation: controller,
             builder: (context, _) {
-              final value = controller.text;
+              final text = controller.text;
               return Directionality(
                 textDirection: TextDirection.ltr,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(6, (index) {
-                    final active = index == value.length.clamp(0, 5);
-                    final char = index < value.length ? value[index] : '-';
+                    final isFilled = index < text.length;
+                    final char = isFilled ? text[index] : '-';
                     return InkWell(
                       borderRadius: BorderRadius.circular(8),
                       onTap: focusNode.requestFocus,
@@ -294,16 +305,19 @@ class _OtpBoxes extends StatelessWidget {
                           color: AppColors.surfaceCard(context),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: active
+                            color: isFilled
                                 ? AppColors.otpActiveBorder(context)
                                 : AppColors.border(context),
-                            width: 0.5,
+                            width: isFilled ? 1.0 : 0.5,
                           ),
                         ),
                         child: Text(
                           char,
-                          style: active
-                              ? AppTextStyles.otpDigitActive(context)
+                          style: isFilled
+                              ? AppTextStyles.otpDigitActive(context).copyWith(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                )
                               : AppTextStyles.otpDigitInactive(context),
                         ),
                       ),
@@ -336,19 +350,22 @@ class _ResendRow extends StatelessWidget {
           l10n.otpTimerSeconds(seconds),
           style: AppTextStyles.timerText(context),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
         TextButton(
           onPressed: seconds == 0 ? onResend : null,
           style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             minimumSize: Size.zero,
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
             l10n.otpResend,
             style: AppTextStyles.textLink(context).copyWith(
-              color: seconds == 0 ? AppColors.primary : Colors.grey,
+              color: seconds == 0
+                  ? AppColors.primary
+                  : AppColors.paragraph(context),
               fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),

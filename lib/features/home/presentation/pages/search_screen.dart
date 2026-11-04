@@ -12,7 +12,6 @@ import 'package:food_user_app/core/theme/text_styles.dart';
 import 'package:food_user_app/core/widgets/app_media.dart';
 import 'package:food_user_app/core/widgets/app_search_field.dart';
 
-import 'package:food_user_app/features/cart/domain/entities/cart_item.dart';
 
 import 'package:food_user_app/features/service_listing/presentation/models/service_listing_config.dart';
 import 'package:food_user_app/l10n/app_localizations.dart';
@@ -28,6 +27,9 @@ import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dar
 import 'package:food_user_app/features/restaurant/domain/entities/menu_item.dart';
 import 'package:food_user_app/core/widgets/empty_state_widget.dart';
 import 'package:food_user_app/features/market/presentation/widgets/hypermarket_mini_card.dart';
+import 'package:food_user_app/core/di/injection_container.dart';
+import 'package:food_user_app/features/restaurant/presentation/cubit/product_detail_cubit.dart';
+import 'package:food_user_app/features/product/presentation/pages/product_details_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, this.sectionId});
@@ -1023,14 +1025,26 @@ void _openSearchResult(BuildContext context, _SearchResult result) {
     context.push(RouteNames.restaurantDetailFor(result.id));
     return;
   }
-  context.push(
-    RouteNames.productDetails,
-    extra: CartItem(
-      id: result.id,
-      name: result.title,
-      description: result.subtitle,
-      price: result.priceValue,
-      imageAsset: result.imageAsset,
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    isDismissible: true,
+    enableDrag: true,
+    useSafeArea: true,
+    backgroundColor: Colors.transparent,
+    builder: (ctx) => BlocProvider<ProductDetailCubit>(
+      create: (_) => sl<ProductDetailCubit>()..fetchProductDetails(result.id),
+      child: ProductDetailsScreen(
+        item: MenuItem(
+          id: result.id,
+          name: result.title,
+          description: result.subtitle,
+          price: result.priceValue,
+          originalPrice: result.priceValue,
+          imageUrl: result.imageAsset,
+          available: true,
+        ),
+      ),
     ),
   );
 }

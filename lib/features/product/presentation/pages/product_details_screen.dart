@@ -152,9 +152,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       duration: const Duration(seconds: 3),
                     ),
                   );
-                  if (Navigator.canPop(context)) {
-                    Navigator.pop(context);
-                  }
+                  Future.delayed(const Duration(milliseconds: 350), () {
+                    if (mounted && Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  });
                 }
               },
               error: (cart, promo, message) {
@@ -284,60 +286,39 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               orElse: () {},
             );
           },
-          child: Scaffold(
-            backgroundColor: AppColors.scaffoldBackground(context),
-            bottomNavigationBar: _ProductBottomBar(
-              quantity: _quantity,
-              total: total,
-              isSubmitting: _isSubmittingMainItem,
-              onIncrement: () => setState(() => _quantity++),
-              onDecrement: () =>
-                  setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
-              onSubmit: () {
-                final authState = context.read<AuthBloc>().state;
-                if (authState is AuthGuest) {
-                  showGuestGate(context);
-                  return;
-                }
-                if (_isSubmittingMainItem) return;
-
-                final List<int> modifierIdsList = [];
-                _selectedOptions.forEach((modId, selectedIds) {
-                  for (final optId in selectedIds) {
-                    final idInt = int.tryParse(optId);
-                    if (idInt != null) {
-                      modifierIdsList.add(idInt);
-                    }
-                  }
-                });
-
-                setState(() => _isSubmittingMainItem = true);
-                context.read<CartCubit>().addItem(
-                  productId: product.id.toString(),
-                  quantity: _quantity,
-                  optionValueIds: modifierIdsList,
-                  note: _notes.trim().isNotEmpty ? _notes.trim() : null,
-                  isPickupIntent: widget.isPickupIntent,
-                );
-              },
-            ),
-            body: SafeArea(
-              bottom: false,
-              child: SingleChildScrollView(
-                physics: const ClampingScrollPhysics(),
-                padding: const EdgeInsetsDirectional.only(bottom: 20),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(
-                        16,
-                        16,
-                        16,
-                        0,
-                      ),
-                      child: _ProductHeader(title: l10n.productDetailsTitle),
-                    ),
-                    const SizedBox(height: 20),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              if (Navigator.canPop(context)) Navigator.pop(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: GestureDetector(
+                onTap: () {},
+                child: Material(
+                  color: AppColors.surfaceCard(context),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(20),
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: SingleChildScrollView(
+                          physics: const ClampingScrollPhysics(),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                  16,
+                                  16,
+                                  16,
+                                  0,
+                                ),
+                                child: _ProductHeader(title: l10n.productDetailsTitle),
+                              ),
+                              const SizedBox(height: 20),
 
                     // Product Image with wavy background stripes
                     _HeroProductImage(
@@ -679,8 +660,49 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ),
                     ),
-                    const ProductExtrasSection(),
-                  ],
+                              const ProductExtrasSection(),
+                              const SizedBox(height: 16),
+                            ],
+                          ),
+                        ),
+                      ),
+                      _ProductBottomBar(
+                        quantity: _quantity,
+                        total: total,
+                        isSubmitting: _isSubmittingMainItem,
+                        onIncrement: () => setState(() => _quantity++),
+                        onDecrement: () =>
+                            setState(() => _quantity = (_quantity - 1).clamp(0, 99)),
+                        onSubmit: () {
+                          final authState = context.read<AuthBloc>().state;
+                          if (authState is AuthGuest) {
+                            showGuestGate(context);
+                            return;
+                          }
+                          if (_isSubmittingMainItem) return;
+
+                          final List<int> modifierIdsList = [];
+                          _selectedOptions.forEach((modId, selectedIds) {
+                            for (final optId in selectedIds) {
+                              final idInt = int.tryParse(optId);
+                              if (idInt != null) {
+                                modifierIdsList.add(idInt);
+                              }
+                            }
+                          });
+
+                          setState(() => _isSubmittingMainItem = true);
+                          context.read<CartCubit>().addItem(
+                            productId: product.id.toString(),
+                            quantity: _quantity,
+                            optionValueIds: modifierIdsList,
+                            note: _notes.trim().isNotEmpty ? _notes.trim() : null,
+                            isPickupIntent: widget.isPickupIntent,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

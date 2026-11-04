@@ -89,5 +89,43 @@ void main() {
       expect(find.text('Delivery price'), findsOneWidget);
       expect(find.text('EGP 20'), findsOneWidget);
     });
+
+    testWidgets('does not display payment method or previous orders in Arabic and English', (tester) async {
+      const restaurant = Restaurant(
+        id: '1',
+        name: 'عز الشام',
+        cuisineType: 'شاورما',
+        coverImageUrl: '',
+        rating: 4.5,
+        deliveryTimeMin: 30,
+        deliveryTimeMax: 45,
+        deliveryFee: 20.0,
+        isFavorited: false,
+      );
+
+      // Arabic test
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const RestaurantRateScreen(restaurant: restaurant),
+          locale: const Locale('ar'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('طريقة الدفع'), findsNothing);
+      expect(find.text('طلبات مسبقة'), findsNothing);
+
+      // English test
+      await tester.pumpWidget(
+        buildTestableWidget(
+          const RestaurantRateScreen(restaurant: restaurant),
+          locale: const Locale('en'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Payment method'), findsNothing);
+      expect(find.text('Previous orders'), findsNothing);
+    });
   });
 }

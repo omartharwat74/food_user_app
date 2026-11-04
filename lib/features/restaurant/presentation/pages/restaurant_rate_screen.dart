@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:food_user_app/core/constants/app_assets.dart';
 import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/theme/app_radius.dart';
 import 'package:food_user_app/core/theme/app_spacing.dart';
 import 'package:food_user_app/core/theme/text_styles.dart';
-import 'package:food_user_app/core/widgets/app_media.dart';
 
 import 'package:food_user_app/core/utils/price_extension.dart';
 import 'package:food_user_app/features/restaurant/domain/entities/restaurant.dart';
@@ -484,20 +482,28 @@ class _RestaurantFacts extends StatelessWidget {
             ),
           ),
         ),
-        _FactRow(label: copy.address, value: restaurant.address),
-        _FactRow(label: copy.previousOrders, value: '-'),
-        _PaymentRow(label: copy.paymentMethod),
+        _FactRow(
+          label: copy.address,
+          value: restaurant.address,
+          showDivider: false,
+        ),
       ],
     );
   }
 }
 
 class _FactRow extends StatelessWidget {
-  const _FactRow({required this.label, this.value, this.valueWidget});
+  const _FactRow({
+    required this.label,
+    this.value,
+    this.valueWidget,
+    this.showDivider = true,
+  });
 
   final String label;
   final String? value;
   final Widget? valueWidget;
+  final bool showDivider;
 
   @override
   Widget build(BuildContext context) {
@@ -529,9 +535,11 @@ class _FactRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.border(context), width: 0.5),
-        ),
+        border: showDivider
+            ? Border(
+                bottom: BorderSide(color: AppColors.border(context), width: 0.5),
+              )
+            : null,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -539,56 +547,6 @@ class _FactRow extends StatelessWidget {
         children: isArabic
             ? [valueText, const SizedBox(width: 12), labelText]
             : [labelText, const SizedBox(width: 12), valueText],
-      ),
-    );
-  }
-}
-
-class _PaymentRow extends StatelessWidget {
-  const _PaymentRow({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final isArabic = Directionality.of(context) == TextDirection.rtl;
-    const icons = Row(
-      textDirection: TextDirection.ltr,
-      children: [
-        AppRasterImage.asset(
-          AppAssets.restaurantPaymentGreenIcon,
-          width: 16,
-          height: 16,
-        ),
-        SizedBox(width: 12),
-        AppRasterImage.asset(
-          AppAssets.restaurantPaymentRedIcon,
-          width: 16,
-          height: 16,
-        ),
-        SizedBox(width: 12),
-        AppRasterImage.asset(
-          AppAssets.restaurantPaymentYellowIcon,
-          width: 16,
-          height: 16,
-        ),
-      ],
-    );
-    final labelText = Text(
-      label,
-      style: AppTextStyles.body(context).copyWith(
-        color: AppColors.paragraph(context),
-        fontSize: 12,
-        height: 1.3,
-      ),
-    );
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        textDirection: TextDirection.ltr,
-        children: isArabic ? [icons, labelText] : [labelText, icons],
       ),
     );
   }
@@ -603,8 +561,6 @@ class _RateCopy {
     required this.minimumOrder,
     required this.deliveryTime,
     required this.address,
-    required this.previousOrders,
-    required this.paymentMethod,
   });
 
   final String customerReviews;
@@ -614,8 +570,6 @@ class _RateCopy {
   final String minimumOrder;
   final String deliveryTime;
   final String address;
-  final String previousOrders;
-  final String paymentMethod;
 
   static _RateCopy of(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -627,8 +581,6 @@ class _RateCopy {
       minimumOrder: l10n.restaurantRateMinimumOrder,
       deliveryTime: l10n.restaurantRateDeliveryTime,
       address: l10n.restaurantRateAddress,
-      previousOrders: l10n.restaurantRatePreviousOrders,
-      paymentMethod: l10n.restaurantRatePaymentMethod,
     );
   }
 }

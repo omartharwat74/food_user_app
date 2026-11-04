@@ -120,12 +120,10 @@ class OrderStatusUiModel {
       case OrderNormalizedStatus.preparing:
         return OrderStatusUiModel(
           normalizedStatus: normalized,
-          shortStatusLabel: isDetailScreen
-              ? l10n.orderAcceptedShort
-              : l10n.orderPreparingShort,
+          shortStatusLabel: l10n.orderAcceptedShort,
           statusLabel: l10n.orderPreparing,
           badgeLabel: l10n.reorder,
-          statusColor: isDetailScreen ? AppColors.success : AppColors.primary,
+          statusColor: AppColors.success,
           statusIconAsset: AppAssets.orderAcceptedIcon,
           progressStep: 1,
           showEta: !isSelfPickup,

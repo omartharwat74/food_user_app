@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart' hide Order;
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:food_user_app/core/theme/app_colors.dart';
 import 'package:food_user_app/core/constants/api_endpoints.dart';
 import 'package:food_user_app/core/errors/failures.dart';
 import 'package:food_user_app/core/network/dio_client.dart';
@@ -90,6 +91,33 @@ void main() {
       final modelRejectedEn = OrderStatusUiModel.fromStatus(status: 'rejected', l10n: l10nEn);
       expect(modelRejectedEn.shortStatusLabel, 'Cancelled order');
       expect(modelRejectedEn.statusLabel, 'Order was rejected by store');
+    });
+
+    test('OrderStatusUiModel maps preparing status to Accepted (#0C9D61) in Arabic and English for both pickup and delivery', () {
+      final l10nAr = AppLocalizationsAr();
+      final l10nEn = AppLocalizationsEn();
+
+      for (final isSelfPickup in [false, true]) {
+        for (final isDetailScreen in [false, true]) {
+          final modelAr = OrderStatusUiModel.fromStatus(
+            status: 'preparing',
+            l10n: l10nAr,
+            isDetailScreen: isDetailScreen,
+            isSelfPickup: isSelfPickup,
+          );
+          expect(modelAr.shortStatusLabel, 'تم القبول');
+          expect(modelAr.statusColor, AppColors.success);
+
+          final modelEn = OrderStatusUiModel.fromStatus(
+            status: 'preparing',
+            l10n: l10nEn,
+            isDetailScreen: isDetailScreen,
+            isSelfPickup: isSelfPickup,
+          );
+          expect(modelEn.shortStatusLabel, 'Accepted');
+          expect(modelEn.statusColor, AppColors.success);
+        }
+      }
     });
   });
 

@@ -119,6 +119,31 @@ void main() {
         }
       }
     });
+
+    test('OrderStatusUiModel maps courierOnWay status to Handed to courier in Arabic and English both outside and inside detail screen', () {
+      final l10nAr = AppLocalizationsAr();
+      final l10nEn = AppLocalizationsEn();
+
+      for (final isDetailScreen in [false, true]) {
+        for (final status in ['assigned', 'on_the_way']) {
+          final modelAr = OrderStatusUiModel.fromStatus(
+            status: status,
+            l10n: l10nAr,
+            isDetailScreen: isDetailScreen,
+            isSelfPickup: false,
+          );
+          expect(modelAr.shortStatusLabel, 'تسليم للمندوب');
+
+          final modelEn = OrderStatusUiModel.fromStatus(
+            status: status,
+            l10n: l10nEn,
+            isDetailScreen: isDetailScreen,
+            isSelfPickup: false,
+          );
+          expect(modelEn.shortStatusLabel, 'Handed to courier');
+        }
+      }
+    });
   });
 
   group('OrdersPaginatedDto', () {

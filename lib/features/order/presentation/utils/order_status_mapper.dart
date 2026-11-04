@@ -156,9 +156,7 @@ class OrderStatusUiModel {
       case OrderNormalizedStatus.courierOnWay:
         return OrderStatusUiModel(
           normalizedStatus: normalized,
-          shortStatusLabel: isDetailScreen
-              ? l10n.orderHandedToCourierShort
-              : l10n.orderCourierOnWayShort,
+          shortStatusLabel: l10n.orderHandedToCourierShort,
           statusLabel: l10n.orderCourierOnWay,
           badgeLabel: l10n.reorder,
           statusColor: AppColors.primary,
